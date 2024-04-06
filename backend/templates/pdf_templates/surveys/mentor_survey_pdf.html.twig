@@ -1,0 +1,102 @@
+<div class="page-body-wrapper">
+
+    <div class="row">
+
+        <div class="col-12 p-t-10 p-l-20 row">
+
+            <div class="col-12 p-0 mb-2 text-center">
+                <span style="font-weight: bold; font-size: 3em">ENCUESTA MENTORES</span>
+            </div>
+
+            <div class="col-12 mt-4">
+                <div class="col-12 mt-2">
+                    <span style="font-weight: bold">Nombre del Mentor:</span>
+                    <span>&nbsp;{{ mentorName }}</span>
+                </div>
+                <div class="col-12 mt-2">
+                    <span style="font-weight: bold">Área de mentorización:</span>
+                    <span>&nbsp;{{ appointmentArea }}</span>
+                </div>
+                <div class="col-12 mt-2 mb-3">
+                    <span style="font-weight: bold">Nº de horas mentorizadas a la startup:</span>
+                    <span>&nbsp;{{ appointmentTime }}</span>
+                </div>
+            </div>
+
+
+            <div class="col-12 p-0 m-t-50 row">
+                <div class="col-12 mt-4">
+                    <span style="font-weight: bold; font-size: 1.8em">{{ document_lines[0].title }} </span>
+                </div>
+                <div class="col-12 mt-2">
+                    <span style="font-weight: bold; font-size: 1.4em">{{ document_lines[0].subtitle }} </span>
+                </div>
+                <div class="col-12 mt-2">
+                    <span>{{ document_lines[0].question }}: </span>
+                    <span>&nbsp; {{ document_lines[0].select }}</span>
+                </div>
+                {% if not document_lines[0].text == '' %}
+                    <div class="col-12 mt-3 mb-2">
+                        <span>Justifica tu respuesta: {{ document_lines[0].text }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-12 p-0 m-t-50 row">
+                <div class="col-12 mt-4">
+                    <span style="font-weight: bold; font-size: 1.8em">{{ document_lines[1].title }} </span>
+                </div>
+                <div class="col-12 mt-2">
+                    <span style="font-weight: bold; font-size: 1.4em">{{ document_lines[1].subtitle }} </span>
+                </div>
+                <div class="col-12 mt-2">
+                    <span>{{ document_lines[1].question }}: </span>
+                    <span>&nbsp; {{ document_lines[1].select }}</span>
+                </div>
+                {% if not document_lines[1].text == '' %}
+                    <div class="col-12 mt-3 mb-2">
+                        <span>Justifica tu respuesta: {{ document_lines[1].text }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-12 p-0 m-t-50 row">
+                <div class="col-12 mt-4">
+                    <span style="font-weight: bold; font-size: 1.8em">{{ document_lines[2].title }} </span>
+                </div>
+                {% for question in document_lines[2].array %}
+                    <div class="col-12 mt-2">
+                        <span style="font-weight: bold; font-size: 1.4em">{{ question.subtitle }} </span>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <span>{{ question.question }}: </span>
+                        <span>&nbsp; {{ question.select }}</span>
+                    </div>
+                    {% if not question.text == '' %}
+                        <div class="col-12 mt-3 mb-3">
+                            <span>Justifica tu respuesta: {{ question.text }}</span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="col-12 p-0 m-t-50 row">
+                <div class="col-12 mt-4 mb-4">
+                    <span style="font-weight: bold; font-size: 1.8em">{{ document_lines[3].title }} </span>
+                    <span style="font-weight: bold; font-size: 1.8em">&nbsp; {{ document_lines[3].select }}</span>
+                </div>
+            </div>
+
+            <div class="col-12 p-0 m-t-50 row">
+                <div class="col-12 mt-5">
+                    <span style="font-weight: bold">{{ document_lines[4].question }} </span>
+                </div>
+                {% if not document_lines[4].text == '' %}
+                    <div class="col-12 mt-3">
+                        <span>{{ document_lines[4].text }}</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

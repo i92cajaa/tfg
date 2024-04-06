@@ -1,0 +1,1066 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Mostrar Proyecto{% endblock %}
+
+{% block body %}
+
+    {% if userPermission.can('create', 'templates') or userPermission.can('edit', 'templates') %}
+        <div class="modal fade" id="templateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content" id="templateModalContent" >
+
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="container-fluid">
+        <!-- User Card & Plan Starts -->
+        <div class="row">
+
+            <div class="col-12">
+            <!-- User Card starts-->
+            <div class="col-12">
+                <div class="tab-content">
+                    <div class="tab-pane active row" id="info" aria-labelledby="info-tab" role="tabpanel">
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <div class="card user-card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <h2 class="row gap-2 align-items-center m-0">Información principal</h2>
+                                        <hr>
+                                            <div class="col-md-6">
+                                                <div class="row gy-4">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-bold">Logo</label><br>
+                                                        <img data-bs-toggle="tooltip"
+                                                             data-html="true"
+                                                             data-placement="bottom"
+                                                             title=''
+                                                             src="{% if client.logo != null %}{{ documentImage.DocumentImage(client.logo) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" class="" style="width: 90px !important;"  alt="">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-bold">Nombre</label>
+                                                        <p class="card-text mb-0">{{ client.name }} {% if client.alumni %}(Alumni){% endif %}</p>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-bold">Centro</label>
+                                                        <p class="card-text">{{ client.center.name }}</p>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-bold">Sector / Especialidad</label>
+                                                        <p class="card-text">{{ client.speciality }}</p>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-bold">Provincia</label>
+                                                        <p class="card-text">{{ client.province }}</p>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-bold">Razón Social</label>
+                                                        <p class="card-text">{{ client.socialName }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">Descripción</label>
+                                                <p class="card-text">{{ client.description }}</p>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-md-2">
+                                                    <label class="form-label fw-bold">CIF</label>
+                                                    <p class="card-text">{{ client.cif }}</p>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label fw-bold">Nº Fundadores</label>
+                                                    <p class="card-text">{{ client.members }}</p>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label fw-bold">Nº Fundadores Mujeres</label>
+                                                    <p class="card-text">{{ client.girlMembers ?? '0' }}</p>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label fw-bold">Startup Digital</label>
+                                                    <p class="card-text">{{ client.digitalStartup ? 'Si' : 'No' }}</p>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label fw-bold">Empresa Nueva</label>
+                                                    <p class="card-text">{{ client.newCompany ? 'Si' : 'No' }}</p>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label fw-bold">Tipo de Apoyo</label>
+                                                    <p class="card-text">{{ client.supportType }}</p>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label fw-bold">Convocatoria</label>
+                                                    <p class="card-text">{{ client.announcementName }}</p>
+                                                </div>
+                                            </div>
+
+                                            <h2 class="mt-4">Equipo</h2>
+                                            <hr>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Representante</label>
+                                                <p class="card-text ">{{ client.representative }}</p>
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Cargo</label>
+                                                <p class="card-text ">{{ client.position }}</p>
+
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Teléfono</label>
+                                                <p class="card-text ">{{ client.phone }}</p>
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Correo Electrónico</label>
+                                                <p class="card-text ">{{ client.email }}</p>
+
+                                            </div>
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Sexo</label>
+                                                <p class="card-text ">{{ client.gender }}</p>
+
+                                            </div>
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Edad</label>
+                                                <p class="card-text ">{{ client.age }}</p>
+
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Representante 2</label>
+                                                <p class="card-text">{{ client.representative2 }}</p>
+
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Cargo 2</label>
+                                                <p class="card-text">{{ client.position2 }}</p>
+
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold" for="country">Teléfono 2</label>
+                                                <p class="card-text">{{ client.phone2 }}</p>
+
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Correo Electrónico 2</label>
+                                                <p class="card-text">{{ client.email2 }}</p>
+
+                                            </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label class="form-label fw-bold">Sexo 2</label>
+                                            <p class="card-text ">{{ client.gender2 }}</p>
+
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label class="form-label fw-bold">Edad 2</label>
+                                            <p class="card-text ">{{ client.age2 }}</p>
+
+                                        </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Representante 3</label>
+                                                <p class="card-text">{{ client.representative3 }}</p>
+
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Cargo 3</label>
+                                                <p class="card-text">{{ client.position3 }}</p>
+
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Teléfono 3</label>
+                                                <p class="card-text">{{ client.phone3 }}</p>
+
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Correo Electŕonico 3</label>
+                                                <p class="card-text">{{ client.email3 }}</p>
+
+                                            </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label class="form-label fw-bold">Sexo 3</label>
+                                            <p class="card-text ">{{ client.gender3 }}</p>
+
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label class="form-label fw-bold">Edad 3</label>
+                                            <p class="card-text ">{{ client.age3 }}</p>
+
+                                        </div>
+                                        {% if client.comment is not null %}
+                                            <h2 class="mt-4">Comentario Adicional</h2><hr>
+                                            <div>
+                                                <p class="card-text">{{ client.comment }}</p>
+                                            </div>
+                                        {% endif %}
+                                            <h2 class="mt-4">Objetivos</h2>
+                                            <hr>
+                                            <div>
+                                                {% if client.getGoalsIdentity is not empty %}
+
+                                                {% endif %}
+                                            </div>
+
+
+                                        {% if userPermission.can('edit', 'clients') %}
+                                            <h2 class="mt-4">Documentación y Cuestionarios</h2><hr>
+
+{#                                            <ul class="nav nav-pills ps-2 pb-2" role="tablist">#}
+{#                                                <li class="nav-item">#}
+{#                                                    <a class="nav-link d-flex align-items-center active" id="documents-tab" data-bs-toggle="tab"#}
+{#                                                       href="#documents" aria-controls="documents" role="tab" aria-selected="false">#}
+{#                                                        <span class="d-none d-sm-block">Documentos</span>#}
+{#                                                    </a>#}
+{#                                                </li>#}
+
+{#                                                <li class="nav-item">#}
+{#                                                    <a class="nav-link d-flex align-items-center" id="startup-survey-tab" data-bs-toggle="tab"#}
+{#                                                       href="#startup_survey" aria-controls="startup_survey" role="tab" aria-selected="false">#}
+{#                                                        <span class="d-none d-sm-block">Cuestionarios Startups</span>#}
+{#                                                    </a>#}
+{#                                                </li>#}
+
+{#                                                <li class="nav-item">#}
+{#                                                    <a class="nav-link d-flex align-items-center " id="mentor-survey-tab" data-bs-toggle="tab"#}
+{#                                                       href="#mentor_survey" aria-controls="mentor_survey" role="tab" aria-selected="false">#}
+{#                                                        <span class="d-none d-sm-block">Cuestionarios Mentores</span>#}
+{#                                                    </a>#}
+{#                                                </li>#}
+{#                                            </ul>#}
+
+                                            <div class="tab-content">
+                                                <div class="tab-pane active row" id="documents" aria-labelledby="documents-tab" role="tabpanel">
+
+                                                    <div class="d-md-flex flex-wrap justify-content-md-between mb-3">
+                                                        {% if userPermission.can('edit', 'clients') %}
+                                                            <a class="btn btn-primary w-auto uploaddocument" data-value="addDocument" style="height: fit-content;">
+                                                                <i class="align-items-center me-2" data-feather='plus' ></i>
+                                                                Nuevo
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <div class="col-md-12 overflow-auto mb-4">
+                                                        <table class="invoice-list-table table  overflow-auto ">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>Nombre</th>
+                                                                <th>Fecha Creación</th>
+                                                                <th>Acciones</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% if documents is defined and documents|length >= 1 %}
+
+                                                                {% for document in documents %}
+                                                                    {% if not document.isStartupSurvey and not document.isMentorSurvey %}
+                                                                    <tr>
+                                                                        <td>{{ document.getOriginalName }}</td>
+
+                                                                        <td>{{ document.createdAt|UTCDateTimeFormat('d-m-Y - H:i') }}</td>
+
+                                                                        <td>
+                                                                            <a href="{{ path('document_download', {'documentId': document.id}) }}" data-value="report" data-value2="Report">
+                                                                                <i class="align-items-center" data-feather='download'></i>
+                                                                            </a>
+                                                                            <a class="text-danger" href="{{ path('document_delete', {'document': document.id}) }}" data-value="report" data-value2="Report">
+                                                                                <i class="align-items-center" data-feather='trash'></i>
+                                                                            </a>
+                                                                        </td>
+                                                                    </tr>
+                                                                    {% endif %}
+                                                                {% endfor %}
+
+                                                            {% else %}
+                                                                <tr>
+                                                                    <td colspan="9">{{ 'No results found'|trans }}</td>
+                                                                </tr>
+                                                            {% endif %}
+                                                            </tbody>
+                                                        </table>
+                                                        {% set totalResults = documents|length %}
+                                                        {% include 'extra/filter_limit.html.twig' %}
+
+                                                        <div class="d-flex justify-content-end mr-4 mt-2 w-100">
+                                                            {% include 'extra/pagination.html.twig' with {
+                                                                filterService: filterService,
+                                                                currentPage: filterService.page,
+                                                                paginationPath: 'client_show',
+                                                                lastPage: documents|length / filterService.limit,
+                                                                showAlwaysFirstAndLast: true
+                                                            } only %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+{#                                                <div class="tab-pane row" id="startup_survey" aria-labelledby="startup-survey-tab" role="tabpanel">#}
+{#                                                    <div class="col-md-12 overflow-auto mb-4">#}
+{#                                                        <table class="invoice-list-table table  overflow-auto ">#}
+{#                                                            <thead>#}
+{#                                                            <tr>#}
+{#                                                                <th>Nombre</th>#}
+{#                                                                <th>Fecha Creación</th>#}
+{#                                                                <th>Acciones</th>#}
+{#                                                            </tr>#}
+{#                                                            </thead>#}
+{#                                                            <tbody>#}
+{#                                                            {% if documents is defined and documents|length >= 1 %}#}
+
+{#                                                                {% for document in documents %}#}
+{#                                                                    {% if document.isStartupSurvey %}#}
+{#                                                                    <tr>#}
+{#                                                                        <td>{{ document.getOriginalName }}</td>#}
+
+{#                                                                        <td>{{ document.createdAt|UTCDateTimeFormat('d-m-Y - H:i') }}</td>#}
+
+{#                                                                        <td>#}
+{#                                                                            <a href="{{ path('document_download', {'documentId': document.id}) }}" data-value="report" data-value2="Report">#}
+{#                                                                                <i class="align-items-center" data-feather='download'></i>#}
+{#                                                                            </a>#}
+{#                                                                            <a class="text-danger" href="{{ path('document_delete', {'document': document.id}) }}" data-value="report" data-value2="Report">#}
+{#                                                                                <i class="align-items-center" data-feather='trash'></i>#}
+{#                                                                            </a>#}
+{#                                                                        </td>#}
+{#                                                                    </tr>#}
+{#                                                                    {% endif %}#}
+{#                                                                {% endfor %}#}
+
+{#                                                            {% else %}#}
+{#                                                                <tr>#}
+{#                                                                    <td colspan="9">{{ 'No results found'|trans }}</td>#}
+{#                                                                </tr>#}
+{#                                                            {% endif %}#}
+{#                                                            </tbody>#}
+{#                                                        </table>#}
+{#                                                        {% set totalResults = documents|length %}#}
+{#                                                        {% include 'extra/filter_limit.html.twig' %}#}
+
+{#                                                        <div class="d-flex justify-content-end mr-4 mt-2 w-100">#}
+{#                                                            {% include 'extra/pagination.html.twig' with {#}
+{#                                                                filterService: filterService,#}
+{#                                                                currentPage: filterService.page,#}
+{#                                                                paginationPath: 'client_show',#}
+{#                                                                lastPage: documents|length / filterService.limit,#}
+{#                                                                showAlwaysFirstAndLast: true#}
+{#                                                            } only %}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+
+{#                                                <div class="tab-pane row" id="mentor_survey" aria-labelledby="mentor-survey-tab" role="tabpanel">#}
+{#    #}
+{#                                                    <div class="row col-12">#}
+{#                                                        <div class="mb-3 col-2">#}
+{#                                                            {% if userPermission.can('edit', 'clients') %}#}
+{#                                                                <a class="btn btn-primary w-auto" href="{{ path('documents_export', {'clientId': clientId, 'type': 1}) }}" style="height: fit-content;">#}
+{#                                                                    <i class="align-items-center me-2" data-feather='plus' ></i>#}
+{#                                                                    Exportar a PDF#}
+{#                                                                </a>#}
+{#                                                            {% endif %}#}
+{#                                                        </div>#}
+{#                                                        <div class="mb-3 col-10">#}
+{#                                                            {% if userPermission.can('edit', 'clients') %}#}
+{#                                                                <a class="btn btn-primary w-auto" href="{{ path('documents_export', {'clientId': clientId, 'type': 0}) }}" style="height: fit-content;">#}
+{#                                                                    <i class="align-items-center me-2" data-feather='plus' ></i>#}
+{#                                                                    Exportar a Excel#}
+{#                                                                </a>#}
+{#                                                            {% endif %}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#    #}
+{#                                                    <div class="col-md-12 overflow-auto mb-4">#}
+{#                                                        <table class="invoice-list-table table  overflow-auto ">#}
+{#                                                            <thead>#}
+{#                                                            <tr>#}
+{#                                                                <th>Nombre</th>#}
+{#                                                                <th>Mentor</th>#}
+{#                                                                <th>Proyecto</th>#}
+{#                                                                <th>Puntuación</th>#}
+{#                                                                <th>Fecha Creación</th>#}
+{#                                                                <th>Acciones</th>#}
+{#                                                            </tr>#}
+{#                                                            </thead>#}
+{#                                                            <tbody>#}
+{#                                                            {% if documents is defined and documents|length >= 1 %}#}
+{#    #}
+{#                                                                {% for document in documents %}#}
+{#                                                                    {% if document.isMentorSurvey %}#}
+{#                                                                        {% set parts = document.getOriginalName|split('-') %}#}
+{#                                                                    <tr>#}
+{#                                                                        <td>{{ document.getOriginalName }}</td>#}
+{#    #}
+{#                                                                        <td>{{ parts[1] }}</td>#}
+{#    #}
+{#                                                                        <td>{{ parts[2] }}</td>#}
+{#    #}
+{#                                                                        <td>{{ document.getTotalPointsMentorSurvey }}</td>#}
+{#    #}
+{#                                                                        <td>{{ document.createdAt|UTCDateTimeFormat('d-m-Y - H:i') }}</td>#}
+{#    #}
+{#                                                                        <td>#}
+{#                                                                            <a href="{{ path('document_download', {'documentId': document.id}) }}" data-value="report" data-value2="Report">#}
+{#                                                                                <i class="align-items-center" data-feather='download'></i>#}
+{#                                                                            </a>#}
+{#                                                                            <a class="text-danger" href="{{ path('document_delete', {'document': document.id}) }}" data-value="report" data-value2="Report">#}
+{#                                                                                <i class="align-items-center" data-feather='trash'></i>#}
+{#                                                                            </a>#}
+{#                                                                        </td>#}
+{#                                                                    </tr>#}
+{#                                                                    {% endif %}#}
+{#                                                                {% endfor %}#}
+{#    #}
+{#                                                            {% else %}#}
+{#                                                                <tr>#}
+{#                                                                    <td colspan="9">{{ 'No results found'|trans }}</td>#}
+{#                                                                </tr>#}
+{#                                                            {% endif %}#}
+{#                                                            </tbody>#}
+{#                                                        </table>#}
+{#                                                        {% set totalResults = documents|length %}#}
+{#                                                        {% include 'extra/filter_limit.html.twig' %}#}
+{#    #}
+{#                                                        <div class="d-flex justify-content-end mr-4 mt-2 w-100">#}
+{#                                                            {% include 'extra/pagination.html.twig' with {#}
+{#                                                                filterService: filterService,#}
+{#                                                                currentPage: filterService.page,#}
+{#                                                                paginationPath: 'client_show',#}
+{#                                                                lastPage: documents|length / filterService.limit,#}
+{#                                                                showAlwaysFirstAndLast: true#}
+{#                                                            } only %}#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+                                            </div>
+
+                                        {% endif %}
+
+
+{#                                            <div class="col-md-5">#}
+{#                                                <h6 class="my-1">Compromiso de Confidencialidad: </h6>#}
+{#                                                {% if userPermission.can('edit', 'clients') %}#}
+{#                                                <div class="text-start">#}
+{#                                                    {% if client.user.documentConfidencial  %}#}
+{#                                                        <a class="btn btn-primary mt-1" href="{{ path('document_download', {'documentId': client.user.documentConfidencial.id}) }}" data-value="report" data-value2="Report">#}
+{#                                                            <i class="align-items-center" data-feather='download'></i>#}
+{#                                                            <span class="align-items-center">Descargar</span>#}
+{#                                                        </a>#}
+{#                                                    {% endif %}#}
+{#                                                    {% if client.documentConfidencial is null or app.user.isAdmin %}#}
+{#                                                        <a class="btn btn-primary mt-1 uploaddocumentconfidencial" data-value="setDocumentConfidencial">#}
+{#                                                            <i class="align-items-center me-2" data-feather='upload'></i>#}
+{#                                                            Subir#}
+{#                                                        </a>#}
+{#                                                    {% endif %}#}
+{#                                                </div>#}
+{#                                                {% endif %}#}
+{#                                                <br>#}
+{#                                                <h6 class="my-1">Contrato de Adhesión: </h6>#}
+{#                                                {% if userPermission.can('edit', 'clients') %}#}
+{#                                                <div class="text-start">#}
+{#                                                    {% if client.user.documentAdhesion  %}#}
+{#                                                        <a class="btn btn-primary mt-1" href="{{ path('document_download', {'documentId': client.user.documentAdhesion.id}) }}" data-value="report" data-value2="Report">#}
+{#                                                            <i class="align-items-center" data-feather='download'></i>#}
+{#                                                            <span class="align-items-center">Descargar</span>#}
+{#                                                        </a>#}
+{#                                                    {% endif %}#}
+{#                                                    {% if client.documentAdhesion is null or app.user.isAdmin %}#}
+{#                                                            <a class="btn btn-primary mt-1 uploaddocumentadhesion" data-value="setDocumentAdhesion">#}
+{#                                                                <i class="align-items-center me-2" data-feather='upload' ></i>#}
+{#                                                                Subir#}
+{#                                                            </a>#}
+{#                                                    {% endif %}#}
+{#                                                </div>#}
+{#                                                {% endif %}#}
+{#                                            </div>#}
+                                        </div>
+                                        <div class="modal fade" id="documentModal" tabindex="-1" role="dialog" aria-labelledby="documentModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="documentModalLabel">Subir documento</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="documentsForm" action="{{ path('client_document', {'client': client.id}) }}" method="post" enctype="multipart/form-data">
+                                                            <input type="hidden" name="uploadDocument" id="upload-document-type" value="">
+
+                                                            <label class="col-2 label-control mt-auto mb-auto text-center font-weight-bolder">Subir archivo *</label>
+                                                            <div class="col-10">
+                                                                <input name="document" required id="documents_document" class="form-control" type="file">
+                                                                <span class="text-danger d-none" id="documents_document_error">Introduce el archivo</span>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-primary" onclick="submitForm()">Subir</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    <div class="tab-pane row" id="clinical-history" aria-labelledby="clinical-history-tab" role="tabpanel">
+                        <div class="col-12">
+                            <div class="row invoice-preview">
+
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <div class="row">
+                                                <div class="col-md-9 col-sm-12">
+                                                    <ul class="nav nav-pills">
+                                                        {% for templateType in templateTypes %}
+                                                            <li class="nav-item">
+                                                                <a class="nav-link {% if loop.first %}active{% endif %}" data-bs-toggle="tab"
+                                                                href="#template-type-{{ templateType.id }}" aria-controls="account" role="tab" aria-selected="true">
+                                                                    {{ templateType.name }}
+                                                                </a>
+                                                            </li>
+
+                                                        {% endfor %}
+
+                                                    </ul>
+                                                </div>
+                                                    <div class="col-md-3 col-sm-12 text-end">
+                                                {% if userPermission.can('export', 'templates') %}
+                                                    <button class="btn add-new btn-secondary mr-1" type="button" onclick="exportTemplates()"><span class="text-white">{{ 'Export'|trans }}</span></button>
+                                                {% endif %}
+                                                {% if userPermission.can('create', 'templates') %}
+                                                    <a><button class="btn add-new btn-primary" type="button" onclick="openCreateModal()"><span class="text-white">{{ 'Create Template'|trans }}</span></button></a>
+                                                {% endif %}
+                                            </div>
+                                                </div>
+                                            </div>
+                                        <div class="tab-content">
+                                            {% for templateType in templateTypes %}
+                                                <div class="tab-pane fade {% if loop.first %}show active {% endif %}" id="template-type-{{ templateType.id }}" role="tabpanel" aria-labelledby="home-tab">
+                                                    <div class="table-responsive overflow-inherit">
+
+                                                        <table class="table table-striped table-borderless">
+                                                            <thead class="thead-light">
+                                                            <tr>
+                                                                <th class="text-truncate">
+                                                                    <a>
+                                                                        {{ 'Date'|trans }}
+                                                                    </a>
+                                                                </th>
+                                                                {% for templateTypeLine in templateType.templateLineTypes %}
+                                                                    <th>
+                                                                        <a>
+                                                                            {{ templateTypeLine.name }}
+                                                                        </a>
+                                                                    </th>
+                                                                {% endfor %}
+
+                                                                <th>
+                                                                    <a>
+                                                                        {{ 'Actions'|trans }}
+                                                                    </a>
+                                                                </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for template in client.getTemplatesByTemplateType(templateType) %}
+                                                                <tr>
+                                                                    <td>
+                                                                        {{ template.createdAt ? template.createdAt|UTCDateTimeFormat('d-m-Y H:i') : '' }}
+                                                                    </td>
+                                                                    {% for templateTypeLine in templateType.templateLineTypes %}
+                                                                        <td>
+                                                                            <a>
+
+                                                                                {% include 'template/render_template_value.html.twig' with {'templateLine': template.getTemplateLineByName(templateTypeLine.name)} only %}
+
+                                                                            </a>
+                                                                        </td>
+                                                                    {% endfor %}
+
+                                                                    <td>
+                                                                        <div class="btn-group">
+                                                                            <button class="btn dropdown-toggle waves-effect waves-float waves-light p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                <i data-feather='align-justify' class="font-medium-5"></i>
+                                                                            </button>
+                                                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" data-boundary="window" style="z-index: 999 !important;">
+
+                                                                                {% if userPermission.can('edit', 'templates') %}
+                                                                                    <a class="dropdown-item" onclick="openEditModal('{{ template.id }}')" data-id="{{ template.id }}"><i data-feather='edit'></i> {{ 'Edit'|trans }}</a>
+                                                                                {% endif %}
+
+                                                                                {% if userPermission.can('delete', 'templates') %}
+                                                                                    <div class="dropdown-divider"></div>
+                                                                                    <a class="dropdown-item" onclick="$('#deleteForm_template_{{ template.id }}').submit()"><i data-feather='delete'></i> {{ 'Delete'|trans }}</a>
+                                                                                    <form method="post" id="deleteForm_template_{{ template.id }}" action="{{ path('template_delete', {'template': template.id}) }}" class="deleteForm d-none">
+                                                                                        <input type="hidden" name="_method" value="DELETE">
+                                                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
+                                                                                        <input type="hidden" name="route" value="{{ path('client_show', {'client': template.client.id}) }}">
+                                                                                    </form>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+
+                                                            </tbody>
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+                                </div>
+                                {% if userPermission.can('list', 'appointments') %}
+                                    <div class="col-md-12">
+
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <div class="col-6">
+                                                    <h5 class="">{{ 'Appointments'|trans }}</h5>
+                                                </div>
+                                                <div class="col d-flex align-items-center flex-row-reverse">
+                                                    {% if userPermission.can('create', 'appointments') %}
+                                                        <a href="{{ path('appointment_new') }}"><button class="btn add-new btn-primary" type="button" id="addAppointment" data-bs-toggle="modal" data-target="#appointmentModal"><span class="text-white">{{ 'Create Appointment'|trans }}</span></button></a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="card-datatable table-responsive">
+                                                    <table class="invoice-list-table table">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>
+                                                                <a href="{{ filterService.orderBy("user", filterService.getInversedOrder("user")) }}">
+                                                                    {{ configuration.user_nomenclature|trans }} {% if filterService.isOrdered("user") %}<i data-feather="{{ filterService.getOrder("user").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                                                </a>
+                                                            </th>
+                                                            <th class="text-truncate">
+                                                                <a href="{{ filterService.orderBy("time_from", filterService.getInversedOrder("time_from")) }}">
+                                                                    {{ 'Start'|trans }} {% if filterService.isOrdered("time_from") %}<i data-feather="{{ filterService.getOrder("time_from").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                                                </a>
+                                                            </th>
+                                                            <th class="text-truncate">
+                                                                <a href="{{ filterService.orderBy("time_to", filterService.getInversedOrder("time_to")) }}">
+                                                                    {{ 'End'|trans }} {% if filterService.isOrdered("time_to") %}<i data-feather="{{ filterService.getOrder("time_to").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                                                </a>
+                                                            </th>
+                                                            <th>
+                                                                <a href="{{ filterService.orderBy("status", filterService.getInversedOrder("status")) }}">
+                                                                    {{ 'Status'|trans }} {% if filterService.isOrdered("status") %}<i data-feather="{{ filterService.getOrder("status").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                                                </a>
+                                                            </th>
+                                                            <th>
+                                                                <a>
+                                                                    {{ 'Actions'|trans }}
+                                                                </a>
+                                                            </th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <h1>HJFBJHDSFB</h1>
+                                                        {% for appointment in appointments['data'] %}
+                                                            <tr data-id="{{ appointment.id }}">
+                                                                <td>
+                                                                    {% if appointment.user is not null %}
+                                                                    {{ appointment.user.name }} {{ appointment.user.surnames }}
+                                                                    {% endif %}    
+                                                                </td>
+                                                                <td>{{ appointment.timeFrom ? appointment.timeFrom|UTCDateTimeFormat('d-m-Y H:i') : '' }}</td>
+                                                                <td>{{ appointment.timeTo ? appointment.timeTo|UTCDateTimeFormat('d-m-Y H:i') : '' }}</td>
+                                                                <td>{% if appointment.status %}Activa{% else %}Liberada{% endif %}</td>
+                                                                <td>
+                                                                    <div class="btn-group">
+                                                                        <button class="btn dropdown-toggle waves-effect waves-float waves-light p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                            <i data-feather='align-justify' class="font-medium-5"></i>
+                                                                        </button>
+                                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" data-boundary="window" style="z-index: 999 !important;">
+                                                                            {% if userPermission.can('show', 'appointments') %}
+                                                                                <a class="dropdown-item" href="{{ path('appointment_show', {'appointment':appointment.id}) }}" data-id="{{ appointment.id }}"><i data-feather='eye'></i> {{ 'Show'|trans }}</a>
+                                                                            {% endif %}
+                                                                            {% if userPermission.can('edit', 'appointments') %}
+                                                                                <a class="dropdown-item" href="{{ path('appointment_edit', {'appointment': appointment.id}) }}"><i data-feather='edit'></i> {{ 'Edit'|trans }}</a>
+
+                                                                            {% endif %}
+                                                                            {% if userPermission.can('delete', 'appointments') %}
+                                                                                <div class="dropdown-divider"></div>
+                                                                                <a class="dropdown-item" onclick="$('#deleteForm_appointment_{{ appointment.id }}').submit()"><i data-feather='delete'></i> {{ 'Delete'|trans }}</a>
+                                                                                <form method="post" id="deleteForm_appointment_{{ appointment.id }}" action="{{ path('appointment_delete', {'appointment': appointment.id}) }}" class="deleteForm d-none">
+                                                                                    <input type="hidden" name="_method" value="DELETE">
+                                                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
+                                                                                    <input type="hidden" name="route" value="{{ path('client_show', {'client': client.id}) }}">
+                                                                                </form>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        {% else %}
+                                                            <tr>
+                                                                <td colspan="6">{{ 'No results found'|trans }}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                    <div class="d-flex justify-content-end m-2">
+                                                        {% if userPermission.can('list', 'appointments') %}
+                                                            <a href="{{ path('appointment_list', {'client_id': client.id}) }}"><button class="btn add-new btn-primary" type="button" ><span class="text-white">{{ 'See More'|trans }}</span></button></a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+
+        <!-- /User Invoice Ends-->
+
+</div>
+{% endblock %}
+
+{% block javascripts %}
+
+    <script>
+
+        function instanceDragDrop(){
+            $( ".task-draggable" ).draggable({
+                revert: "invalid",
+                zIndex: 999,
+                connectToSortable: ".task-draggable-div"
+            })
+
+            $( ".task-draggable-div" ).droppable({
+                accept: ".task-draggable",
+                drop: function (e, ui) {
+
+                    ui.draggable.css('left', 0);
+                    ui.draggable.css('top', 0);
+
+                    $(this).append(ui.draggable)
+
+                    $.ajax({
+                        url: '{{ path('task_change_status') }}',
+                        type: 'post',
+                        dataType: 'json',
+                        delay: 250,
+                        data: {
+                            _token: '{{ csrf_token('change-status-task') }}',
+                            id: ui.draggable.data('task-id'), // search term
+                            status: $(this).data('task-status')
+                        },
+                        success: function (response) {
+                            Swal.fire(
+                                '{{ 'Task Updated'|trans }}',
+                                '{{ 'Task Status Updated Successfully'|trans }}',
+                                'success'
+                            )
+
+                            $.ajax({
+                                url: '{{ path('task_schema_get') }}',
+                                type: 'post',
+                                dataType: 'json',
+                                delay: 250,
+                                data: {
+                                    _token: '{{ csrf_token('get-task-schema-template') }}',
+                                    appointment: null,
+                                    client: '{{ client.id }}'
+                                },
+                                success: function (response) {
+                                    if(response.success){
+
+                                        $('#task-schema').html(response.data);
+
+                                        if (feather) {
+                                            feather.replace({
+                                                width: 14,
+                                                height: 14
+                                            });
+                                        }
+
+                                        instanceDragDrop()
+
+                                    }
+                                },
+                                error: function(jqXHR, textStatus, errorThrown) {
+                                    console.log(textStatus, errorThrown);
+                                }
+                            })
+
+                        }
+                    })
+
+                }
+            });
+        }
+
+        $(function(){
+            instanceDragDrop()
+
+        });
+
+        {% if userPermission.can('export', 'templates') %}
+        async function exportTemplates()
+        {
+
+            const { value: formValues } = await Swal.fire({
+                title: '{{ 'Export'|trans }} {{ 'Templates'|trans }}',
+                html: '{{ 'Select The Templates To Be Exported'|trans }}.' +
+                    '<div class="form-group">' +
+                    '<label class="form-control-label" for="swal-input-select">{{ 'Templates'|trans }}</label>' +
+                    '<select class="form-control" id="swal-input-select" multiple name="type[]">' +
+                        {% for templateType in templateTypes %}
+                    '<option value="{{ templateType.id }}">{{ templateType.name }}</option>' +
+                        {% endfor %}
+                    '</select>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<label class="form-control-label" for="swal-input-date">{{ 'Dates'|trans }}</label>' +
+                    '<input type="text" class="form-control" id="swal-input-date">' +
+                    '</div>'
+                ,
+                showCancelButton: true,
+                confirmButtonText: 'Siguiente',
+                cancelButtonText: 'Cancelar',
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading(),
+                didOpen: function () {
+                    $('#swal-input-select').select2({});
+
+                    flatpickr('#swal-input-date',{
+                        locale: locale,
+                        mode: "range",
+                        dateFormat: "d-m-Y",
+                    })
+                },
+                preConfirm: () => {
+
+                    return {
+                        'types': $('#swal-input-select').val(),
+                        'dateRange': $('#swal-input-date').val()
+                    };
+                }
+            })
+
+            if(formValues) {
+
+                let form = document.createElement('form');
+
+                form.setAttribute('method', "post");
+                form.setAttribute('action', "{{ path('export_template_pdf') }}");
+
+
+                let clientInput = document.createElement('input')
+                clientInput.type = 'hidden';
+                clientInput.name = 'client';
+                clientInput.value = '{{ client.id }}';
+
+                let dateRangeInput = document.createElement('input')
+                dateRangeInput.type = 'hidden';
+                dateRangeInput.name = 'date_range';
+                dateRangeInput.value = formValues.dateRange;
+
+                for( let i = 0; i < formValues.types.length; i++ ) {
+                    let typesInput = document.createElement('input')
+                    typesInput.type = 'hidden';
+                    typesInput.name = `types[]`;
+                    typesInput.value = formValues.types[i];
+
+                    form.appendChild(typesInput);
+                }
+
+
+                form.appendChild(clientInput);
+                form.appendChild(dateRangeInput);
+
+
+
+                document.body.appendChild(form);
+
+                form.submit();
+
+            }
+
+        }
+        {% endif %}
+
+        {% if userPermission.can('create', 'templates') %}
+        async function openCreateModal()
+        {
+
+            const { value: templateType } = await Swal.fire({
+                title: '{{ 'Create Template'|trans }}',
+                html: '{{ 'Select The Template You Want To Create'|trans }}.' +
+                    '<select class="form-control" id="swal-input-select">' +
+                        {% for templateType in templateTypes %}
+                    '   <option value="{{ templateType.id }}">{{ templateType.name }}</option>' +
+                        {% endfor %}
+                    '</select>',
+                showCancelButton: true,
+                confirmButtonText: 'Siguiente',
+                cancelButtonText: 'Cancelar',
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading(),
+                didOpen: function () {
+                    $('#swal-input-select').select2({});
+                },
+                preConfirm: () => {
+                    return $('#swal-input-select').val();
+                }
+            })
+
+            if(templateType) {
+
+                $.ajax({
+                    url: '{{ path('template_get_create_template') }}',
+                    type: 'post',
+                    dataType: 'json',
+                    delay: 250,
+                    data: {
+                        _token: '{{ csrf_token('get-create-template-template') }}',
+                        templateType: templateType,
+                        client: '{{ client.id }}',
+                    },
+                    success: function (response) {
+                        if (response.success) {
+
+                            $('#templateModalContent').html(response.data);
+
+                            if (feather) {
+                                feather.replace({
+                                    width: 14,
+                                    height: 14
+                                });
+                            }
+
+                            $('#templateModal').modal('show');
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 2000
+                            })
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(textStatus, errorThrown);
+                    }
+                })
+            }
+
+        }
+        {% endif %}
+
+        {% if userPermission.can('edit', 'templates') %}
+        function openEditModal(id){
+
+            $.ajax({
+                url: '{{ path('template_get_edit_template') }}',
+                type: 'post',
+                dataType: 'json',
+                delay: 250,
+                data: {
+                    _token: '{{ csrf_token('get-edit-template-template') }}',
+                    template: id, // search term
+                },
+                success: function (response) {
+                    if(response.success){
+
+                        $('#templateModalContent').html(response.data);
+
+                        if (feather) {
+                            feather.replace({
+                                width: 14,
+                                height: 14
+                            });
+                        }
+
+                        $('#templateModal').modal();
+
+                    }else{
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 2000
+                        })
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus, errorThrown);
+                }
+            })
+
+        }
+        {% endif %}
+
+
+    </script>
+    <script>
+        $('.uploaddocumentadhesion').on('click', function (e) {
+            document.getElementById('upload-document-type').value=$(this).data('value');
+            $('#documentModal').modal('show');
+        });
+        $('.uploaddocumentconfidencial').on('click', function (e) {
+            document.getElementById('upload-document-type').value=$(this).data('value');
+            $('#documentModal').modal('show');
+        });
+        $('.uploaddocument').on('click', function (e) {
+            document.getElementById('upload-document-type').value=$(this).data('value');
+            $('#documentModal').modal('show');
+        });
+
+        function submitForm() {
+            const documentFileInput = document.getElementById("documents_document");
+
+            if (!documentFileInput.value.trim()) {
+                document.getElementById("documents_document_error").classList.remove("d-none");
+            }
+
+            if (documentFileInput.value.trim()) {
+                document.getElementById('documentsForm').submit();
+            }
+            document.getElementById('upload-document-type').value=null;
+
+
+        }
+    </script>
+{% endblock %}
+
+
+{% block action_buttons %}
+    <li class="level-menu outside d-flex align-items-center">
+    <a class="nav-link cursor-pointer" href="#" onclick="window.history.back()" >
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+        {% block page_title %}
+            <h5 class="ms-3 mb-0">Proyecto: "{{ client.name }}"</h5>
+        {% endblock %}
+    </li>
+{% endblock %}

@@ -1,0 +1,5 @@
+<form method="post" action="{{ path('client_delete', {'client': client.id}) }}" class="deleteForm">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ client.id) }}">
+    <button class="btn btn-outline-danger">{{ 'Delete'|trans }}</button>
+</form>

@@ -1,0 +1,43 @@
+<div class="page-body-wrapper">
+
+    <div class="row">
+
+        <div class="col-12 p-t-10 p-l-20 row">
+            <table class="invoice-list-table table">
+                <thead>
+                <tr>
+                    <th>Mentor</th>
+                    <th>Proyecto</th>
+                    <th>Puntuación</th>
+                    <th>Fecha Creación</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if documents is defined and documents|length >= 1 %}
+
+                    {% for document in documents %}
+                        {% set parts = document.getOriginalName|split('-') %}
+                        {% set project = parts[2]|split('.') %}
+                        <tr>
+                            <td>{{ parts[1] }}</td>
+
+                            <td>{{ project[0] }}</td>
+
+                            <td>{{ document.getTotalPointsMentorSurvey }}</td>
+
+                            <td>{{ document.createdAt|UTCDateTimeFormat('d-m-Y - H:i') }}</td>
+                        </tr>
+                    {% endfor %}
+
+                {% else %}
+                    <tr>
+                        <td colspan="9">{{ 'No results found'|trans }}</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>

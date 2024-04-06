@@ -1,0 +1,60 @@
+{% extends 'base-client.html.twig' %}
+
+{% block title %}Paciente{% endblock %}
+
+{% block page_title %}
+    {{ 'Contact Fluxua'|trans }}
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <div class="tab-content">
+                    <!-- Account Tab starts -->
+                    <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
+                        <form name="service" method="post">
+                            <div id="service" class="row">
+                                <div class="col-12 p-t-15">
+                                    <label for="email_client" class="required">{{ 'Email'|trans }} *</label>
+                                    <input type="email"
+                                           id="email_client"
+                                           name="client[email]"
+                                           required="required"
+                                           maxlength="255"
+                                           class="form-control mb-2"
+                                           autocomplete="off" value="{{ client.email }}">
+                                </div>
+                                <div class="col-12 p-t-15">
+                                    <label for="text_client" class="required">{{'Text'|trans}} *</label>
+                                    <textarea class="form-control mb-2" id="text_client" name="client[text]" cols="50" rows="10" required="required"></textarea>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-end mt-2">
+                                <div class="mr-2 text-end">
+                                    <button class="btn btn-primary text-white waves-effect waves-float waves-light">{{ 'Send'|trans }}</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+
+    <link rel="stylesheet" type="text/css"
+          href="{{ asset('assets/css/vendors/calendar/fullcalendar2.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/calendar/app-calendar.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/jquery.contextMenu.min.css') }}">
+    <style>
+        .fc-more-popover {
+            max-height: 65%;
+            overflow-y: auto;
+        }
+    </style>
+{% endblock %}

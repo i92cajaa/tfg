@@ -1,0 +1,126 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Lista de Tareas{% endblock %}
+
+{% block body %}
+    <!-- users list start -->
+    <div class="container-fluid">
+        <!-- list section start -->
+        <div class="card">
+            <div class="card-datatable overflow-inherit table-responsive card-body">
+
+                <div class="table-responsive overflow-inherit">
+                    <div class="overflow-auto">
+                        <table class="invoice-list-table table  overflow-auto ">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <a href="{{ filterService.orderBy("client", filterService.getInversedOrder("client")) }}">
+                                            Usuario {% if filterService.isOrdered("client") %}<i data-feather="{{ filterService.getOrder("client").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ filterService.orderBy("paid", filterService.getInversedOrder("paid")) }}">
+                                            Titulo {% if filterService.isOrdered("paid") %}<i data-feather="{{ filterService.getOrder("paid").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ filterService.orderBy("status", filterService.getInversedOrder("status")) }}">
+                                            Estado {% if filterService.isOrdered("status") %}<i data-feather="{{ filterService.getOrder("status").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        </a>
+                                    </th>
+                                    <th class="text-truncate">
+                                        <a href="{{ filterService.orderBy("time_from", filterService.getInversedOrder("time_from")) }}">
+                                            Fecha creación {% if filterService.isOrdered("time_from") %}<i data-feather="{{ filterService.getOrder("time_from").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        </a>
+                                    </th>
+                                    <th class="text-center">
+                                        <a>
+                                            {{ 'Actions'|trans }}
+                                        </a>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for task in tasks['data'] %}
+                                <tr data-id="{{ task.id }}">
+                                    <td>
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <span class="font-weight-bold d-block text-nowrap" >
+                                                    {{ task.user.name is defined ? task.user.name ?? (task.client.name is defined ? task.client.name ?? '-') : '-' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{ task.title is defined ? task.title ?? '-' : '-' }}
+                                    </td>
+                                    <td>
+                                        {% if task.currentStatus.status.statusOrder == 2 %}
+                                            <span class="badge badge-light-warning">{{ task.currentStatus.status.name }}</span>
+                                        {% elseif task.currentStatus.status.statusOrder == 1 %}
+                                            <span class="badge badge-light-success">{{ task.currentStatus.status.name }}</span>
+                                        {% else %}
+                                            <span class="badge badge-light-danger">{{ task.currentStatus.status.name }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ task.creationDate ? task.creationDate|UTCDateTimeFormat('d-m-Y H:m') : '' }}
+                                    </td>
+                                    <td class="text-nowrap text-center">
+                                        <span class="cursor-pointer" title="{{ 'Show'|trans }}" onclick="showTask('{{ task.id }}')" data-bs-toggle="tooltip"><i data-feather='eye' ></i></span>
+                                        <span class="cursor-pointer" title="{{ 'Edit'|trans }}" onclick="openEditTaskModal('{{ task.id }}')" data-bs-toggle="tooltip"><i data-feather='edit' ></i></span>
+                                        <span class="cursor-pointer" title="{{ 'Delete'|trans }}" onclick="confirmDeleteTask('{{ task.id }}')" data-bs-toggle="tooltip" ><i data-feather='delete' ></i></span>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="9">{{'No results found'|trans}}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% include 'extra/filter_limit.html.twig' %}
+                    <form id="delete_appointments_form">
+                        <input type="hidden" name="url" value="{{ app.request.uri }}">
+                    </form>
+                </div>
+                <div class="d-flex justify-content-end mr-4 mt-2">
+                    {% include 'extra/pagination.html.twig' with {
+                        filterService: filterService,
+                        currentPage: filterService.page,
+                        paginationPath: 'tasks_list',
+                        lastPage: lastPage,
+                        showAlwaysFirstAndLast: true
+                    } only %}
+                </div>
+            </div>
+        </div>
+        <!-- list section end -->
+    </div>
+
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside d-flex align-items-center">
+        <a class="nav-link bg-color" onclick="openCreateTaskModal(null, null, null, null)" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ 'Create'|trans }}">
+            <i class="ficon" data-feather="plus-circle"></i>
+        </a>
+
+         <a class="nav-link cursor-pointer mr-1 bg-color" href="#" onclick="toggleFilter()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ 'Filter'|trans }}" >
+            <i data-feather="filter"></i>
+        </a>
+        <h5 class="ms-3 mb-0 ">Lista de Tareas</h5>
+    </li>
+
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'extra/task_filter.html.twig' %}
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}

@@ -1,0 +1,22 @@
+ <form id="filter_form" name="form-filter-users w-100">
+        <fieldset class="">
+            <div class="d-flex justify-content-end align-items-center mx-50 row pt-0 pb-2">
+                <input type="hidden" class="form-control" name="{{ filterService.filterField('verification_ids') }}" value="" form="filter_form">
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                    <label for="Nombre">Buscar</label>
+                    <input type="text" class="form-control" placeholder="Texto a buscar..." name="{{ filterService.filterField('info') }}" value="{{ filterService.getFilterValue("info") }}" form="filter_form">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                {{ filterService.filterFormField() | raw }}
+
+                <div class="form-group-feedback form-group-feedback-right text-end col-6">
+                    <button type="submit" class="btn add-new text-white btn-primary mt-2">{{ 'Apply Filter'|trans }}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+

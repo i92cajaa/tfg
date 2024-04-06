@@ -1,0 +1,33 @@
+<form name="surveyRange" method="post">
+    <div id="surveyRange" class="row">
+        <div class="col-6 p-t-15">
+            <label for="week_day">{{ 'Start Date'|trans }} *</label>
+            <input type="text"
+                   id="startDate"
+                   name="survey_range[startDate]"
+                   required="required"
+                   class="form-control flatpickr"
+                   autocomplete="off">
+            {% include 'extra/form_type_error.html.twig' with {'element': form.startDate } only %}
+        </div>
+        <div class="col-6 p-t-15">
+            <label for="week_day">{{ 'End Date'|trans }} *</label>
+            <input type="text"
+                   id="endDate"
+                   name="survey_range[endDate]"
+                   required="required"
+                   class="form-control flatpickr"
+                   autocomplete="off">
+            {% include 'extra/form_type_error.html.twig' with {'element': form.endDate } only %}
+        </div>
+
+        {{ form_row(form._token) }}
+    </div>
+    <div class="row d-flex justify-content-end mt-4">
+        <div class="mr-2 text-end">
+            <button class="btn btn-primary text-white waves-effect waves-float waves-light">{{ button_label }}</button>
+        </div>
+    </div>
+</form>
+
+

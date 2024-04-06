@@ -1,0 +1,183 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'Show Request'|trans }}{% endblock %}
+
+{% block page_title %}
+{{ 'Show Request'|trans }}
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <!-- User Card & Plan Starts -->
+        <div class="row">
+
+            <div class="col-xl-12 col-lg-12 col-md-12">
+                <div class="card user-card">
+                    <!--<div class="card-header">
+                        <h5>{{ 'Info'|trans }}</h5>
+                    </div>-->
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 d-flex justify-content-between border-container-lg row">
+                                <div class="user-info-wrapper col">
+                                    <div class="d-flex flex-wrap row">
+                                        <div class="user-info-title col-12">
+                                            <i data-feather="user" class="mr-1"></i>
+                                            <span class="card-text user-info-title font-weight-bold mb-0">{{ 'Full Name'|trans }}: </span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="card-text mb-0">{{ clientRequest.name }} {{ clientRequest.surnames }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="user-info-wrapper col">
+                                    <div class="d-flex flex-wrap row">
+                                        <div class="user-info-title col-12">
+                                            <i data-feather="at-sign" class="mr-1"></i>
+                                            <span class="card-text user-info-title font-weight-bold mb-0">{{ 'Email'|trans }}: </span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="card-text mb-0">{{ clientRequest.email }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="user-info-wrapper col">
+                                    <div class="d-flex flex-wrap row">
+                                        <div class="user-info-title col-12">
+                                            <i data-feather="phone" class="mr-1"></i>
+                                            <span class="card-text user-info-title font-weight-bold mb-0">{{ 'Phone'|trans }}: </span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="card-text mb-0">{{ clientRequest.phone }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h5>Respuestas Cuestionario</h5>
+                            </div>
+
+                            <div class="card-body w-100">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <span class="fw-bold">¿Cómo definirías aquello que te ha hecho pedir ayuda?</span><br>
+                                        <span>{{ clientRequest.firstAnswer }}</span>
+                                    </div>
+                                    <div class="col-4">
+                                        <span class="fw-bold">¿A que crees que se deben los problemas que describes antes?</span><br>
+                                        <span>{{ clientRequest.secondAnswer }}</span>
+                                    </div>
+                                    <div class="col-4">
+                                        <span class="fw-bold">¿Desde que te encuentras de este modo, ¿Qué cosas has intentado para sentirte mejor?</span><br>
+                                        <span>{{ clientRequest.thirdAnswer }}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <span class="fw-bold">¿Cuáles han funcionado? Aunque sea por un tiempo limitado.</span><br>
+                                        <span>{{ clientRequest.fourthAnswer }}</span>
+                                    </div>
+                                    <div class="col-4">
+                                        <span class="fw-bold">¿Has realizado algún proceso de terapia antes?</span><br>
+                                        <span>{{ clientRequest.fifthAnswer }}</span>
+                                    </div>
+                                    <div class="col-4">
+                                        <span class="fw-bold">¿Crees que hay algo que debamos tener en cuenta que no hemos preguntado?</span><br>
+                                        <span>{{ clientRequest.sixthAnswer }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h5>{{ 'Available Time Slots'|trans }}</h5>
+                            </div>
+
+                            <div class="card-body w-100">
+
+                                {% set weekDays = {1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursday', 5:'Friday', 6:'Saturday', 0:'Sunday'} %}
+                                {% for timeSlot in clientRequest.getAvailableTimeSlots %}
+                                    <div class="col-12 row m-b-15 p-t-10 p-b-10 border border-top-primary" id="time-slot-{{ loop.index }}">
+                                        <div class="col-md-6 row">
+
+                                            <div class="col-12 text-center m-t-10">
+                                                <b>{{ 'From'|trans }}</b>
+                                                <hr>
+                                            </div>
+
+                                            <div class="form-group col-xl-6 col-12">
+                                                <label for="">{{ 'Weekday'|trans }}</label>
+                                                <input type="text" disabled value="{{ weekDays[timeSlot['from']['weekDay']]|trans }}" class="form-control"   autocomplete="off">
+                                            </div>
+
+                                            <div class="form-group col-xl-6 col-12">
+                                                <label for="">{{ 'Hour'|trans }}</label>
+                                                <input type="text" disabled value="{{ timeSlot['from']['time'] }}" class="form-control"   autocomplete="off">
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-md-6 row">
+
+                                            <div class="col-12 text-center m-t-10">
+                                                <b>{{ 'To'|trans }}</b>
+                                                <hr>
+                                            </div>
+
+                                            <div class="form-group col-xl-6 col-12">
+                                                <label for="">{{ 'Weekday'|trans }}</label>
+                                                <input type="text" disabled value="{{ weekDays[timeSlot['to']['weekDay']]|trans }}" class="form-control"   autocomplete="off">
+                                            </div>
+
+                                            <div class="form-group col-xl-6 col-12">
+                                                <label for="">{{ 'Hour'|trans }}</label>
+                                                <input type="text" disabled value="{{ timeSlot['to']['time'] }}" class="form-control"   autocomplete="off">
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+        </div>
+        <!-- /User Invoice Ends-->
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+
+    <script>
+
+
+    </script>
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside">
+        <a class="nav-link cursor-pointer" href="{% if userPermission.can('list', 'requests') %}{{ path('client_request_index') }}{% else %}#{% endif %}">
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+    </li>
+{% endblock %}

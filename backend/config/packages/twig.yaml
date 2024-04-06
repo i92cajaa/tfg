@@ -1,0 +1,8 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+    globals:
+        pdf_absolute_url: '%env(PDF_ABSOLUTE_URL)%'
+
+when@test:
+    twig:
+        strict_variables: true

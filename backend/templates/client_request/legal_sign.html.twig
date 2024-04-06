@@ -1,0 +1,64 @@
+{% extends 'base-empty.html.twig' %}
+
+{% block title %}Política de protección de datos{% endblock %}
+
+
+{% block body %}
+    <div class="col-12 p-2">
+
+        <div class="row p-t-0">
+            <div class="language-nav col-12 d-flex justify-content-end">
+                <div class="translate_wrapper">
+                    <div class="current_lang">
+                        <div class="lang"><i class="flag-icon flag-icon-{{ _locale }}"></i><span class="lang-txt">{{ _locale }}</span></div>
+                    </div>
+                    <div class="more_lang" style="z-index: 999 !important;">
+                        <div class="lang {% if _locale == 'es' %}selected{% endif %}" onclick="window.location = '{{ path('app_change_locale', {'locale':'es'}) }}'"><i class="flag-icon flag-icon-es"></i><span class="lang-txt">Español <span>(ES)</span></span></div>
+                        <div class="lang {% if _locale == 'en' %}selected{% endif %}" onclick="window.location = '{{ path('app_change_locale', {'locale':'en'}) }}'"><i class="flag-icon flag-icon-en"></i><span class="lang-txt">English <span>(EN)</span></span></div>
+                        <div class="lang {% if _locale == 'de' %}selected{% endif %}" onclick="window.location = '{{ path('app_change_locale', {'locale':'de'}) }}'"><i class="flag-icon flag-icon-de"></i><span class="lang-txt">Deutsch <span>(DE)</span></span></div>
+                        <div class="lang {% if _locale == 'fr' %}selected{% endif %}" onclick="window.location = '{{ path('app_change_locale', {'locale':'fr'}) }}'"><i class="flag-icon flag-icon-fr"></i><span class="lang-txt">Français <span>(FR)</span></span></div>
+                        <div class="lang {% if _locale == 'pt' %}selected{% endif %}" onclick="window.location = '{{ path('app_change_locale', {'locale':'pt'}) }}'"><i class="flag-icon flag-icon-pt"></i><span class="lang-txt">Português <span>(PT)</span></span></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-12">
+                <h1>Condiciones generales de uso de FLUXUA e información al usuario</h1>
+
+                <h5>Preámbulo</h5>
+
+                FLUXUA pone a disposición de los USUARIOS de Internet el Sitio Web mundopsicologos.com como plataforma online para que (a) USUARIOS de Internet puedan compartir mediante los foros, canales de acceso y comunicación habilitados, sus preocupaciones e intereses con psicólogos para obtener servicios de asistencia psicológica, así como para que (b) los centros psicológicos o psicólogos independientes ( quienes serán denominados en las presentes condiciones legales como los CLIENTES) puedan ofrecer sus servicios, establecer contacto con los usuarios y gestionar citas de visita a través de las funcionalidades del Sitio Web.
+
+                En el sitio web pueden aparecer consejos médicos o de salud, los cuales serán proporcionados por médicos o profesionales de salud especializados y cualificados. En caso contrario, se dejará constancia en el propio artículo según los principios establecidos por la organización “Health On the Net”.
+
+                El acceso a y/o uso del Sitio Web mundopsicologos.com es totalmente voluntario y atribuye a quien lo realiza la condición de USUARIO. Todo USUARIO acepta, desde el mismo momento en el que accede, sin ningún tipo de reserva, el contenido de las presentes "Condiciones generales de uso", la "Política de Protección de datos" así como, en su caso, las "Condiciones particulares" que puedan complementarlas, sustituirlas o modificarlas en algún sentido en relación con los servicios y contenidos del Sitio Web.
+
+                En consecuencia, el USUARIO deberá leer detenidamente unas y otras antes del acceso y de utilización de cualquier servicio del Sitio Web bajo su entera responsabilidad.
+
+                El USUARIO puede acceder, imprimir, descargar y guardar las Condiciones generales de uso en todo momento. Estas Condiciones estarán permanentemente accesibles en el Sitio Web a través del enlace "Condiciones legales".
+
+                La utilización de este Sitio Web (en especial la entrada en el menú personal y la gestión y edición de los datos propios o de las informaciones que el portal ofrece a las empresas) implica por parte del USUARIO la aceptación de la aparición en el Sitio Web.
+
+                Asimismo FLUXUA pone en conocimiento de los USUARIOS de este Sitio Web que estas Condiciones generales de uso pueden ser modificadas sin notificación previa. En consecuencia el USUARIO debe leer atentamente el presente Aviso Legal en cada una de las ocasiones en que se proceda a utilizar el Sitio Web, ya que aquél puede sufrir modificaciones.
+
+                Asimismo FLUXUA se reserva la posibilidad de modificar sin previo aviso, el diseño, presentación y/o configuración de este Sitio Web, así como algunos o todos los servicios, y añadir servicios nuevos.
+
+                En cualquier caso, FLUXUA se reserva el derecho de, en cualquier momento y sin necesidad de previo aviso, denegar el acceso a este sitio a aquellos USUARIOS que incumplan cualesquiera de estas condiciones generales de uso o de las particulares que les sean de aplicación.
+                Objeto
+
+                El presente aviso legal regula el acceso y el uso del servicio del Sitio Web mundopsicologos.com (en adelante, el Sitio Web) que FLUXUA pone a disposición de los USUARIOS de Internet interesados en sus servicios y contenidos (en adelante, los USUARIOS).
+
+                FLUXUA podrá eliminar del Sitio Web contenidos ilegales sin previo aviso, así como aquellos contenidos que pudieran considerarse inapropiados o pudieran vulnerar derechos de terceros.
+
+                El USUARIO reconoce que técnicamente no es posible lograr disponibilidad del Sitio Web de FLUXUA al 100%. Sin embargo, FLUXUA se esforzará por mantener disponible el Sitio Web de la forma más constante posible. Especialmente por razones de mantenimiento, seguridad o capacidad, así como a causa de acontecimientos sobre los que no puede influir FLUXUA (por ejemplo anomalías de redes públicas de comunicación, cortes de electricidad, etc.) pueden producirse breves anomalías o la suspensión pasajera de los servicios del Sitio Web.
+            </div>
+
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock %}

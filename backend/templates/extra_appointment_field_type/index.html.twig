@@ -1,0 +1,128 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'List Extra Appointment Fields'|trans }}{% endblock %}
+
+{% block page_title %}
+    {{ 'List Extra Appointment Fields'|trans }}
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+
+    <!-- list section start -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-datatable overflow-inherit table-responsive card-body">
+                    <table class="user-list-table table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <a href="{{ filterService.orderBy("name", filterService.getInversedOrder("name")) }}">
+                                        {{ 'Name'|trans }} {% if filterService.isOrdered("name") %}<i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("name", filterService.getInversedOrder("name")) }}">
+                                        {{ 'Type'|trans }} {% if filterService.isOrdered("name") %}<i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("description", filterService.getInversedOrder("description")) }}">
+                                        {{ 'Description'|trans }} {% if filterService.isOrdered("description") %}<i data-feather="{{ filterService.getOrder("description").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("division", filterService.getInversedOrder("division")) }}">
+                                        {{ 'División'|trans }} {% if filterService.isOrdered("division") %}<i data-feather="{{ filterService.getOrder("division").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a>
+                                        {{ 'Actions'|trans }}
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for extra_appointment_field_type in extra_appointment_field_types %}
+                            <tr>
+                                <td>{{ extra_appointment_field_type.name }}</td>
+                                <td>
+                                    {{ extra_appointment_field_type.type|trans }}
+                                </td>
+                                <td>
+                                    {{ extra_appointment_field_type.description }}
+                                </td>
+                                <td>
+                                    {{ extra_appointment_field_type.division ? extra_appointment_field_type.division.name : 'All'|trans }}
+                                </td>
+
+                                <td>
+                                    <div class="dropdown-basic ">
+                                        <div class="dropdown">
+                                            <button class="dropbtn bg-transparent text-dark p-0 m-0" type="button" data-bs-original-title="" title="">
+                                                <i data-feather='align-justify'></i>
+                                            </button>
+                                            <div class="dropdown-content " style="top: 20px">
+
+                                                {% if userPermission.can('edit', 'extra_appointment_field_types') %}
+                                                    <a class="dropdown-item" href="{{ path('extra_appointment_field_type_edit', {'extraAppointmentFieldType': extra_appointment_field_type.id}) }}"><i class="align-middle" data-feather='edit'></i><span class="align-middle"> {{ 'Edit'|trans }}</span></a>
+                                                {% endif %}
+                                                {% if userPermission.can('delete', 'extra_appointment_field_types') %}
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item" onclick="$('#deleteForm_extra_appointment_field_type_{{ extra_appointment_field_type.id }}').submit()"><i class="align-middle" data-feather='delete'></i> <span class="align-middle"> {{ 'Delete'|trans }}</span></a>
+                                                    <form method="post" id="deleteForm_extra_appointment_field_type_{{ extra_appointment_field_type.id }}" class="deleteForm d-none" action="{{ path('extra_appointment_field_type_delete', {'extraAppointmentFieldType': extra_appointment_field_type.id}) }}">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ extra_appointment_field_type.id) }}">
+                                                        <button class="btn">Delete</button>
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5">{{ 'No results found'|trans }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-end mr-4 mt-2">
+                        {% include 'extra/pagination.html.twig' with {
+                            filterService: filterService,
+                            currentPage: filterService.page,
+                            paginationPath: 'extra_appointment_field_type_index',
+                            lastPage: lastPage,
+                            showAlwaysFirstAndLast: true
+                        } only %}
+                    </div>
+                    {% include 'extra/filter_limit.html.twig' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside">
+        {% if userPermission.can('create', 'extra_appointment_field_types') %}
+            <a class="nav-link" href="{{ path('extra_appointment_field_type_new') }}">
+                <i class="ficon" data-feather="plus-circle"></i>
+            </a>
+        {% endif %}
+
+        <a class="nav-link cursor-pointer mr-1" href="#" onclick="toggleFilter()" >
+            <i data-feather="filter"></i>
+        </a>
+    </li>
+
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'extra/extra_appointment_field_filter.html.twig' %}
+{% endblock %}

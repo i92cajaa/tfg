@@ -1,0 +1,151 @@
+<form name="extra_appointment_field_type" method="post">
+    <div id="extra_appointment_field_type" class="row">
+        <div class="col-xl-3 col-md-3">
+            <label for="extra_appointment_field_type_name" class="required">{{ 'Name'|trans }}</label>
+            <input type="text"
+                id="extra_appointment_field_type_name"
+                name="extra_appointment_field_type[name]"
+                required="required"
+                maxlength="255"
+                class="form-control mb-2"
+                autocomplete="off" value="{{ extra_appointment_field_type.name|default('') }}">
+            {% include 'extra/form_type_error.html.twig' with {'element': form.name } only %}
+        </div>
+
+        <div class="col-xl-3 col-md-3">
+            <label for="extra_appointment_field_type_position" class="required">{{ 'Position'|trans }}</label>
+            <select
+                    id="extra_appointment_field_type_position"
+                    name="extra_appointment_field_type[position]"
+                    class="form-control select2 mb-2">
+                {% for label, position in positions %}
+                    <option value="{{ position }}" {% if position == extra_appointment_field_type.position %} selected {% endif %}>{{ label|trans }}</option>
+                {% endfor %}
+            </select>
+            {% include 'extra/form_type_error.html.twig' with {'element': form.position } only %}
+        </div>
+
+        <div class="col-xl-3 col-md-3">
+            <label for="extra_appointment_field_type_type" class="required">{{ 'Type'|trans }}</label>
+            <select
+                   id="extra_appointment_field_type_type"
+                   name="extra_appointment_field_type[type]"
+                   onchange="changeType()"
+                   class="form-control select2 mb-2">
+                    {% for label, type in types %}
+                        <option value="{{ type }}" {% if type == extra_appointment_field_type.type %} selected {% endif %}>{{ label|trans }}</option>
+                    {% endfor %}
+            </select>
+            {% include 'extra/form_type_error.html.twig' with {'element': form.type } only %}
+        </div>
+
+        <div class="col-xl-3 col-md-3">
+            <label for="extra_appointment_field_type_division" class="required">{{'Division'|trans}}</label>
+            <select
+                    id="extra_appointment_field_type_division"
+                    name="extra_appointment_field_type[division]"
+                    class="form-control select2 mb-2">
+                <option value="" >{{ 'All'|trans }}</option>
+                {% for division in divisions %}
+                    <option value="{{ division.id }}" {% if extra_appointment_field_type.division and division.id == extra_appointment_field_type.division.id %} selected {% endif %}>{{ division.name }}</option>
+                {% endfor %}
+            </select>
+            {% include 'extra/form_type_error.html.twig' with {'element': form.type } only %}
+        </div>
+
+        <div class="col-sm-12 col-md-12 {% if extra_appointment_field_type.type != constant('App\\Entity\\ExtraAppointmentField\\ExtraAppointmentFieldType::SELECT_TYPE') %}d-none{% endif %}" id="options_form">
+            <label class="required">{{ 'Options'|trans }}</label>
+            <div class="w-100 row" id="extra_appointment_field_type_options">
+                {% for index, option in extra_appointment_field_type.options  %}
+                    <div class="col-12 row" id="extra_appointment_field_type_options_div_{{ index }}">
+                        <div class="col-10">
+                            <label for="extra_appointment_field_type_options_{{ index }}" class="required font-small-3">{{ 'Name'|trans }}</label>
+                            <input type="text"
+                                   id="extra_appointment_field_type_options_{{ index }}"
+                                   name="extra_appointment_field_type[options][{{ index }}]"
+                                   maxlength="255"
+                                   class="form-control mb-2"
+                                   autocomplete="off" value="{{ option }}">
+                        </div>
+
+                        <div class="col-2 pt-2">
+                            <span class="cursor-pointer" onclick="document.getElementById('extra_appointment_field_type_options_div_{{ index }}').remove()">
+                                <i data-feather="delete" class="text-danger font-medium-4"></i>
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="w-100 text-center">
+                <button type="button" class="btn btn-outline-secondary" onclick="addOption()">{{'Add Option'|trans}}</button>
+            </div>
+
+        </div>
+
+        <div class="col-12">
+            <label for="extra_appointment_field_type_description" class="required">{{'Description'|trans}}</label>
+            <textarea type="text"
+                   id="extra_appointment_field_type_description"
+                   name="extra_appointment_field_type[description]"
+                   maxlength="255"
+                   class="form-control mb-2"
+                      autocomplete="off" >{{ extra_appointment_field_type.description|default('') }}</textarea>
+            {% include 'extra/form_type_error.html.twig' with {'element': form.description } only %}
+        </div>
+
+        {{ form_row(form._token) }}
+    </div>
+    <div class="row d-flex justify-content-end mt-2">
+        <div class="mr-2 text-end">
+            <button class="btn btn-primary text-white waves-effect waves-float waves-light">{{ button_label }}</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    let optionsCounter = {% if extra_appointment_field_type.options|length > 0 %}{{ extra_appointment_field_type.options|length }}{% else %}0{% endif %};
+
+    function addOption(){
+
+        let html = `
+            <div class="col-12 row" id="extra_appointment_field_type_options_div_${optionsCounter}">
+                <div class="col-10">
+                    <label for="extra_appointment_field_type_options_${optionsCounter}" class="required font-small-3">{{ 'Name'|trans }}</label>
+                    <input type="text"
+                           id="extra_appointment_field_type_options_${optionsCounter}"
+                           name="extra_appointment_field_type[options][]"
+                           maxlength="255"
+                           class="form-control mb-2"
+                           autocomplete="off">
+                </div>
+
+                <div class="col-2 pt-2">
+                    <span class="cursor-pointer" onclick="document.getElementById('extra_appointment_field_type_options_div_${optionsCounter}').remove()">
+                        <i data-feather="delete" class="text-danger font-medium-4"></i>
+                    </span>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('extra_appointment_field_type_options').innerHTML += html;
+
+        feather.replace({
+            width: 14,
+            height: 14
+        });
+
+        optionsCounter++;
+    }
+
+    function changeType(){
+        let type = document.getElementById('extra_appointment_field_type_type').value;
+
+        if(type == '{{ constant('App\\Entity\\ExtraAppointmentField\\ExtraAppointmentFieldType::SELECT_TYPE') }}'){
+            document.getElementById('options_form').classList.remove('d-none');
+        }else{
+            document.getElementById('options_form').classList.add('d-none');
+        }
+    }
+</script>
+
+

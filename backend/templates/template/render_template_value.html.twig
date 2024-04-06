@@ -1,0 +1,25 @@
+ {% if templateLine and templateLine.value != "" %}
+    {% if templateLine.type == 'Archivo' %}
+
+        <a class="text-primary" href="{{ absolute_url(path('document_render', {'document' : templateLine.value})) }}" target="_blank"><i data-feather="eye"></i> Ver archivo</a>
+
+    {% elseif templateLine.type == 'Color' %}
+
+        <span class="badge" style="background-color: {{ templateLine.value }}">{{ templateLine.value }}</span>
+
+    {% elseif templateLine.type == 'Texto' %}
+        <div class="mh-100 overflow-y-scroll">
+            <div class="ms-3">
+                {{ templateLine.value|raw }}
+            </div>
+        </div>
+
+    {% else %}
+        <div class="ms-3">
+        {{ templateLine.value }}
+        </div>
+
+    {% endif %}
+{% else %}
+    <span class="text-muted"><i>{{ 'No value'|trans }}</i></span>
+{% endif %}

@@ -1,0 +1,296 @@
+<form class="form-wizard" id="regForm" method="POST">
+    <div class="tab">
+        <div class="mb-3">
+            <h3 class="text-center mb-2">{{ 'Treatment Initiation Questionnaire'|trans }}</h3>
+            <span class="fs-4">
+                <b style="color: #FF5A33">{{ 'Welcome to Fluxua!'|trans }}</b><br>
+                {{ 'The following questionnaire has as its main function to ensure the most optimal start for your therapeutic process. In this way, the questionnaire will be read by the clinical director and he/she will look for the therapist profile that best fits the emotional situation explained. If you can´t find the words to describe what you need, don´t worry, you can put "I don´t know", "I prefer to talk about it when the time comes", "I wouldn´t know how to define it"... This questionnaire is confidential and only the clinical director and the therapist assigned to you for the process will have access to it. At the end of the questionnaire you will find the information you need to fill in to register and start the process.'|trans }} </span>
+        </div>
+    </div>
+    <div class="tab">
+        <div class="mb-3 text-center">
+            <label for="client_request_firstQuestion" class="h4 mb-2">{{'How would you define what made you ask for help?'|trans}}</label>
+            <textarea id="client_request_firstQuestion" rows="7" name="client_request[firstAnswer]" minlength="2" maxlength="500" class="form-control mb-2" autocomplete="off" required="required" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important"></textarea>
+            <span id="miError" style="display:none;color:red;">El textarea está vacío. Por favor, ingrese un valor.</span>
+        </div>
+    </div>
+    <div class="tab">
+        <div class="mb-3 text-center">
+            <label for="client_request_secondQuestion" class="h4 mb-2" >{{'What do you think the problems you describe above are due to?'|trans}}</label>
+            <textarea id="client_request_secondQuestion" rows="7" name="client_request[secondAnswer]" minlength="2" maxlength="500" class="form-control mb-2" autocomplete="off" required="required" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important"></textarea>
+        </div>
+    </div>
+    <div class="tab">
+        <div class="mb-3 text-center">
+            <label for="client_request_thirdQuestion" class="h4 mb-2">{{'Since you have been like this, what things have you tried to feel better?'|trans}}</label>
+            <textarea id="client_request_thirdQuestion" rows="7" name="client_request[thirdAnswer]" minlength="2" maxlength="500" class="form-control mb-2" autocomplete="off" required="required" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important"></textarea>
+        </div>
+    </div>
+    <div class="tab">
+        <div class="mb-3 text-center">
+            <label for="client_request_fourthQuestion" class="h4 mb-2">{{'Which ones have worked? Even if only for a limited time.'|trans}}</label>
+            <textarea id="client_request_fourthQuestion" rows="7" name="client_request[fourthAnswer]" minlength="2" maxlength="500" class="form-control mb-2" autocomplete="off" required="required" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important"></textarea>
+        </div>
+    </div>
+    <div class="tab">
+        <div class="mb-3 text-center">
+            <label for="client_request_fifthQuestion" class="h4 mb-2">{{'Have you gone through any therapy process before?'|trans}}</label>
+            <textarea id="client_request_fifthQuestion" rows="7" name="client_request[fifthAnswer]" minlength="2" maxlength="500" class="form-control mb-2" autocomplete="off" required="required" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important"></textarea>
+        </div>
+    </div>
+    <div class="tab">
+        <div class="mb-3 text-center">
+            <label for="exampleFormControlInput1" class="h4 mb-2">{{'Do you think there is anything we should be aware of that we haven´t asked?'|trans}}</label>
+            <textarea id="client_request_sixthQuestion" rows="7" name="client_request[sixthAnswer]" minlength="2" maxlength="500" class="form-control mb-2" autocomplete="off" required="required" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important"></textarea>
+        </div>
+    </div>
+    <div class="tab">
+        <div id="clientRequest" class="row">
+
+            <div class="col-12">
+                <h5>{{ 'Info'|trans }}</h5>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <label for="client_request_name">{{ 'Name'|trans }} *</label>
+                <input type="text" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important" id="client_request_name" name="client_request[name]" required="required" maxlength="255" class="form-control mb-2" value="{{ clientRequest.name }}" autocomplete="off">
+                <span class="error"></span>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <label for="client_request_surnames" class="required">{{ 'Surnames'|trans }} *</label>
+                <input type="text" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important" id="client_request_surnames" name="client_request[surnames]" required="required" maxlength="255" class="form-control mb-2" value="{{ clientRequest.surnames }}" autocomplete="off">
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <label for="client_request_email">{{ 'Email'|trans }} *</label>
+                <input type="email" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important" id="client_request_email" name="client_request[email]" maxlength="255" required="required" class="form-control mb-2" value="{{ clientRequest.email }}" autocomplete="off">
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <label for="country">{{ 'Phone'|trans }} *</label><br>
+                <input type="tel" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important" id="country" name="client_request[phone]" required="required" value="+1" class="form-control" autocomplete="off" pattern="\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d| 2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]| 4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$">
+            </div>
+
+            <div class="">
+                <input type="checkbox" id="dataP" autocomplete="off" required="required">
+                <label for="dataP">{{ 'I have read and accept the'|trans }} <a target="_blank" href="https://fluxuawp.studio128k.com/terminos-y-condiciones/"><u>{{ 'Data Protection and Legal Consent'|trans }}</u></a></label><br>
+                <lable>{{ 'The consultation fee will be deducted at the first appointment.'|trans }}</lable>
+            </div>
+
+
+            <div class="col-12 m-t-15">
+                <h5>{{ 'Available Time Slots'|trans }}</h5>
+                <div class="row m-auto d-flex p-auto justify-content-center" id="time-slots-div" style="background-color: #efece6; !important; border: #FF5A33 solid 1px !important">
+                    {% set weekDays = {1:'Monday', 2:'Tuesday', 3:'Wednesday', 4:'Thursday', 5:'Friday', 6:'Saturday', 0:'Sunday'} %}
+                    <div class="col-12 row m-b-15 p-t-10 p-b-10 border border-top-primary" id="time-slot-1">
+
+                        <div class="col-6 row">
+
+                            <div class="col-12 text-center m-t-10">
+                                <b>{{ 'From'|trans }}</b>
+                                <hr>
+                            </div>
+
+                            <div class="form-group col-xl-6 col-12">
+                                <label for="client_request_week_from">{{ 'Weekday'|trans }}</label>
+                                <select class="form-control select2" id="client_request_week_from" name="client_request[availableTimeSlots][${timeSlotsCounter}][from][weekDay]">
+                                    {% for number, weekDay in weekDays %}
+                                        <option value="{{ number }}" >{{ weekDay|trans }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group col-xl-6 col-12">
+                                <label for="client_request_hour_from">{{ 'Hour'|trans }}</label>
+                                <input type="text" id="client_request_hour_from" name="client_request[availableTimeSlots][${timeSlotsCounter}][from][time]" required="required" class="form-control flatpickr" autocomplete="off">
+                            </div>
+
+                        </div>
+
+                        <div class="col-6 row">
+
+                            <div class="col-12 text-center m-t-10">
+                                <b>{{ 'To'|trans }}</b>
+                                <hr>
+                            </div>
+
+                            <div class="form-group col-xl-6 col-12">
+                                <label for="client_request_week_to">{{ 'Weekday'|trans }}</label>
+                                <select class="form-control select2" id="client_request_week_to" name="client_request[availableTimeSlots][${timeSlotsCounter}][to][weekDay]">
+                                    {% for number, weekDay in weekDays %}
+                                        <option value="{{ number }}" >{{ weekDay|trans }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group col-xl-6 col-12">
+                                <label for="client_request_hour_to">{{ 'Hour'|trans }}</label>
+                                <input type="text" id="client_request_hour_to" name="client_request[availableTimeSlots][${timeSlotsCounter}][to][time]" required="required" class="form-control flatpickr"  autocomplete="off">
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="w-100 text-center mt-2">
+                    <button class="btn btn-secondary" type="button" onclick="addTimeSlot()">{{ 'Add time slot'|trans }}</button>
+                </div>
+
+            </div>
+
+            <input type="hidden" id="timezone" name="client_request[timezone]" value="" autocomplete="off">
+            <input type="hidden" id="timezone" name="client_request[locale]" value="{{ _locale }}" autocomplete="off">
+
+
+            {{ form_row(form._token) }}
+
+        </div>
+    </div>
+    <div>
+        <div class="text-end btn-mb">
+            <button class="btn btn-secondary" id="prevBtn" type="button" onclick="previous()">{{ 'Previous'|trans }}</button>
+            <button class="btn btn-primary" id="nextBtn" type="button" onclick="validarTextarea()">Siguiente</button>
+            <input class="btn btn-primary" type="submit" id="accept" value="{{ 'Send'|trans }}" style="display: none">
+        </div>
+    </div>
+
+    <!-- Circles which indicates the steps of the form:-->
+    <div class="text-center d-none"><span class="step"></span><span class="step"></span><span class="step"></span><span class="step"></span><span class="step"></span><span class="step"></span><span class="step"></span><span class="step"></span></div>
+    <!-- Circles which indicates the steps of the form:-->
+    <!-- Container-fluid Ends-->
+</form>
+
+<!-- form wizard JS -->
+
+{% block javascripts %}
+    <script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
+    <script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
+    <script src="{{ asset('assets/js/select2/select2.full.min.js') }}"></script>
+    <script src="{{ asset('assets/js/select2/intltelinput.min.js') }}"></script>
+    <script src="{{ asset('assets/js/select2/telephone-input.js') }}"></script>
+    <script type="application/javascript">
+        let timeSlotsCounter = {{ clientRequest.availableTimeSlots|length +1 }};
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('timezone').value = getCookie('timezone') ? getCookie('timezone') : Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.getElementById('nextBtn').innerHTML = "{{ 'Next'|trans }}";
+
+            $(`#time-slot-${timeSlotsCounter} .flatpickr`).flatpickr({
+                locale: locale,
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                allowInput: true,
+            });
+            timeSlotsCounter++;
+        });
+
+        function previous(){
+            nextPrev(-1)
+            document.getElementById('nextBtn').style.display = 'inline';
+            document.getElementById('accept').style.display = 'none';
+        }
+
+        function validarTextarea() {
+            var flag = true;
+            var textareaVisible = $('textarea:not(:hidden)');
+            if(textareaVisible.length > 0){
+                if(textareaVisible[0].value == ""){
+                    flag = false;
+                }
+                if (textareaVisible[0].id == "client_request_sixthQuestion") {
+                    document.getElementById('nextBtn').style.display = 'none';
+                    document.getElementById('accept').style.display = 'inline';
+                } else {
+                    document.getElementById('nextBtn').style.display = 'inline';
+                    document.getElementById('accept').style.display = 'none';
+                }
+
+            }
+            if(flag){
+                nextPrev(1);
+            }
+            document.getElementById('nextBtn').innerHTML = "{{ 'Next'|trans }}";
+
+        }
+
+
+        function addTimeSlot(){
+
+            let html = `
+            <div class="col-12 row m-b-15 p-t-10 p-b-10 border border-top-primary" id="time-slot-${timeSlotsCounter}">
+
+                <div class="col-5 row">
+
+                    <div class="col-12 text-center m-t-10">
+                        <b>{{ 'From'|trans }}</b>
+                        <hr>
+                    </div>
+
+                    <div class="form-group col-xl-6 col-12">
+                        <label for="client_request_week_from">{{ 'Weekday'|trans }}</label>
+                        <select class="form-control select2" id="client_request_week_from" name="client_request[availableTimeSlots][${timeSlotsCounter}][from][weekDay]">
+                            {% for number, weekDay in weekDays %}
+                                <option value="{{ number }}" >{{ weekDay|trans }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group col-xl-6 col-12">
+                        <label for="client_request_hour_from">{{ 'Hour'|trans }}</label>
+                        <input type="text" id="client_request_hour_from" name="client_request[availableTimeSlots][${timeSlotsCounter}][from][time]" required="required" class="form-control flatpickr" autocomplete="off">
+                    </div>
+
+                </div>
+
+                <div class="col-5 row">
+
+                    <div class="col-12 text-center m-t-10">
+                        <b>{{ 'To'|trans }}</b>
+                        <hr>
+                    </div>
+
+                    <div class="form-group col-xl-6 col-12">
+                        <label for="client_request_week_to">{{ 'Weekday'|trans }}</label>
+                        <select class="form-control select2" id="client_request_week_to" name="client_request[availableTimeSlots][${timeSlotsCounter}][to][weekDay]">
+                            {% for number, weekDay in weekDays %}
+                                <option value="{{ number }}" >{{ weekDay|trans }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group col-xl-6 col-12">
+                        <label for="client_request_hour_to">{{ 'Hour'|trans }}</label>
+                        <input type="text" id="client_request_hour_to" name="client_request[availableTimeSlots][${timeSlotsCounter}][to][time]" required="required" class="form-control flatpickr"  autocomplete="off">
+                    </div>
+
+                </div>
+
+                <div class="col-2 d-flex align-items-center justify-content-center">
+                    <button type="button" class="btn btn-outline-danger" onclick="document.getElementById('time-slot-${timeSlotsCounter}').remove()">{{ 'Delete'|trans }}</button>
+                </div>
+
+            </div>
+        `;
+
+            $('#time-slots-div').append(html);
+
+            $(`#time-slot-${timeSlotsCounter} .select2`).select2();
+
+            $(`#time-slot-${timeSlotsCounter} .flatpickr`).flatpickr({
+                locale: locale,
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                allowInput: true,
+            });
+
+
+
+            timeSlotsCounter++;
+
+        }
+
+    </script>
+{% endblock %}

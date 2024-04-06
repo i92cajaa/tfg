@@ -1,0 +1,90 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">{{ 'Create Task'|trans }}</h5>
+    <button type="button" class="close btn bg-transparent" data-bs-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form action="{{ path('task_process_new') }}" method="POST" id="createTaskForm" class="w-100 row mt-2">
+        <input type="hidden" name="_token" value="{{ csrf_token('create-task') }}"/>
+
+        <input type="hidden" name="appointment" value="{{ appointment }}"/>
+        <input type="hidden" name="client" value="{{ client }}"/>
+        <input type="hidden" name="event" value="{{ event }}"/>
+        <input type="hidden" name="status" value="{{ status }}"/>
+
+
+        {% if userPermission.can('assign_tasks','users') %}
+            <div class="form-group col-md-12 mb-2" >
+                <div class="form-group">
+                    <label for="createTaskName">{{ configuration.user_nomenclature|trans }} *</label>
+                    <select type="text" class="form-control select2" id="createTaskUser" name="users[]" multiple required="required">
+                        {% for user in users %}
+                            <option value="{{ user.id }}" selected="selected">{{ user.fullName }} {% if user.id == app.user.id %} ({{'You'|trans}}){% endif %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        {% else %}
+            <input type="hidden" name="user" value="{{ app.user.id }}">
+        {% endif %}
+
+        <div class="form-group col-md-12 mb-2" >
+            <div class="form-group">
+                <label for="createTaskName">{{ 'Estimated Start Date'|trans }} *</label>
+                <input type="text" class="form-control flatpickr-basic" id="createTaskEstimatedStartDate" name="estimated_start_date" required="required" />
+            </div>
+        </div>
+
+        <div class="form-group col-md-12 mb-2" >
+            <div class="form-group">
+                <label for="createTaskName">{{ 'Title'|trans }} *</label>
+                <input type="text" class="form-control" id="createTaskTitle" name="title" required="required" />
+            </div>
+        </div>
+
+        <div class="form-group col-md-12 mb-2" >
+            <div class="form-group">
+                <label for="createTaskDescription">{{ 'Description'|trans }}</label>
+                <div class="quill-editor" id="createTaskDescriptionEditor"
+                     data-input-id="createTaskDescription"></div>
+                <input type="hidden" id="createTaskDescription" name="description">
+            </div>
+        </div>
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close'|trans }}</button>
+    <button type="button" class="btn btn-primary" onclick="document.getElementById('createTaskForm').submit()">{{ 'Create'|trans }}</button>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+
+        $('.select2').select2();
+        if (feather) {
+            feather.replace({
+                width: 14,
+                height: 14
+            });
+        }
+
+        let basicPickr = $('#createTaskEstimatedStartDate');
+        if (basicPickr.length) {
+            basicPickr.flatpickr({
+                locale: locale,
+                dateFormat: 'd/m/Y H:i',
+                defaultDate: 'today',
+                enableTime: true,
+            });
+        }
+
+        instanceEditor(document.getElementById('createTaskDescriptionEditor'));
+
+
+    });
+
+
+</script>

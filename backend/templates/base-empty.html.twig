@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="{{ _locale|lower }}" style="background-color: #D9D3CB">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ configuration.favicon ? path('document_render', {'document':  configuration.favicon})}}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ configuration.favicon ? path('document_render', {'document':  configuration.favicon})}}" type="image/x-icon">
+    <title>{% block title %}{% endblock %} - {{ configuration.app_name }}</title>
+    <!-- Google font-->
+    <link href="https://fonts.googleapis.com/css?family=Rubik:400,400i,500,500i,700,700i&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome.css') }}">
+    <!-- ico-font-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/icofont.css') }}">
+    <!-- Themify icon-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/themify.css') }}">
+    <!-- Flag icon-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/flag-icon.css') }}">
+    <!-- Feather icon-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/feather-icon.css') }}">
+    <!-- Plugins css start-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/scrollbar.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/prism.css') }}">
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/select2.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/sweetalert2.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/intltelinput.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset("assets/css/vendors/flatpickr/flatpickr.min.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset("assets/css/vendors/jquery-ui/jquery-ui.min.css") }}">
+    <!-- App css-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
+    <link id="color" rel="stylesheet" href="{{ asset('assets/css/color-1.css') }}" media="screen">
+    <!-- Responsive css-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
+
+    <link rel="stylesheet" type="text/css" href="{{ asset("assets/css/vendors/quill/quill.snow.css") }}">
+
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/custom.css') }}">
+
+    <style>
+        :root{
+            {% if configuration.primary_color is not null %}
+                --primary: {{ configuration.primary_color }} !important;
+                --theme-deafult: var(--primary);
+                --bs-primary: var(--primary);
+            {% endif %}
+            {% if configuration.secondary_color is not null %}
+                --secondary: {{ configuration.secondary_color }} !important;
+                --theme-secondary: var(--secondary);
+                --bs-secondary: var(--secondary);
+            {% endif %}
+
+        }
+    </style>
+
+    {% block stylesheets %}
+    {% endblock %}
+
+</head>
+<body>
+
+
+<!-- loader starts-->
+<div class="loader-wrapper">
+    <div class="loader-index"><span></span></div>
+    <svg>
+        <defs></defs>
+        <filter id="goo">
+            <fegaussianblur in="SourceGraphic" stddeviation="11" result="blur"></fegaussianblur>
+            <fecolormatrix in="blur" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo"> </fecolormatrix>
+        </filter>
+    </svg>
+</div>
+<!-- loader ends-->
+<!-- tap on top starts-->
+<div class="tap-top"><i data-feather="chevrons-up"></i></div>
+<!-- tap on tap ends-->
+<!-- page-wrapper Start-->
+<div class="page-wrapper compact-wrapper" id="pageWrapper" style="background-color: #D9D3CB">
+    <!-- Page Header Start-->
+
+    <!-- Page Header Ends                              -->
+    <!-- Page Body Start-->
+    <div class="page-body-wrapper">
+        <!-- Page Sidebar Start-->
+        {% block body %}{% endblock %}
+    </div>
+        <!-- footer start-->
+    <footer>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 footer-copyright text-center">
+                    <p class="mb-0">Copyright {{ 'now'|date('Y') }} © {{ configuration.app_name }}  </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+<!-- latest jquery-->
+<script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
+<!-- Bootstrap js-->
+<script src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
+<!-- feather icon js-->
+<script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
+<script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
+<!-- scrollbar js-->
+<!-- Sidebar jquery-->
+<script src="{{ asset('assets/js/config.js') }}"></script>
+<!-- Plugins JS start-->
+
+<script src="{{ asset('assets/js/prism/prism.min.js') }}"></script>
+<script src="{{ asset('assets/js/clipboard/clipboard.min.js') }}"></script>
+<script src="{{ asset('assets/js/custom-card/custom-card.js') }}"></script>
+<script src="{{ asset('assets/js/select2/select2.full.min.js') }}"></script>
+<script src="{{ asset('assets/js/select2/telephone-input.js') }}"></script>
+<script src="{{ asset('assets/js/select2/intltelinput.min.js') }}"></script>
+<script src="{{ asset('assets/js/form-wizard/form-wizard.js') }}"></script>
+<script src="{{ asset('assets/js/sweet-alert/sweetalert2.all.min.js') }}"></script>
+<script src="{{ asset('assets/js/tooltip-init.js') }}"></script>
+<script src="{{ asset("assets/js/flatpickr/flatpickr.min.js") }}"></script>
+<script src="{{ asset("assets/js/flatpickr/es.js") }}"></script>
+<script src="{{ asset("assets/js/quill/quill.js") }}"></script>
+<script src="{{ asset("assets/js/quill/image-resize.min.js") }}"></script>
+<script src="{{ asset("assets/js/jquery-ui/jquery-ui.min.js") }}"></script>
+<!-- Plugins JS Ends-->
+<!-- Theme js-->
+<script src="{{ asset('assets/js/script.js') }}"></script>
+<script src="{{ asset('assets/js/custom-script.js') }}"></script>
+<!-- login js-->
+
+<!-- Plugin used-->
+<script>
+
+    let primaryColor = '{{ configuration.primary_color ?: '' }}';
+    let locale = '{{ _locale|lower }}';
+
+    $( document ).ready(function() {
+
+
+
+        {% for flash_message in app.session.flashbag.get('success') %}
+
+            customNotify("{{ 'Action Done'|trans }}", "{{ flash_message|trans  }}", "success")
+
+        {% endfor %}
+
+        {% for flash_message in app.session.flashbag.get('error') %}
+
+            {% if flash_message is iterable %}
+                {% for m in flash_message%}
+                    customNotify("{{ 'Error'|trans }}", "{{ m|trans  }}", "error")
+                {% endfor %}
+            {% else %}
+                customNotify("{{ 'Error'|trans }}", "{{ flash_message|trans  }}", "error")
+            {% endif %}
+
+        {% endfor %}
+
+        {% for flash_message in app.session.flashbag.get('notice') %}
+
+            {% if flash_message is iterable %}
+                {% for m in flash_message%}
+                    customNotify("{{ 'Info'|trans }}", "{{ m|trans  }}", "info")
+                {% endfor %}
+            {% else %}
+                customNotify("{{ 'Info'|trans }}", "{{ flash_message|trans  }}", "info")
+            {% endif %}
+
+        {% endfor %}
+
+
+    });
+
+    $(window).on('load', function() {
+        if (feather) {
+            feather.replace({
+                width: 14,
+                height: 14
+            });
+        }
+
+        $('#toggleMode').on('click', function () {
+            toggleMode();
+        });
+
+        $('#toggleMenu').on('click', function () {
+            toggleMenu();
+        });
+
+        if (!getCookie('timezone')) {
+            document.cookie = 'timezone='+ Intl.DateTimeFormat().resolvedOptions().timeZone +'; Path=/; Expires=Thu, 01 Jan 2999 00:00:01 GMT; SameSite=None; secure; cross-site-cookie1=nonCookie;';
+        }
+
+        $('.deleteForm').on('submit', function(event){
+            event.preventDefault();
+            confirmDelete($(this));
+        })
+
+    });
+
+    function getCookie(cookieName) {
+        let cookie = [];
+        document.cookie.split(';').forEach(function(el) {
+            let [key,value] = el.split('=');
+            cookie[key.trim()] = value;
+        })
+
+        return cookie[cookieName] ? cookie[cookieName] : null;
+    }
+
+    async function changeTimezone(){
+        const { value: timezone } = await Swal.fire({
+            title: '{{ 'Change Timezone'|trans }}',
+            html:
+                '<div class="form-group">' +
+                '<select class="form-control" id="swal-input-select">' +
+                    {% for timezone in _timezones %}
+                '<option value="{{ timezone }}" {% if app.request.cookies.get('timezone') == timezone %}selected{% endif %}>{{ timezone }}</option>' +
+                    {% endfor %}
+                '</select>' +
+                '</div>'
+            ,
+            showCancelButton: true,
+            confirmButtonText: '{{ 'Continue'|trans }}',
+            cancelButtonText: '{{ 'Cancel'|trans }}',
+            showLoaderOnConfirm: true,
+            didOpen: function () {
+                $('#swal-input-select').select2({});
+            },
+            preConfirm: () => {
+                return $('#swal-input-select').val();
+            }
+        })
+
+        if (timezone) {
+            document.cookie = 'timezone =; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            document.cookie = 'timezone='+ timezone +'; Path=/; Expires=Thu, 01 Jan 2999 00:00:01 GMT; SameSite=None; secure; cross-site-cookie1=nonCookie;';
+            location.reload();
+        }
+    }
+
+    function toggleFilter(){
+
+        if(document.getElementById("filterSidebar").style.width == '0px' || document.getElementById("filterSidebar").style.width == ''){
+            openNav();
+        }else{
+            closeNav();
+        }
+    }
+
+    function openNav() {
+        document.getElementById("filterSidebar").style.width = "400px";
+
+    }
+
+    /* Set the width of the sidebar to 0 and the left margin of the page content to 0 */
+    function closeNav() {
+        document.getElementById("filterSidebar").style.width = "0px";
+    }
+
+    function toggleMode() {
+        $.ajax({
+            type: 'get',
+            cache: "true",
+            dataType: 'json',
+            url: "{{ path('toggle_mode') }}",
+            data: {},
+            success: function (data) {
+
+            }
+        });
+    }
+
+    function toggleMenu() {
+        $.ajax({
+            type: 'get',
+            cache: "true",
+            dataType: 'json',
+            url: "{{ path('toggle_menu') }}",
+            data: {},
+            success: function (data) {
+
+
+            }
+        });
+    }
+
+    function deleteNotification(notificationId){
+
+        $.ajax({
+            type: 'POST',
+            url: "{{path('notification_delete')}}",
+            dataType: 'json',
+            data: { id: notificationId },
+            success: function (response) {
+                let notificationElement = document.getElementById("notification-" + notificationId);
+                notificationElement.remove();
+                $('.notification-counter').text($('#notificationsDiv .notification-item').length);
+
+            },
+            error: function (err) {
+                console.log("ERROR");
+            }
+        });
+
+    }
+
+    //Tareas
+
+    function openCreateTaskModal(appointment, event, client, status)
+    {
+
+        $.ajax({
+            url: '{{ path('task_get_create_template') }}',
+            type: 'post',
+            dataType: 'json',
+            delay: 250,
+            data: {
+                _token: '{{ csrf_token('get-create-task-template') }}',
+                appointment: appointment,
+                client: client,
+                event: event,
+                status: status
+            },
+            success: function (response) {
+                if(response.success){
+                    $('#taskModalContent').html(response.data);
+                    if (feather) {
+                        feather.replace({
+                            width: 14,
+                            height: 14
+                        });
+                    }
+
+                    $('#taskModal').modal('show');
+
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+            }
+        })
+
+    }
+
+    function openEditTaskModal(id){
+
+        $.ajax({
+            url: '{{ path('task_get_edit_template') }}',
+            type: 'post',
+            dataType: 'json',
+            delay: 250,
+            data: {
+                _token: '{{ csrf_token('get-edit-task-template') }}',
+                id: id, // search term
+            },
+            success: function (response) {
+                if(response.success){
+
+                    $('#taskModalContent').html(response.data);
+
+                    if (feather) {
+                        feather.replace({
+                            width: 14,
+                            height: 14
+                        });
+                    }
+
+                    $('#taskModal').modal('show');
+
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+            }
+        })
+
+    }
+
+    function changeStatusTask(taskId)
+    {
+        const inputOptions = new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({
+                    {% for status in taskStatuses %}
+                    '{{ status.id }}':'{{ status.name|trans }}',
+                    {% endfor %}
+                })
+
+            }, 1000)
+
+        })
+
+        swal.fire({
+            title: '{{ 'Change Status'|trans }}',
+            text: '{{ 'Select the status to which you want to change the task'|trans }}',
+            input: 'select',
+            inputAttributes: {
+                id: 'swal-input-select'
+            },
+            inputOptions: inputOptions,
+            inputValidator: (value) => {
+                if (!value) {
+                    return '{{ 'You need to select an option'|trans }}'
+                }
+            },
+            showCancelButton: true,
+            confirmButtonText: '{{ 'Change Status'|trans }}',
+            cancelButtonText: '{{ 'Cancel'|trans }}',
+            showLoaderOnConfirm: true,
+            preConfirm: async (type) => {
+                return type;
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if(result.isConfirmed){
+
+                $.ajax({
+                    url: '{{ path('task_change_status') }}',
+                    type: 'post',
+                    dataType: 'json',
+                    delay: 250,
+                    data: {
+                        _token: '{{ csrf_token('change-status-task') }}',
+                        id: taskId, // search term
+                        status: result.value
+                    },
+                    success: function (response) {
+                        Swal.fire(
+                            '{{ 'Task Updated'|trans }}',
+                            '{{ 'Task status has been changed successfully'|trans }}',
+                            'success'
+                        )
+
+
+                        if (calendar){
+                            calendar.refetchEvents();
+                        }
+
+
+                    }
+                })
+            }
+        })
+    }
+
+    function addTimeToTask(taskId)
+    {
+        swal.fire({
+            title: '{{ 'Add Time'|trans }}',
+            text: '{{'Select the time you want to add to the task'|trans}}',
+            input: 'text',
+            inputAttributes: {
+                id: 'swal-input-flatpickr'
+            },
+            willOpen: () => {
+
+                $('#swal-input-flatpickr').flatpickr({
+                    locale: locale,
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i",
+                    time_24hr: true,
+                    defaultHour: 0,
+                    defaultMinute: 0,
+
+                })
+            },
+            inputValidator: (value) => {
+                if (!value) {
+                    return '{{ 'You need to add time'|trans }}'
+                }
+            },
+            showCancelButton: true,
+            confirmButtonText: '{{ 'Add Time'|trans }}',
+            cancelButtonText: '{{ 'Cancel'|trans }}',
+            showLoaderOnConfirm: true,
+            preConfirm: async (type) => {
+                return type;
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if(result.isConfirmed){
+
+                $.ajax({
+                    url: '{{ path('task_add_time') }}',
+                    type: 'post',
+                    dataType: 'json',
+                    delay: 250,
+                    data: {
+                        _token: '{{ csrf_token('add-time-task') }}',
+                        id: taskId, // search term
+                        time: result.value
+                    },
+                    success: function (response) {
+                        Swal.fire(
+                            '{{ 'Task Updated' }}',
+                            '{{ 'Time has been recorded for the selected task'|trans }}',
+                            'success'
+                        )
+
+                        if(calendar){
+                            calendar.refetchEvents();
+                        }
+
+
+                    }
+                })
+            }
+        })
+    }
+
+    // Event click function
+    function showTask(taskId) {
+
+        $.ajax({
+            url: '{{ path('task_get_by_id') }}',
+            type: 'post',
+            dataType: 'json',
+            delay: 250,
+            data: {
+                _token: '{{ csrf_token('get-task') }}',
+                id: taskId, // search term
+            },
+            success: function (response) {
+                let task = response.data;
+                let resourceHTML = '';
+
+                if (task.appointment) {
+                    resourceHTML = `
+                        <div class="col-md-12">
+                            <h3>{{ 'Appointment Assigned'|trans }}</h3>
+                            <p><a class="text-primary" href="{% if userPermission.can('show', 'appointments') %}{{ path('appointment_show') }}/${task.appointment}{% else %}#{% endif %}">${task.appointmentDate}</a></p>
+                        </div>
+                    `
+                }
+
+                if (task.client) {
+                    resourceHTML = `
+                        <div class="col-md-12">
+                            <h3>{{ (configuration.client_nomenclature ~ ' Assigned')|trans }}</h3>
+                            <p><a class="text-primary" href="{% if userPermission.can('show', 'clients') %}{{ path('client_show') }}/${task.client}{% else %}#{% endif %}">${task.clientFullName}</a></p>
+                        </div>
+                    `
+                }
+
+                Swal.fire({
+                    title: '<strong>' + task.title.toUpperCase() + '</strong>',
+                    html:
+                        `
+                            <hr>
+                            <div class="d-flex flex-row flex-wrap justify-content-center my-2 gap-3 ">
+                                ${resourceHTML}
+                                <div class="col-auto">
+                                    <h3>Usuario</h3>
+                                    <p>${task.userFullName}</p>
+                                </div>
+                                <div class="col-auto">
+                                    <h3>Estado</h3>
+                                    <p>${task.currentStatus}</p>
+                                </div>
+                                <div class="col-auto">
+                                    <h3>Fecha Inicio</h3>
+                                    <p style="text-align: left; width: fit-content; margin: auto;">
+                                        <i class="fa fa-calendar-o" style="font-size: 15px; margin-right: 5px;"></i>${task.estimated_start_date} <br>
+                                        <i class="icofont icofont-clock-time" style="font-size: 15px; margin-right: 5px;"></i>${task.estimated_start_time}
+                                    </p>
+                                </div>
+                                <div class="col-12">
+                                    <h3>{{ 'Description'|trans }}</h3>
+                                    ${task.description}
+                                </div>
+                            </div>
+                            `
+                    ,
+                    width: 600,
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    closeButtonText: 'Cerrar',
+                });
+            }
+        });
+    }
+
+    async function confirmDeleteTask(taskId){
+        let form = document.createElement("form");
+
+        form.method =  "post";
+        form.id = "deleteTaskForm"+taskId;
+
+        form.action = "{{ path('task_delete') }}/" + taskId;
+
+        let token = document.createElement("input");
+        token.type = "hidden";
+        token.name = "_token";
+        token.value = "{{ csrf_token('delete-task') }}";
+
+        form.appendChild(token);
+        document.body.appendChild(form);
+
+        await Swal.fire({
+            title: '{{ 'Are You Sure?'|trans }}',
+            text: "{{ 'The Task Will Be Deleted'|trans }}.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: primaryColor,
+            cancelButtonColor: '#d33',
+            confirmButtonText: '{{ 'Delete'|trans }}',
+            cancelButtonText: '{{ 'Cancel'|trans }}'
+        }).then((result) => {
+            if (result.isConfirmed === true) {
+
+                form.submit();
+            }
+        });
+
+        $('#deleteTaskForm'+taskId).remove();
+
+    }
+
+    function confirmDelete(form){
+        Swal.fire({
+            title: '{{ 'Are You Sure?'|trans }}',
+            text: "{{ 'This Element Will Be Deleted'|trans }}.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: primaryColor,
+            cancelButtonColor: '#d33',
+            confirmButtonText: '{{ 'Delete'|trans }}',
+            cancelButtonText: '{{ 'Cancel'|trans }}'
+        }).then((result) => {
+            if (result.isConfirmed === true) {
+
+                form.off('submit').submit();
+            }
+        });
+    }
+
+</script>
+
+{% block javascripts %}
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% if entity.type == 'Text' %}
+
+    <input class="form-control" type="text" {% if id is defined %}id="{{ id }}"{% endif%} name="{{ formName }}" {% if value is defined %}value="{{ value }}"{% endif %}>
+
+{% elseif entity.type == 'File' %}
+
+    <input class="form-control" type="file" {% if id is defined %}id="{{ id }}"{% endif%} name="{{ formName }}">
+
+{% elseif entity.type == 'Number' %}
+
+    <input class="form-control" type="number" {% if id is defined %}id="{{ id }}"{% endif%} name="{{ formName }}" step="0.01" {% if value is defined %}value="{{ value }}"{% endif %}>
+
+{% elseif entity.type == 'Date' %}
+
+    <input class="form-control flatpickr_date" type="text" {% if id is defined %}id="{{ id }}"{% endif%} name="{{ formName }}" {% if value is defined %}value="{{ value }}"{% endif %}>
+
+{% elseif entity.type == 'Hour' %}
+
+    <input class="form-control flatpickr_time" type="text" {% if id is defined %}id="{{ id }}"{% endif%} name="{{ formName }}" {% if value is defined %}value="{{ value }}"{% endif %}>
+
+{% elseif entity.type == 'Color' %}
+
+    <input class="form-control" type="color" {% if id is defined %}id="{{ id }}"{% endif%} name="{{ formName }}" {% if value is defined %}value="{{ value }}"{% endif %}>
+
+{% elseif entity.type == 'Confirmation' %}
+
+    <input class="form-check" type="checkbox" {% if id is defined %}id="{{ id }}"{% endif%} name="{{ formName }}" {% if value is defined %}value="{{ value }}"{% else %}value="Si"{% endif %}>
+
+{% elseif entity.type == 'Selector' %}
+
+    <select class="select2 form-control" {% if id is defined %}id="{{ id }}"{% endif%} name="{{ formName }}" >
+        <option value="" {% if value is defined and value == "" %} selected="selected" {% endif %}>Selecciona un valor</option>
+        {% for option in entity.options %}
+            <option value="{{ option }}" {% if value is defined and value == option %} selected="selected" {% endif %}>{{ option }}</option>
+        {% endfor %}
+    </select>
+
+{% endif %}

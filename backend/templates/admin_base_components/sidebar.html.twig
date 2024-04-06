@@ -1,0 +1,164 @@
+<!-- Page Sidebar Start-->
+<div class="sidebar-wrapper {% if not app.user.menuExpanded %} close_icon {% endif %}">
+	<div>
+		<div class="logo-wrapper">
+			<a href="{{ path('appointment_index') }}"><img class="img-fluid for-light" style="height: 50px !important;" src="{{ configuration.logo_big ? path('document_render', {'document': configuration.logo_big}) : asset('assets/images/logo/logo.png') }}" alt=""><img class="img-fluid for-dark" style="height: 50px !important;" src="{{ configuration.logo_big ? path('document_render', {'document': configuration.logo_big}) : asset('assets/images/logo/logo.png') }}" alt=""></a>
+			<div class="back-btn">
+				<i class="fa fa-angle-left"></i>
+			</div>
+			<div class="toggle-sidebar" style="right: 15px; top:15px;" onclick="toggleMenu()">
+				<i class="status_toggle middle sidebar-toggle" data-feather="grid"></i>
+			</div>
+		</div>
+		<div class="logo-icon-wrapper">
+			<a href="{{ path('appointment_index') }}"><img class="img-fluid" width="40" src="{{ configuration.logo_small ? path('document_render', {'document': configuration.logo_small}) : asset('assets/images/logo/logo-icon.png') }}" alt=""></a>
+		</div>
+		<nav class="sidebar-main">
+			<div class="left-arrow" id="left-arrow">
+				<i data-feather="arrow-left"></i>
+			</div>
+			<div id="sidebar-menu">
+				<ul class="sidebar-links" id="simple-bar">
+					<li class="back-btn">
+						<a><img class="img-fluid" width="40" src="{{ configuration.logo_small ? path('document_render', {'document': configuration.logo_small}) : asset('assets/images/logo/logo-icon.png') }}" alt=""></a>
+						<div class="mobile-back text-end">
+							<span>Back</span>
+							<i class="fa fa-angle-right ps-2" aria-hidden="true"></i>
+						</div>
+					</li>
+
+					<li class="sidebar-list">
+						<a href="{{ path('client_dashboard') }}" class="sidebar-link sidebar-title link-nav" data-button-id="dashboard">
+							<i data-feather="pie-chart"></i>
+							<span>Dashboard</span>
+						</a>
+					</li>
+					{% if userPermission.can('list', 'appointments') %}
+						<li class="sidebar-list">
+							<a href="{{ path('appointment_list') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'appointment_' and app.request.attributes.get( '_route' ) != 'appointment_index'  %}nav-active{% endif %}" data-original-title="" title="">
+								<i data-feather="layers"></i>
+								<span>Mentorías</span>
+							</a>
+						</li>
+					{% endif %}
+
+					<li class="sidebar-list">
+						<a href="{{ path('task_list') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'task_' and app.request.attributes.get( '_route' ) != 'task_index'  %}nav-active{% endif %}" data-original-title="" title="">
+							<i data-feather="check-circle"></i>
+							<span>Tareas</span>
+						</a>
+					</li>
+
+					<li class="sidebar-list">
+						<a href="{{ path('appointment_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) == 'appointment_index' %}nav-active{% endif %}" data-original-title="" title="">
+							<i data-feather="calendar"></i>
+							<span>{{ 'Calendar'|trans }}</span>
+						</a>
+					</li>
+
+					{% if userPermission.can('list', 'users') %}
+						<li class="sidebar-list">
+							<a href="{{ path('center_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'center_' %}nav-active{% endif %}" data-original-title="" title="">
+								<i data-feather="map-pin"></i>
+								<span>Centros</span>
+							</a>
+						</li>
+					{% endif %}
+
+					{% if userPermission.can('list', 'clients') %}
+						<li class="sidebar-list">
+							<a href="{{ path('client_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'client_' and 'request_' not in app.request.attributes.get( '_route' ) %}nav-active{% endif %}" data-original-title="" title="Proyectos">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24">
+									<g id="feRocket0" fill="none" fill-rule="evenodd" stroke="none" stroke-width="1">
+										<g id="feRocket1" fill="currentColor">
+											<path id="feRocket2" d="M14 22h-4c-.8 0-1.602-1.123-2.274-2.726L5 22l-1-1v-4l2.383-2.383C6.14 13.325 6 12.057 6 11c0-4 3-9 6-9s6 5 6 9c0 1.058-.14 2.325-.383 3.617L20 17v4l-1 1l-2.726-2.726C15.602 20.877 14.801 22 14 22Zm-2-2h-1.615a3.136 3.136 0 0 1-.179-.249c-.347-.532-.72-1.365-1.059-2.383C8.455 15.29 8 12.755 8 11c0-3.198 2.444-7 4-7s4 3.802 4 7c0 1.755-.455 4.291-1.147 6.368c-.34 1.018-.712 1.85-1.06 2.383a3.136 3.136 0 0 1-.178.249H12Zm0-8a2 2 0 1 0 0-4a2 2 0 0 0 0 4Z"/></g>
+									</g>
+								</svg>
+								<span>Proyectos</span>
+							</a>
+						</li>
+					{% endif %}
+
+					{% if userPermission.can('list', 'appointments') %}
+						<li class="sidebar-list">
+							<a href="{{ path('user_mentores_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'user_mentores_'  %}nav-active{% endif %}" data-original-title="" title="">
+								<i data-feather="users"></i>
+								<span>Mentores</span>
+							</a>
+						</li>
+					{% endif %}
+
+
+					{% if app.user.isAdmin %}
+						<li class="sidebar-main-title">
+							<div>
+								<h6>{{ 'Administration'|trans }}</h6>
+								<p>{{ 'Dashboards & configuration'|trans }}</p>
+							</div>
+						</li>
+
+						{% if userPermission.can('list', 'services') %}
+							<li class="sidebar-list">
+								<a href="{{ path('service_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'service_' %}nav-active{% endif %}" data-original-title="" title="">
+									<i data-feather="server"></i>
+									<span>Servicios</span>
+								</a>
+							</li>
+						{% endif %}
+
+						{% if userPermission.can('list', 'users') %}
+							<li class="sidebar-list">
+								<a href="{{ path('user_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'user_index' %}nav-active{% endif %}" data-original-title="" title="">
+									<i data-feather="user"></i>
+									<span>Usuarios</span>
+								</a>
+							</li>
+						{% endif %}
+
+						{% if userPermission.can('list', 'template_types') %}
+							<li class="sidebar-list">
+								<a href="{{ path('template_type_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'template_type_' %}nav-active{% endif %}" data-original-title="" title="">
+									<i data-feather="layout"></i>
+									<span>Tipos de Fichas</span>
+								</a>
+							</li>
+						{% endif %}
+
+						{% if userPermission.can('list', 'festives') %}
+							<li class="sidebar-list">
+								<a href="{{ path('festive_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'festive_' %}nav-active{% endif %}" data-original-title="" title="">
+									<i data-feather="clipboard"></i>
+									<span>Ausencias</span>
+								</a>
+							</li>
+						{% endif %}
+
+						{% if userPermission.can('list', 'extra_appointment_field_types') %}
+							<li class="sidebar-list">
+								<a href="{{ path('extra_appointment_field_type_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'extra_appointment_field_' %}nav-active{% endif %}" data-original-title="" title="">
+									<i data-feather="tag"></i>
+									<span>Campos adicionales</span>
+								</a>
+							</li>
+						{% endif %}
+
+						{% if userPermission.can('edit', 'configs') %}
+							<li class="sidebar-list">
+								<a href="{{ path('config_edit') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'config_' %}nav-active{% endif %}" data-original-title="" title="">
+									<i data-feather="settings"></i>
+									<span>Configuración</span>
+								</a>
+							</li>
+						{% endif %}
+
+					{% endif %}
+
+				</ul>
+			</div>
+			<div class="right-arrow" id="right-arrow">
+				<i data-feather="arrow-right"></i>
+			</div>
+		</nav>
+	</div>
+</div>
+<!-- Page Sidebar Ends-->

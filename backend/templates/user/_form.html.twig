@@ -1,0 +1,246 @@
+{#<form name="user" enctype="multipart/form-data" method="post" autocomplete="off">#}
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+    <div class="w-100 row">
+
+        <input type="hidden" id="user_delete_image" name="user[delete_image]" autocomplete="off">
+        <h2>Info de Contacto</h2>
+        <hr>
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.name) }}">{{ field_label(form.name) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.name) }}" id="{{ field_name(form.name) }}" name="{{ field_name(form.name) }}" value="{{ field_value(form.name) }}" required>
+            {% for error in field_errors(form.name) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.surnames) }}">{{ field_label(form.surnames) }} <span class="text-danger">{% if not user.isProject %}*{% endif %}</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.surnames) }}" id="{{ field_name(form.surnames) }}" name="{{ field_name(form.surnames) }}" value="{{ field_value(form.surnames) }}">
+            {% for error in field_errors(form.surnames) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.phone) }}">{{ field_label(form.phone) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.phone) }}" id="{{ field_name(form.phone) }}" name="{{ field_name(form.phone) }}" value="{{ field_value(form.phone) }}" required>
+            {% for error in field_errors(form.phone) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.email) }}">{{ field_label(form.email) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.email) }}" id="{{ field_name(form.email) }}" name="{{ field_name(form.email) }}" value="{{ field_value(form.email) }}" required>
+            {% for error in field_errors(form.email) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-2 col-sm-6 mb-3">
+                <label class="form-label" >{{ field_label(form.password.first) }} {% if user.name == '' %}<span class="text-danger">*</span>{% endif %} </label>
+                <input class="form-control" type="password"
+                       placeholder="{{ field_label(form.password.first) }}" id="{{ field_name(form.password.first) }}"
+                       name="{{ field_name(form.password.first) }}"
+                       value="{{ field_value(form.password.first) }}"
+                       {% if user.name == '' %}required{% endif %}>
+                {% for error in field_errors(form.password.first) %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+        </div>
+
+        <div class="col-md-2 col-sm-6 mb-3">
+                <label class="form-label" for="{{ field_name(form.password.second) }}">{{ field_label(form.password.second) }} {% if user.name == '' %}<span class="text-danger">*</span>{% endif %} </label>
+                <input class="form-control" type="password"
+                       placeholder="{{ field_label(form.password.second) }}" id="{{ field_name(form.password.second) }}"
+                       name="{{ field_name(form.password.second) }}"
+                       value="{{ field_value(form.password.second) }}"
+                       {% if user.name == '' %}required{% endif %}>
+                {% for error in field_errors(form.password.second) %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.img_profile) }}">Imagen de perfil </label>
+            <input type="file" class="form-control"
+                   placeholder="{{ field_label(form.img_profile) }}" id="{{ field_name(form.img_profile) }}" name="{{ field_name(form.img_profile) }}"
+                   value="{{ field_value(form.img_profile) }}" accept="image/*">
+        </div>
+
+        <h2 class="mt-3">Info <span id="title_mentor">Mentorías</span></h2>
+        <hr>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.roles) }}">Rol <span class="text-danger">*</span></label>
+            <select class="form-control" type="text" onchange="rolSelectChange()" id="{{ field_name(form.roles) }}" name="{{ field_name(form.roles) }}" required>
+                <option disabled selected value="">Selecciona una opción</option>
+                {% for rol in roles %}
+                    <option {% if user.roles[0] is defined and rol.name == user.roles[0] %}selected{% endif %} value="{{ rol.id }}">{{ rol.name }}</option>
+                {% endfor %}
+
+                {% for error in field_errors(form.roles) %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3 {% if user.isSuperAdmin %}d-none{% endif %}" id="user_center">
+            <label class="form-label" for="{{ field_name(form.center) }}">Centro Asociado <span class="text-danger">*</span></label>
+            <select class="form-select" type="text" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" required>
+                <option disabled {% if field_value(form.center)|length < 1 %}selected{% endif %} value="{{ null }}">Selecciona una opción</option>
+                {% for center in centers %}
+                    <option {% if center.id == field_value(form.center) %}selected{% endif %} value="{{ center.id }}">{{ center.name }}</option>
+                {% endfor %}
+
+            {% for error in field_errors(form.center) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3 {% if user.isProject or user.isSuperAdmin %}d-none{% endif %}" id="user_modality">
+            <label class="form-label" for="{{ field_name(form.modality) }}" >Modalidad <span class="text-danger">*</span></label>
+            <select class="form-select" type="text" id="{{ field_name(form.modality) }}" name="{{ field_name(form.modality) }}" {% if not user.isProject %}required{% endif %}>
+                <option disabled {% if field_value(form.center)|length < 1 %}selected{% endif %} value="{{ null }}">Selecciona una opción</option>
+                <option {% if user.modality == "presencial" %}selected {% endif %} value="presencial">Presencial</option>
+                <option {% if user.modality == "online" %}selected {% endif %} value="online">Online</option>
+            {% for error in field_errors(form.center) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+            </select>
+        </div>
+
+
+        <div class="col-md-4 col-sm-6 d-none">
+            <label class="form-label" for="{{ field_name(form.calendar_interval) }}">Horario <span class="text-danger">*</span></label>
+            <input class="form-control" type="time" placeholder="{{ field_label(form.calendar_interval) }}" id="{{ field_name(form.calendar_interval) }}" name="{{ field_name(form.calendar_interval) }}" value="{{ user.calendarInterval|default('01:00') }}" required>
+            {% for error in field_errors(form.calendar_interval) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+
+        </div>
+        <div class="col-md-8 col-sm-6 mb-3 {% if user.isProject or user.isSuperAdmin %}d-none{% endif %}" id="user_area">
+            <label class="form-label" for="{{ field_name(form.areas) }}">Áreas de Mentorización <span class="text-danger">*</span></label>
+            <span class="blockquote-footer">Múltiples opciones</span> <br>
+            {% set userAreas = user.getAreas(false) %}
+            <select class="form-select select2" id="{{ field_name(form.areas) }}" name="{{ field_name(form.areas) }}" multiple aria-label="multiple select example">
+                {% for area in areas %}
+                    {% set selected = '' %}
+                    {% for userArea in userAreas %}
+                        {% if userArea.area.id == area.id %}
+                            {% set selected = 'selected' %}
+                        {% endif %}
+                    {% endfor %}
+                    <option value="{{ area.id }}" {{ selected }}>{{ area.name}}<i class="feather feather-chevron-down arrow-down"></i>
+                    </option>
+                {% endfor %}
+
+                {% for error in field_errors(form.areas) %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </select>
+        </div>
+
+{#        <h2 class="mt-3">Documentación</h2>#}
+
+{#        <div class="col-md-3">#}
+{#            <label class="form-label" for="{{ field_name(form.documents) }}">Cesión de Imagen</label>#}
+{#            <input type="file" class="form-control" id="{{ field_name(form.documents) }}" name="{{ field_name(form.documents) }}" >#}
+{#        </div>#}
+{#        <div class="col-md-3">#}
+{#            <label class="form-label" for="{{ field_name(form.documents) }}">Confidencialidad</label>#}
+{#            <input type="file" class="form-control" id="{{ field_name(form.documents) }}" name="{{ field_name(form.documents) }}" >#}
+{#        </div>#}
+{#        <div class="col-md-3">#}
+{#            <label class="form-label" for="{{ field_name(form.documents) }}">Código Deontológico</label>#}
+{#            <input type="file" class="form-control" id="{{ field_name(form.documents) }}" name="{{ field_name(form.documents) }}" >#}
+{#        </div>#}
+{#        <div class="col-md-3">#}
+{#            <label class="form-label" for="{{ field_name(form.documents) }}">Obligaciones Técnicas</label>#}
+{#            <input type="file" class="form-control" id="{{ field_name(form.documents) }}" name="{{ field_name(form.documents) }}" >#}
+{#        </div>#}
+        {{ form_row(form._token) }}
+
+    </div>
+
+    {% if edit and app.user.isSuperAdmin %}
+        <hr>
+        <h6 class="py-1 mx-1 mt-2 mb-0 font-medium-2">
+            <span class="align-middle">{{ 'Permissions'|trans }}</span>
+        </h6>
+        <div class="table-responsive border rounded mt-1 mb-2">
+
+            <div class="card-body w-100 row">
+                {% include 'extra/permissions.html.twig' with {'disabled':false, 'col': 'col-md-3'} %}
+            </div>
+        </div>
+    {% endif %}
+
+    <input id="deleteImgInput" type="hidden" name="user[deleteImg]">
+{{ form_end(form) }}
+
+<script>
+    function triggerAutonomous(){
+
+        if(document.getElementById("user_autonomous").checked === false){
+            document.getElementById("user_appointment_percentage_div").classList.add("d-none");
+        }else{
+            document.getElementById("user_appointment_percentage_div").classList.remove("d-none");
+        }
+    }
+
+    function rolSelectChange(){
+        try {
+            var selectElement = document.getElementById("{{ field_name(form.roles) }}");
+            var selectedOption = selectElement.options[selectElement.selectedIndex].value;
+            console.log( selectedOption);
+
+            {#// Mentor#}
+            {#if(selectedOption === "3") {#}
+            {#    document.getElementById("user_area").classList.remove("d-none");#}
+            {#    document.getElementById("title_mentor").classList.remove("d-none");#}
+            {#    document.getElementById("{{ field_name(form.areas) }}").setAttribute("required", 'required');#}
+            {#}#}
+
+            // Jefe de estudios
+            if(selectedOption === "1" || selectedOption === "5") {
+                document.getElementById("user_center").classList.add("d-none");
+                document.getElementById("user_area").classList.add("d-none");
+                document.getElementById("user_modality").classList.add("d-none");
+                document.getElementById("title_mentor").classList.add("d-none");
+                document.getElementById("{{ field_name(form.areas) }}").removeAttribute("required");
+                document.getElementById("{{ field_name(form.modality) }}").removeAttribute("required");
+                document.getElementById("{{ field_name(form.center) }}").removeAttribute("required");
+            }
+
+            // Director
+            if(selectedOption === "2" || selectedOption === "4") {
+                document.getElementById("user_center").classList.remove("d-none");
+                document.getElementById("user_area").classList.add("d-none");
+                document.getElementById("user_modality").classList.add("d-none");
+                document.getElementById("title_mentor").classList.add("d-none");
+                document.getElementById("{{ field_name(form.areas) }}").removeAttribute("required");
+                document.getElementById("{{ field_name(form.modality) }}").removeAttribute("required");
+                document.getElementById("{{ field_name(form.center) }}").setAttribute("required", 'required');
+            }
+
+            if(selectedOption === "3") {
+                document.getElementById("user_center").classList.remove("d-none");
+                document.getElementById("user_area").classList.remove("d-none");
+                document.getElementById("user_modality").classList.remove("d-none");
+                document.getElementById("title_mentor").classList.add("d-none");
+                document.getElementById("{{ field_name(form.areas) }}").setAttribute("required", 'required');
+                document.getElementById("{{ field_name(form.modality) }}").setAttribute("required", 'required');
+                document.getElementById("{{ field_name(form.center) }}").setAttribute("required", 'required');
+            }
+
+
+
+        }catch (error){}
+
+    }
+    rolSelectChange();
+</script>
+
+
+

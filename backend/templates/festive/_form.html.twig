@@ -1,0 +1,33 @@
+<form name="festive" method="post" data-select2-id="8">
+    <div id="festive" class="row" data-select2-id="festive">
+        <div class="col-6">
+            <label for="festive_date" class="required">{{ 'Date'|trans }}</label>
+            <input type="text" id="festive_date" name="festive[date]" required="required" value="{{ festive.date|UTCDateTimeFormat('d-m-Y') }}" class="form-control mb-2 timeDate flatpickr-input " autocomplete="off" readonly="readonly">
+            {% include 'extra/form_type_error.html.twig' with {'element': form.date } only %}
+        </div>
+        <div class="col-6">
+            <label for="festive_name" class="required">{{ 'Name'|trans }}</label>
+            <input type="text" id="festive_name" name="festive[name]" required="required" maxlength="255" value="{{ festive.name }}" class="form-control mb-2" autocomplete="off">
+            {% include 'extra/form_type_error.html.twig' with {'element': form.name } only %}
+        </div>
+        <div class="col-6">
+            <label for="festive_user">{{ (configuration.user_nomenclature ~ 's')|trans }}</label>
+            <select id="festive_user" name="festive[user]" class="form-check mb-2 select2 " autocomplete="off" tabindex="-1" aria-hidden="true">
+                <option value="" >{{ 'All'|trans }}</option>
+                {% for user in users %}
+                    <option value="{{ user.id }}" {% if user == festive.user %}selected{% endif %}>{{ user.getFullName() }}</option>
+                {% endfor %}
+            </select>
+            {% include 'extra/form_type_error.html.twig' with {'element': form.user } only %}
+        </div>
+
+        {{ form_row(form._token) }}
+    </div>
+    <div class="row d-flex justify-content-end mt-2">
+        <div class="mr-2 text-end">
+            <button class="btn btn-primary text-white">{{ button_label }}</button>
+        </div>
+    </div>
+</form>
+
+

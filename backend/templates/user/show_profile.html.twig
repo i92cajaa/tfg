@@ -1,0 +1,909 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Mostrar Usuarios{% endblock %}
+
+{% block page_title %}
+    {{ ('Show ' ~ configuration.user_nomenclature)|trans }}
+{% endblock %}
+
+{% block body %}
+    <div class="modal fade" id="templateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" id="templateModalContent" >
+
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- User Card starts-->
+            <div class="col-12 p-0">
+                <div class="card user-card">
+                    <div class="card-body pt-3">
+                        <div class="row">
+                            <h2 class="row gap-2 align-items-center m-0 pb-2">
+                                <div class="col-auto">
+                                    <img class="rounded-pill" data-bs-toggle="tooltip"
+                                         data-html="true"
+                                         data-placement="bottom"
+                                         title=''
+                                         src="{% if user.imgProfile != null %}{{ documentImage.DocumentImage(user.imgProfile) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}"
+                                         class="" style="width: 70px !important;" alt="">
+                                </div>
+                                Información Principal
+                            </h2>
+                            <hr>
+                            <div class="col-md-12 pb-2">
+                                <div class="row h-100 gap-2">
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Nombre</label>
+                                        <p class="card-text mb-0">{{ user.name }}</p>
+                                    </div>
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Apellidos</label>
+                                        <p class="card-text">{{ user.surnames }}</p>
+                                    </div>
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Teléfono</label>
+                                        <p class="card-text ">{{ user.phone }}</p>
+                                    </div>
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Correo Electrónico</label>
+                                        <p class="card-text ">{{ user.email }}</p>
+                                    </div>
+
+                                    <div class="col-auto align-self-center {% if user.isProject or user.isSuperadmin or user.isAdmin %} d-none {% endif %}">
+                                        <label class="form-label fw-bold">Áreas de Mentorización</label>
+                                        {% for areas in user.areas %}
+                                            <li class="card-text">{{ areas }}</li>
+                                        {% endfor %}
+
+                                    </div>
+
+                                    <div class="col-auto align-self-center {% if user.isSuperadmin %} d-none {% endif %}">
+                                        <label class="form-label fw-bold">Centro Asociado</label>
+                                        <p class="card-text ">{{ user.center.name }}</p>
+                                    </div>
+
+                                    <div class="col-auto align-self-center {% if user.isProject or user.isSuperadmin or user.isAdmin %} d-none {% endif %}">
+                                        <label class="form-label fw-bold">Modalidad</label>
+                                        <p class="card-text ">{{ user.modality }}</p>
+                                    </div>
+
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Rol</label>
+                                        {% for rol in user.roles %}
+                                            <p class="card-text ">{{ rol }}</p>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="d-none">
+                                        <label class="form-label fw-bold">Duración</label>
+                                        <p class="card-text ">{{ user.calendarInterval }}</p>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <h6 class="row gap-2 align-items-center m-0 pt-4 pb-2">Actualizar contraseña</h6>
+                            <hr>
+                            <div>
+                                {{ form_start(form) }}
+                                <div class="">
+                                    <div class="row">
+
+                                        <div class="col-sm-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ field_label(form.password.first) }} <span
+                                                            class="text-danger">*</span> </label>
+                                                <input class="form-control" type="password"
+                                                       placeholder="{{ field_label(form.password.first) }}"
+                                                       name="{{ field_name(form.password.first) }}"
+                                                       value="{{ field_value(form.password.first) }}"
+                                                       required>
+                                                {% for error in field_errors(form.password.first) %}
+                                                    <span class="text-danger">{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ field_label(form.password.second) }} <span
+                                                            class="text-danger">*</span> </label>
+                                                <input class="form-control" type="password"
+                                                       placeholder="{{ field_label(form.password.second) }}"
+                                                       name="{{ field_name(form.password.second) }}"
+                                                       value="{{ field_value(form.password.second) }}"
+                                                       required>
+                                                {% for error in field_errors(form.password.second) %}
+                                                    <span class="text-danger">{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <input type="hidden" name="_token" value="{{ csrf_token('chage-password' ~ user.id) }}">
+                                    <button class="btn btn-primary" type="submit">Actualizar</button>
+                                </div>
+                                {{ form_end(form) }}
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+                {% if user.isProject %}
+                <div class="card user-card">
+                    <div class="card-body pt-3">
+                        <h3 class="row gap-2 align-items-center m-0 pb-2">
+                            Cuestionarios
+                        </h3>
+                        {% set hasStartupSurvey = false %}
+                        {% for survey in surveys %}
+                            {% if survey.document.isStartupSurvey %}
+                                {% set hasStartupSurvey = true %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if not hasStartupSurvey %}
+                            <button class="btn add-new btn-primary mt-3" onclick="addSurvey(this)" data-value="startup">Rellenar cuestionario Startups</button>
+                        {% endif %}
+                    </div>
+
+
+                        <div class="tab-pane fade show active card-body pt-0" id="template-type" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="table-responsive overflow-inherit">
+                                <table class="table table-striped table-borderless">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th class="text-truncate">
+                                            <a>
+                                                {{ 'Cuestionario'|trans }}
+                                            </a>
+                                        </th>
+                                        <th class="text-truncate">
+                                            <a>
+                                                {{ 'Date'|trans }}
+                                            </a>
+                                        </th>
+
+                                        <th>
+                                            <a>
+                                                {{ 'Status'|trans }}
+                                            </a>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for survey in surveys %}
+                                        <tr>
+                                            <td> {{ survey.document.originalName }}</td>
+                                            <td>
+                                                <i data-feather="calendar" class="me-2" style="width: 15px"></i>{{ survey.document.createdAt ? survey.document.createdAt|UTCDateTimeFormat('d-m-Y') : '' }}
+                                            </td>
+
+                                            <td>
+                                                <div class="btn-group">
+                                                    <span class="badge text-capitalize" style="background-color: #7367f0 !important;"> {{ 'Hecho'|trans }} </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% else %}
+                                        <tr class="text-center">
+                                            <td colspan="3">
+                                                <span>No se han encontrado resultados</span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- /User Card Ends-->
+    <!-- User Card & Plan Ends -->
+
+    <!-- User Timeline & Permissions Starts -->
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <!-- information starts -->
+            {% if user.isMentor %}
+            <ul class="nav nav-pills ps-2 pb-2" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center active" id="document-tab" data-bs-toggle="tab"
+                       href="#document" aria-controls="document" role="tab" aria-selected="false">
+                        <i data-feather="file"></i><span class="d-none d-sm-block">Documentación</span>
+                    </a>
+                </li>
+{#                {% if userPermission.can('list', 'appointments') %}#}
+{#                    <li class="nav-item">#}
+{#                        <a class="nav-link d-flex align-items-center active" id="appointment-tab" data-bs-toggle="tab"#}
+{#                           href="#appointment" aria-controls="appointment" role="tab" aria-selected="false">#}
+{#                            <i data-feather="check-square"></i><span class="d-none d-sm-block">Mentorías</span>#}
+{#                        </a>#}
+{#                    </li>#}
+{#                {% endif %}#}
+
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center " id="time-slots-tab" data-bs-toggle="tab"
+                       href="#time-slots" aria-controls="time-slots" role="tab" aria-selected="false">
+                        <i data-feather="watch"></i><span class="d-none d-sm-block">Horario</span>
+                    </a>
+                </li>
+                {#<li class="nav-item">
+                    <a class="nav-link d-flex align-items-center" id="survey-tab" data-bs-toggle="tab"
+                       href="#survey" aria-controls="survey" role="tab" aria-selected="false">
+                        <i data-feather="file"></i><span class="d-none d-sm-block">Cuestionarios</span>
+                    </a>
+                </li>#}
+                {% endif %}
+
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane row" id="time-slots" aria-labelledby="time-slots-tab" role="tabpanel">
+                    <div class="col-xl-12 col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h4 class="card-title">{{ 'Schedules'|trans }}</h4>
+                                    </div>
+                                    {% if userPermission.can('manage_schedules', 'users') %}
+                                        <div class="col-6 d-flex justify-content-end">
+                                            <a>
+                                                <button class="btn add-new btn-primary" type="button"
+                                                        id="addAppointment"
+                                                        onclick="$('#createSchedulesForm').submit();"><span
+                                                            class="text-white">{{ 'Manage Schedules'|trans }}</span>
+                                                </button>
+                                            </a>
+                                            <form action="{{ path('schedules_show', {'user': user.id}) }}"
+                                                  id="createSchedulesForm" method="post">
+                                                <input type="hidden" name="_method" value="POST">
+                                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                            </form>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="card-body scrolled-div">
+                                <div class="table-responsive" id="scheduleTableDiv">
+                                    <table class="table table-striped table-borderless">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th>{{ 'Weekday'|trans }}</th>
+                                            <th>{{ 'Schedule'|trans }}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% set daysOfWeek = ['Sunday'|trans, 'Monday'|trans, 'Tuesday'|trans, 'Wednesday'|trans, 'Thursday'|trans, 'Friday'|trans, 'Saturday'|trans] %}
+                                        {% for schedule in schedules %}
+                                            <tr>
+                                                <td>
+                                                <span>
+                                                    {{ daysOfWeek[schedule.weekDay] }}
+                                                </span>
+                                                    <span class="ml-1 badge badge-{{ schedule.fixed ? 'danger' : 'primary' }} font-small-2">{{ schedule.fixed ? 'Fixed'|trans : 'Flexible'|trans }}</span>
+
+                                                </td>
+                                                <td>{{ schedule.timeFrom ? schedule.timeFrom|UTCDateTimeFormat('H:i') : '' }}
+                                                    - {{ schedule.timeTo ? schedule.timeTo|UTCDateTimeFormat('H:i') : '' }}</td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="2">{{ 'No results found'|trans }}</td>
+                                            </tr>
+                                        {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if userPermission.can('list', 'appointments') %}
+                    <!-- User Invoice Starts-->
+{#                    <div class="tab-pane active row" id="appointment" aria-labelledby="appointment-tab" role="tabpanel">#}
+{#                        <div class="col-12">#}
+{#                            <div class="card">#}
+{#                                <div class="card-datatable overflow-inherit table-responsive card-body">#}
+{#                                    <table class="invoice-list-table table ">#}
+{#                                        <thead>#}
+{#                                        <tr>#}
+{#                                            <th>#}
+{#                                                Proyecto#}
+{#                                            </th>#}
+{#                                            <th>#}
+{#                                                Tipos de Mentorías#}
+{#                                            </th>#}
+{#                                            <th>#}
+{#                                                <a href="{{ filterService.orderBy("date", filterService.getInversedOrder("date")) }}">#}
+{#                                                    {{ 'Date'|trans }} {% if filterService.isOrdered("date") %}<i#}
+{#                                                        data-feather="{{ filterService.getOrder("date").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}#}
+{#                                                </a>#}
+{#                                            </th>#}
+{#                                            <th class="text-truncate">#}
+{#                                                <a href="{{ filterService.orderBy("time_from", filterService.getInversedOrder("time_from")) }}">#}
+{#                                                    {{ 'Schedule'|trans }} {% if filterService.isOrdered("time_from") %}#}
+{#                                                        <i#}
+{#                                                        data-feather="{{ filterService.getOrder("time_from").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}#}
+{#                                                </a>#}
+{#                                            </th>#}
+
+
+{#                                            #}{#                                        <th> #}
+{#                                            #}{#                                            <a> #}
+{#                                            #}{#                                                {{ 'Actions'|trans }} #}
+{#                                            #}{#                                            </a> #}
+{#                                            #}{#                                        </th> #}
+{#                                        </tr>#}
+{#                                        </thead>#}
+{#                                        <tbody>#}
+{#                                        {% for appointment in appointments['data'] %}#}
+{#                                            <tr data-id="{{ appointment.id }}">#}
+{#                                                <td>#}
+{#                                                    <div class="media">#}
+{#                                                        <div class="media-body">#}
+{#                                            <span class="font-weight-bold d-block text-nowrap" target="_self">#}
+{#                                                {{ appointment.client.name }}#}
+{#                                            </span>#}
+{#                                                        </div>#}
+{#                                                    </div>#}
+{#                                                </td>#}
+
+{#                                                <td>#}
+{#                                                    {{ appointment.timeFrom ? appointment.timeFrom|UTCDateTimeFormat('d-m-Y') : '' }}#}
+{#                                                </td>#}
+{#                                                <td>{{ appointment.timeFrom ? appointment.timeFrom|UTCDateTimeFormat('H:i') : '' }}#}
+{#                                                    - {{ appointment.timeTo ? appointment.timeTo|UTCDateTimeFormat('H:i') : '' }}</td>#}
+{#                                                <td>#}
+{#                                                    {% for service in appointment.services %}#}
+{#                                                        <span class="badge badge-light-secondary">{{ service.name }} {{ service.division ? '-' ~ service.division.name : '' }}</span>#}
+{#                                                    {% endfor %}#}
+{#                                                </td>#}
+{#                                                #}{##}
+{#                                                <td>{{ appointment.type }}</td>#}
+{#                                                #}
+{#                                            </tr>#}
+{#                                        {% else %}#}
+{#                                            <tr>#}
+{#                                                <td colspan="9">{{ 'No results found'|trans }}</td>#}
+{#                                            </tr>#}
+{#                                        {% endfor %}#}
+{#                                        </tbody>#}
+{#                                    </table>#}
+{#                                    {% include 'extra/filter_limit.html.twig' %}#}
+
+{#                                    <div class="d-flex justify-content-end mr-4 mt-2">#}
+{#                                        {% include 'extra/pagination.html.twig' with {#}
+{#                                            filterService: filterService,#}
+{#                                            currentPage: filterService.page,#}
+{#                                            paginationPath: 'user_index',#}
+{#                                            lastPage: lastPage,#}
+{#                                            showAlwaysFirstAndLast: true#}
+{#                                        } only %}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+                    <!-- /User Invoice Ends-->
+                {% endif %}
+                {% if not app.user.isProject %}
+                <div class="tab-pane active row" id="document" aria-labelledby="document-tab" role="tabpanel">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-datatable overflow-inherit table-responsive card-body">
+                                <h2 class="mt-4">Documentación {% if app.user.isMentor %} <a class="h6" href="{{ path('user_mentor_documents', {'user': app.user.id}) }}">( Descargue aqui los modelos para cumplimentar )</a> {% endif %}</h2><hr>
+                                {% if app.user.isProject %}
+                                    <div class="col-12 d-md-flex flex-md-row mb-4">
+                                    <div class="col-6">
+                                        <h6 class="my-1">Compromiso de Confidencialidad: </h6>
+                                        {% if true %}
+                                            <div class="text-start">
+                                                {% if app.user.documentConfidencial  %}
+                                                    <a class="btn btn-primary mt-1" href="{{ path('document_download', {'documentId': app.user.documentConfidencial.id}) }}" data-value="report" data-value2="Report">
+                                                        <i class="align-items-center" data-feather='download'></i>
+                                                        <span class="align-items-center">Descargar</span>
+                                                    </a>
+                                                {% endif %}
+                                                {% if app.user.documentConfidencial is null or app.user.isAdmin %}
+                                                    <a class="btn btn-primary mt-1 uploaddocumentconfidencial" data-value="setDocumentConfidencial">
+                                                        <i class="align-items-center me-2" data-feather='upload'></i>
+                                                        Subir
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-6">
+                                        <h6 class="my-1">Contrato de Adhesión: </h6>
+                                        {% if user %}
+                                            <div class="text-start">
+                                                {% if app.user.documentAdhesion  %}
+                                                    <a class="btn btn-primary mt-1" href="{{ path('document_download', {'documentId': app.user.documentAdhesion.id}) }}" data-value="report" data-value2="Report">
+                                                        <i class="align-items-center" data-feather='download'></i>
+                                                        <span class="align-items-center">Descargar</span>
+                                                    </a>
+                                                {% endif %}
+                                                {% if app.user.documentAdhesion is null or app.user.isAdmin %}
+                                                    <a class="btn btn-primary mt-1 uploaddocumentadhesion" data-value="setDocumentAdhesion">
+                                                        <i class="align-items-center me-2" data-feather='upload' ></i>
+                                                        Subir
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                                {% elseif app.user.isMentor %}
+                                    <div class="col-12 d-md-flex flex-md-row mb-4">
+                                        <div class="col-3">
+                                            <h6 class="my-1">Compromiso de Confidencialidad: </h6>
+                                            {% if true %}
+                                                <div class="text-start">
+                                                    {% if app.user.documentConfidencial  %}
+                                                        <a class="btn btn-primary mt-1" href="{{ path('document_download', {'documentId': app.user.documentConfidencial.id}) }}" data-value="report" data-value2="Report">
+                                                            <i class="align-items-center" data-feather='download'></i>
+                                                            <span class="align-items-center">Descargar</span>
+                                                        </a>
+                                                    {% endif %}
+                                                    {% if app.user.documentConfidencial is null or app.user.isAdmin %}
+                                                        <a class="btn btn-primary mt-1 uploaddocumentconfidencial" data-value="setDocumentConfidencial">
+                                                            <i class="align-items-center me-2" data-feather='upload'></i>
+                                                            Subir
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-3">
+                                            <h6 class="my-1">Código Deontológico: </h6>
+                                            {% if user %}
+                                                <div class="text-start">
+                                                    {% if app.user.documentDeontological  %}
+                                                        <a class="btn btn-primary mt-1" href="{{ path('document_download', {'documentId': app.user.documentDeontological.id}) }}" data-value="report" data-value2="Report">
+                                                            <i class="align-items-center" data-feather='download'></i>
+                                                            <span class="align-items-center">Descargar</span>
+                                                        </a>
+                                                    {% endif %}
+                                                    {% if app.user.documentDeontological is null or app.user.isAdmin %}
+                                                        <a class="btn btn-primary mt-1 uploaddocumentdeontological" data-value="setDocumentDeontological">
+                                                            <i class="align-items-center me-2" data-feather='upload' ></i>
+                                                            Subir
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-3">
+                                            <h6 class="my-1">Derechos de Imagen: </h6>
+                                            {% if user %}
+                                                <div class="text-start">
+                                                    {% if app.user.documentImage  %}
+                                                        <a class="btn btn-primary mt-1" href="{{ path('document_download', {'documentId': app.user.documentImage.id}) }}" data-value="report" data-value2="Report">
+                                                            <i class="align-items-center" data-feather='download'></i>
+                                                            <span class="align-items-center">Descargar</span>
+                                                        </a>
+                                                    {% endif %}
+                                                    {% if app.user.documentImage is null or app.user.isAdmin %}
+                                                        <a class="btn btn-primary mt-1 uploaddocumentimage" data-value="setDocumentImage">
+                                                            <i class="align-items-center me-2" data-feather='upload' ></i>
+                                                            Subir
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-3">
+                                            <h6 class="my-1">Anexo I: </h6>
+                                            {% if user %}
+                                                <div class="text-start">
+                                                    {% if app.user.documentAnexo  %}
+                                                        <a class="btn btn-primary mt-1" href="{{ path('document_download', {'documentId': app.user.documentAnexo.id}) }}" data-value="report" data-value2="Report">
+                                                            <i class="align-items-center" data-feather='download'></i>
+                                                            <span class="align-items-center">Descargar</span>
+                                                        </a>
+                                                    {% endif %}
+                                                    {% if app.user.documentAnexo is null or app.user.isAdmin %}
+                                                        <a class="btn btn-primary mt-1 uploaddocumentanexoi" data-value="setDocumentAnexo">
+                                                            <i class="align-items-center me-2" data-feather='upload' ></i>
+                                                            Subir
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                <div class="col-12 overflow-auto mb-4">
+                                    <div class="d-md-flex flex-wrap justify-content-end">
+                                        {% if true %}
+                                            <a class="btn btn-primary w-auto uploaddocument" data-value="addDocument" style="height: fit-content;">
+                                                <i class="align-items-center me-2" data-feather='plus' ></i>
+                                                Nuevo Documento
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <table class="invoice-list-table table  overflow-auto ">
+                                        <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Fecha Creación</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if user is defined and user.documents|filter(document => not document.isMentorSurvey)|length >= 1 %}
+                                            {% for document in user.documents|slice(((filterService.limit*filterService.page)-filterService.limit), filterService.limit) %}
+                                                <tr>
+                                                    <td>{{ document.originalName }}</td>
+
+                                                    <td>{{ document.createdAt|UTCDateTimeFormat('d-m-Y - H:i') }}</td>
+
+                                                    <td>
+                                                        <a href="{{ path('document_download', {'documentId': document.id}) }}" data-value="report" data-value2="Report">
+                                                            <i class="align-items-center" data-feather='download'></i>
+                                                        </a>
+                                                        <a href="#" onclick="$('#deleteForm_document_{{ document.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ 'Delete'|trans }}">
+                                                            <i class="align-middle" data-feather='trash-2'></i>
+                                                        </a>
+                                                        <form method="post" id="deleteForm_document_{{ document.id }}"
+                                                              action="{{ path('document_delete', {'document': document.id}) }}"
+                                                              class="d-none deleteForm" >
+                                                            <input type="hidden" name="_method" value="DELETE">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ document.id) }}">
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="9">{{ 'No results found'|trans }}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                    {% include 'extra/filter_limit.html.twig' %}
+
+                                    <div class="d-flex justify-content-end mr-4 mt-2 w-100">
+                                        {% include 'extra/pagination.html.twig' with {
+                                            filterService: filterService,
+                                            currentPage: filterService.page,
+                                            paginationPath: 'user_index',
+                                            lastPage: user.documents|filter(document => not document.isMentorSurvey)|length / filterService.limit,
+                                            showAlwaysFirstAndLast: true
+                                        } only %}
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    {#<div class="tab-pane row" id="survey" aria-labelledby="survey-tab" role="tabpanel">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-datatable overflow-inherit table-responsive card-body">
+                                    <h2 class="mt-4">Cuestionarios </h2><hr>
+                                    <div class="col-12 overflow-auto mb-4">
+                                        <table class="invoice-list-table table  overflow-auto ">
+                                            <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Fecha Creación</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% if user is defined and user.documents|filter(document => document.isMentorSurvey)|length >= 1 %}
+                                                {% for document in user.documents|slice(((filterService.limit*filterService.page)-filterService.limit), filterService.limit) %}
+                                                    <tr>
+                                                        <td>{{ document.originalName }}</td>
+
+                                                        <td>{{ document.createdAt|UTCDateTimeFormat('d-m-Y - H:i') }}</td>
+
+                                                        <td>
+                                                            <a href="{{ path('document_download', {'documentId': document.id}) }}" data-value="report" data-value2="Report">
+                                                                <i class="align-items-center" data-feather='download'></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="9">{{ 'No results found'|trans }}</td>
+                                                </tr>
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                        {% include 'extra/filter_limit.html.twig' %}
+
+                                        <div class="d-flex justify-content-end mr-4 mt-2 w-100">
+                                            {% include 'extra/pagination.html.twig' with {
+                                                filterService: filterService,
+                                                currentPage: filterService.page,
+                                                paginationPath: 'user_index',
+                                                lastPage: user.documents|filter(document => not document.isMentorSurvey)|length / filterService.limit,
+                                                showAlwaysFirstAndLast: true
+                                            } only %}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>#}
+                {% endif %}
+            </div>
+
+            <div class="modal fade" id="documentModal" tabindex="-1" role="dialog" aria-labelledby="documentModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="documentModalLabel">Subir documento</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="documentsForm" action="{{ path('user_document', {'user': app.user.id}) }}" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="uploadDocument" id="upload-document-type" value="">
+
+                                <label class="col-2 label-control mt-auto mb-auto text-center font-weight-bolder">Subir archivo *</label>
+                                <div class="col-10">
+                                    <input name="document" required id="documents_document" class="form-control" type="file">
+                                    <span class="text-danger d-none" id="documents_document_error">Introduce el archivo</span>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="submitForm()">Subir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- information Ends -->
+
+            <!-- User Permissions Starts -->
+            <!--<div class="col-xl-4 col-md-6">
+
+                <div class="card">
+                    <div class="card-header ">
+                        <div class="row">
+                            <div class="col-6">
+                                <h4 class="card-title">{{ 'Services'|trans }}</h4>
+                            </div>
+                            {% if userPermission.can('manage_services', 'users') %}
+                            <div class="col-6 d-flex justify-content-end">
+                            <a><button class="btn add-new btn-primary" type="button" id="addAppointment" data-bs-toggle="modal" data-bs-target="#serviceModal"><span class="text-white">{{ 'Add Service'|trans }}</span></button></a>
+                        </div>
+                        {% endif %}
+                        </div>
+
+                    </div>
+                    <div class="card-body scrolled-div">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-borderless">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th>{{ 'Service'|trans }}</th>
+                                    {% if userPermission.can('manage_services', 'users') %}
+                                        <th>{{ 'Actions'|trans }}</th>
+                                    {% endif %}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for service in user.getServicesArray %}
+                                    <tr>
+                                        <td>{{ service.name }}</td>
+                                        {% if userPermission.can('manage_services', 'users') %}
+                                            <td>
+                                                <div class="col flex-row-reverse">
+                                                    <a class="btn btn-outline-grey" onclick="$('#remove_service_{{ service.id }}').submit()"><i data-feather='delete'></i> Eliminar</a>
+                                                    <form action="{{ path('user_remove_service') }}" id="remove_service_{{ service.id }}" method="post">
+                                                        <input type="hidden" name="_method" value="POST">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('edit') }}">
+                                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                                        <input type="hidden" name="service_id" value="{{ service.id }}">
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+
+                                {% else %}
+                                    <tr>
+                                        <td colspan="{% if userPermission.can('manage_services', 'users') %}2{% else %}1{% endif %}">{{ 'No results found'|trans }}</td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+
+            <!--<div class="col-xl-4 col-md-12">
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">{{ 'Permissions'|trans }}</h4>
+                    </div>
+                    <div class="card-body row scrolled-div">
+                        {% include 'extra/permissions.html.twig' with {'disabled':'true', 'col': 'col-xl-12 col-md-4 col-xs-12'} %}
+                    </div>
+                </div>
+
+            </div>-->
+            <!-- User Permissions Ends -->
+        </div>
+        <!-- User Timeline & Permissions Ends -->
+
+    </div>
+
+
+{% endblock %}
+
+{% block action_buttons %}
+    <div class="d-flex align-content-center">
+
+        <li class="level-menu outside">
+            <a class="nav-link cursor-pointer" href="{{ path('appointment_index') }}">
+                <i class="ficon" data-feather="chevron-left"></i>
+            </a>
+        </li>
+        <h3 class="d-inline-block ms-3">Perfil</h3>
+    </div>
+
+{% endblock %}
+
+
+{% block stylesheets %}
+    <style>
+        .scrolled-div {
+            max-height: 500px;
+            overflow-y: scroll;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+
+        $('#filter').on('click', function () {
+            $('#filter_form').attr('action', '{{ path('appointment_list') }}');
+        })
+
+
+        $(function () {
+            $('.select2').select2();
+            $('.select2-selection__arrow').remove();
+
+        });
+    </script>
+    <script>
+        $('.uploaddocumentadhesion').on('click', function (e) {
+            document.getElementById('upload-document-type').value=$(this).data('value');
+            $('#documentModal').modal('show');
+        });
+        $('.uploaddocumentimage').on('click', function (e) {
+            document.getElementById('upload-document-type').value=$(this).data('value');
+            $('#documentModal').modal('show');
+        });
+        $('.uploaddocumentanexoi').on('click', function (e) {
+            document.getElementById('upload-document-type').value=$(this).data('value');
+            $('#documentModal').modal('show');
+        });
+
+        $('.uploaddocumentdeontological').on('click', function (e) {
+            document.getElementById('upload-document-type').value=$(this).data('value');
+            $('#documentModal').modal('show');
+        });
+
+        $('.uploaddocumentconfidencial').on('click', function (e) {
+            document.getElementById('upload-document-type').value=$(this).data('value');
+            $('#documentModal').modal('show');
+        });
+        $('.uploaddocument').on('click', function (e) {
+            document.getElementById('upload-document-type').value=$(this).data('value');
+            $('#documentModal').modal('show');
+        });
+
+        function submitForm() {
+            const documentFileInput = document.getElementById("documents_document");
+
+            if (!documentFileInput.value.trim()) {
+                document.getElementById("documents_document_error").classList.remove("d-none");
+            }
+
+            if (documentFileInput.value.trim()) {
+                document.getElementById('documentsForm').submit();
+            }
+            document.getElementById('upload-document-type').value=null;
+
+
+        }
+
+        function addSurvey(surveyId){
+            const surveyType = surveyId.getAttribute('data-value');
+            $.ajax({
+                url: '{{ path('document_get_survey') }}',
+                type: 'POST',
+                dataType: 'json',
+                delay: 250,
+                data: {
+                    surveyType: surveyType
+                },
+                success: function (response) {
+                    if (response.success) {
+
+                        $('#templateModalContent').html(response.data);
+
+                        if (feather) {
+                            feather.replace({
+                                width: 14,
+                                height: 14
+                            });
+                        }
+
+                        $('#templateModal').modal('show');
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 2000
+                        })
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus, errorThrown);
+                }
+            })
+        }
+
+        async function exportSurvey(surveyId)
+        {
+            const document_id = surveyId.getAttribute('data-value');
+
+            let form = document.createElement('form');
+
+            form.setAttribute('method', "post");
+            form.setAttribute('action', "/documents/download/"+document_id);
+
+            let documentInput = document.createElement('input')
+            documentInput.type = 'hidden';
+            documentInput.name = 'documentId';
+            documentInput.value = document_id;
+
+            form.appendChild(documentInput);
+
+            document.body.appendChild(form);
+
+            form.submit();
+        }
+    </script>
+{% endblock %}

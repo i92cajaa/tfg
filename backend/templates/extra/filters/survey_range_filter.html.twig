@@ -1,0 +1,36 @@
+ <form id="filter_form" name="form-filter-users w-100">
+        <fieldset class="">
+            <div class="d-flex justify-content-around align-items-center mx-50 row pt-0 pb-2">
+
+                <div class="form-group-feedback form-group-feedback-right mt-2 col-md-12 mb-1">
+                    <label for="week_day">{{ 'Date Range'|trans }}</label>
+                    <br>
+                    <input type="text" class="form-control" id="dateRangeFilter" name="{{ filterService.filterField('dateRange') }}" value="{{ filterService.getFilterValue("dateRange") }}" form="filter_form">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right mt-2 col-md-12 mb-1">
+                    <label for="week_day">{{ 'Status'|trans }}</label>
+                    <br>
+                    <select name="{{ filterService.filterField('status') }}" data-boundary="window" class="select select2" id="status_type">
+                        <option value="" selected>{{ 'Select an option'|trans }}</option>
+                        <option value="1" {% if filterService.getFilterValue('status') is same as '1' %}selected{% endif %}>Activo</option>
+                        <option value="0" {% if filterService.getFilterValue('status') is same as '0' %}selected{% endif %}>Inactivo</option>
+                    </select>
+                </div>
+
+                {{ filterService.filterFormField() | raw }}
+
+                <div class="form-group-feedback form-group-feedback-right text-end col-12">
+                    <button id="filter_export" type="button" class="btn add-new text-white btn-outline-grey mt-2">
+                        {{ 'Export'|trans }}</button>
+                    <button id="filter" type="submit" class="btn add-new text-white btn-primary mt-2">{{ 'Apply Filter'|trans }}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+
+
+

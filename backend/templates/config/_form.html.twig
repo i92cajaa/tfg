@@ -1,0 +1,65 @@
+<form name="config" class="row w-100" method="post" enctype="multipart/form-data">
+
+    {% for config_field in company_fields['info'] %}
+
+        {% if config_field.tag in configuration|keys %}
+            {% set value = configuration[config_field.tag] %}
+        {% else %}
+            {% set value = null %}
+        {% endif %}
+
+        {% include 'extra/config_input_field.html.twig' with {'config_field': config_field, 'config_field_value': value} %}
+
+    {% endfor %}
+
+    {% if app.user.isSuperadmin() %}
+        <div class="row col-12 mt-2">
+            <h4 class="col-12 mb-1">{{'Modules'|trans}}</h4>
+            {% for config_field in company_fields['modules'] %}
+
+                {% if config_field.tag in configuration|keys %}
+                    {% set value = configuration[config_field.tag] %}
+                {% else %}
+                    {% set value = null %}
+                {% endif %}
+
+                {% include 'extra/config_input_field.html.twig' with {'config_field': config_field, 'config_field_value': value} %}
+
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% for module, moduleData in company_fields['modules_dependant'] %}
+
+        {% if module in configuration|keys and configuration[module] and moduleData['configTypes']|length > 0 %}
+
+            <div class="row col-12 mt-2" {% if moduleData['name'] == "Meeting Module" %} style="display: none;" {% endif %}>
+                <h4 class="col-12 mb-1">{{ moduleData['name']|trans }}</h4>
+                {% for config_field in moduleData['configTypes'] %}
+
+                    {% if config_field.tag in configuration|keys %}
+                        {% set value = configuration[config_field.tag] %}
+                    {% else %}
+                        {% set value = null %}
+                    {% endif %}
+
+                    {% include 'extra/config_input_field.html.twig' with {'config_field': config_field, 'config_field_value': value} %}
+
+                {% endfor %}
+            </div>
+
+        {% endif %}
+
+    {% endfor %}
+
+    <input type="hidden" name="_token" value="{{ csrf_token('edit-config') }}">
+
+    <div class="col-12 row d-flex justify-content-end">
+        <div class="col-2 mr-2 text-end">
+            <button class="btn btn-primary btn-block" data-bs-original-title="" title="">{{ button_label }}</button>
+        </div>
+    </div>
+
+
+</form>
+

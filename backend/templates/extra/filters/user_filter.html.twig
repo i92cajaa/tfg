@@ -1,0 +1,56 @@
+ <form id="filter_form" name="form-filter-users">
+        <fieldset class="">
+            <div class="d-flex justify-content-around align-items-around mx-50 row pt-0 pb-2">
+                <input type="hidden" class="form-control" name="{{ filterService.filterField('verification_ids') }}" value="" form="filter_form">
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                    <label for="Nombre">Buscar</label>
+                    <input type="text" class="form-control" placeholder="{{ 'Name'|trans }}, {{ 'Surnames'|trans }}, {{ 'Email'|trans }}..." name="{{ filterService.filterField('info') }}" value="{{ filterService.getFilterValue("info") }}" form="filter_form">
+
+                </div>
+
+                {% if userPermission.can('list', 'roles') and rol_filter is defined  %}
+                    <div class="form-group col-md-12 mb-1">
+                        <label for="roles">{{ 'Roles'|trans }}</label>
+                        <select name="{{ filterService.filterField('roles') }}[]" class="form-control select2" id="roles" multiple >
+                            {% for role in roles %}
+                                <option value="{{ role.id }}" {% if role.id in filterService.getFilterValue("roles") %}selected="selected"{% endif %}>{{ role.name|trans }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+
+                {% if userPermission.can('list', 'centers') and center_filter is defined and centers is defined and centers|length >=2 %}
+                    <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                        <label for="center">Centro</label>
+                        <select name="{{ filterService.filterField('center') }}" class="select2 form-control" id="center">
+                            <option value="" selected>Seleccionar centro</option>
+                            {% for center in centers %}
+                                <option value="{{ center.id }}" {% if filterService.getFilterValue('center') == center.id %}selected{% endif %}>{{ center.name }}</option>
+
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+
+                {% if status_filter is defined %}
+                    <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                        <label for="status">{{ 'Status'|trans }}</label>
+                        <br>
+                        <select name="{{ filterService.filterField('status') }}[]" class="select form-control" id="status">
+                            <option {% if filterService.getFilterValue("status")[0] is defined and 1 == filterService.getFilterValue("status")[0] %}selected{% endif %} value="1">{{ 'Active'|trans }}</option>
+                            <option {% if filterService.getFilterValue("status")[0] is defined and 0 == filterService.getFilterValue("status")[0] %}selected{% endif %} value="0">{{ 'Inactive'|trans }}</option>
+                        </select>
+                    </div>
+                {% endif %}
+
+                {{ filterService.filterFormField() | raw }}
+
+                <div class="form-group-feedback form-group-feedback-right text-end col-12">
+                    <button type="submit" class="btn add-new text-white btn-primary mt-2">{{ 'Apply Filter'|trans }}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+
+

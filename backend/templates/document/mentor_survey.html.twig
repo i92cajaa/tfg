@@ -1,0 +1,187 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">{{ 'Crear Cuestionario'|trans }} Startups</h5>
+    <button type="button" class="close bg-transparent" data-bs-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form action="{{ path('document_save_survey') }}" method="POST" enctype="multipart/form-data" id="createMentorSurveyForm" class="w-100 row mt-2">
+        <input type="hidden" name="type" value="mentor"/>
+
+        <input type="hidden" value="{{ user.name }} {{ user.surnames }}" name="mentor_name">
+        <input type="hidden" value="{{ areaName }}" name="appointment_area">
+        <input type="hidden" value={% if not hours == 0 and not minutes == 0 %}"{{ hours }}h {{ minutes }}min"
+                            {% elseif not hours == 0 %}"{{ hours }}h"
+                            {% elseif not minutes == 0 %}"{{ minutes }}min"
+                            {% endif %}
+               name="appointment_time">
+        <input type="hidden" value={% if not hours == 0 and not minutes == 0 %}"{{ hours }}.{{ minutes }}"
+                            {% elseif not hours == 0 %}"{{ hours }}"
+                            {% elseif not minutes == 0 %}"{{ minutes }}"
+                            {% endif %}
+        name="appointment_time_float">
+        <input type="hidden" value="{{ user.id }}" name="userId">
+
+        <div class="col-12 mb-3">
+            <span class="form-control-label font-weight-bolder" style="font-weight: 900; font-size: 2em">Encuesta Mentores</span>
+        </div>
+
+        <div class="col-12 mb-3 mt-3">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-control-label" style="font-weight: 700; font-size: 1.7em">Valoración conocimientos</label>
+                        <input type="hidden" name="document_lines[0][title]" value="Valoración conocimientos">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-control-label" style="font-weight: 600; font-size: 1.3em">Transmisión de conocimientos</label>
+                        <input type="hidden" name="document_lines[0][subtitle]" value="Transmisión de conocimientos">
+                    </div>
+                    <div class="col-9">
+                        <label class="form-control-label" style="font-weight: 500">En este apartado te pedimos que nos indiques si la transferencia de conocimiento del mentor ha sido adecuada</label>
+                        <input type="hidden" name="document_lines[0][question]" value="En este apartado te pedimos que nos indiques si la transferencia de conocimiento del mentor ha sido adecuada:">
+                    </div>
+                    <div class="col-3">
+                        <select class="select2 form-control custom-select" id="document_lines0_select" name="document_lines[0][select]">
+                            <option value="Insuficiente">Insuficiente</option>
+                            <option value="Mejorable">Mejorable</option>
+                            <option value="Aceptable">Aceptable</option>
+                            <option value="Buena">Buena</option>
+                            <option value="Muy Buena">Muy Buena</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-2" id="document_lines0_text" >
+                        <textarea name="document_lines[0][text]" class="form-control" placeholder="Justifique su respuesta" style="width: 75%"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-3 mt-3">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-control-label" style="font-weight: 700; font-size: 1.7em">Compromiso</label>
+                        <input type="hidden" name="document_lines[1][title]" value="Compromiso">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-control-label" style="font-weight: 600; font-size: 1.3em">Compromiso de trabajo</label>
+                        <input type="hidden" name="document_lines[1][subtitle]" value="Compromiso de trabajo">
+                    </div>
+                    <div class="col-9">
+                        <label class="form-control-label" style="font-weight: 500">Como calificarías la implicación del mentor en el apoyo al crecimiento de tu proyecto mediante las actividades de mentorización</label>
+                        <input type="hidden" name="document_lines[1][question]" value="Como calificarías la implicación del mentor en el apoyo al crecimiento de tu proyecto mediante las actividades de mentorización">
+                    </div>
+                    <div class="col-3">
+                        <select class="select2 form-control custom-select" name="document_lines[1][select]">
+                            <option value="Insuficiente">Insuficiente</option>
+                            <option value="Mejorable">Mejorable</option>
+                            <option value="Aceptable">Aceptable</option>
+                            <option value="Buena">Buena</option>
+                            <option value="Muy Buena">Muy Buena</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-2" >
+                        <textarea name="document_lines[1][text]" class="form-control" placeholder="Justifique su respuesta" style="width: 75%"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-3 mt-3">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-control-label" style="font-weight: 700; font-size: 1.7em">Valoración mentorización</label>
+                        <input type="hidden" name="document_lines[2][title]" value="Valoración mentorización">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-control-label" style="font-weight: 600; font-size: 1.3em">Grado de "utilidad" de la mentorización</label>
+                        <input type="hidden" name="document_lines[2][array][0][subtitle]" value="Grado de &quot;utilidad&quot; de la mentorización">
+                    </div>
+                    <div class="col-9">
+                        <label class="form-control-label" style="font-weight: 500">Qué utilidad han tenido las sesiones de mentorización para vuestra startup</label>
+                        <input type="hidden" name="document_lines[2][array][0][question]" value="Qué utilidad han tenido las sesiones de mentorización para vuestra startup">
+                    </div>
+                    <div class="col-3">
+                        <select class="select2 form-control custom-select" name="document_lines[2][array][0][select]">
+                            <option value="Insuficiente">Insuficiente</option>
+                            <option value="Mejorable">Mejorable</option>
+                            <option value="Aceptable">Aceptable</option>
+                            <option value="Buena">Buena</option>
+                            <option value="Muy Buena">Muy Buena</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-2" >
+                        <textarea name="document_lines[2][array][0][text]" class="form-control" placeholder="Justifique su respuesta" style="width: 75%"></textarea>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <label class="form-control-label" style="font-weight: 600; font-size: 1.3em">Momento de utilidad en la evolución de la startup</label>
+                        <input type="hidden" name="document_lines[2][array][1][subtitle]" value="Momento de utilidad en la evolución de la startup">
+                    </div>
+                    <div class="col-9">
+                        <label class="form-control-label" style="font-weight: 500">Como consideras el momento en que se ha impartido la materia de mentorización respecto al estado del proyecto</label>
+                        <input type="hidden" name="document_lines[2][array][1][question]" value="Como consideras el momento en que se ha impartido la materia de mentorización respecto al estado del proyecto">
+                    </div>
+                    <div class="col-3">
+                        <select class="select2 form-control custom-select" name="document_lines[2][array][1][select]">
+                            <option value="Insuficiente">Insuficiente</option>
+                            <option value="Mejorable">Mejorable</option>
+                            <option value="Aceptable">Aceptable</option>
+                            <option value="Buena">Buena</option>
+                            <option value="Muy Buena">Muy Buena</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-2" >
+                        <textarea name="document_lines[2][array][1][text]" class="form-control" placeholder="Justifique su respuesta" style="width: 75%"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-3 mt-3">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-control-label" style="font-weight: 700; font-size: 1.7em">Satisfacción global con el mentor</label>
+                        <input type="hidden" name="document_lines[3][title]" value="Satisfacción global con el mentor">
+                    </div>
+                    <div class="col-9">
+                        <label class="form-control-label" style="font-weight: 500">Satisfacción global con el mentor</label>
+                        <input type="hidden" name="document_lines[3][question]" value="Satisfacción global con el mentor">
+                    </div>
+                    <div class="col-3">
+                        <select class="select2 form-control custom-select" name="document_lines[3][select]">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mt-5">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-control-label" style="font-weight: 500">¿Quieres aportar alguna idea u opinión más?</label>
+                        <input type="hidden" name="document_lines[4][question]" value="¿Quieres aportar alguna idea u opinión más?">
+                    </div>
+                    <div class="col-12 mt-2" >
+                        <textarea name="document_lines[4][text]" class="form-control" style="width: 100%"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close'|trans }}</button>
+    <button type="button" class="btn btn-primary" onclick="document.getElementById('createMentorSurveyForm').submit()">
+        {{ 'Create'|trans }}</button>
+</div>

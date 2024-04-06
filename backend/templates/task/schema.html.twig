@@ -1,0 +1,50 @@
+
+{% for taskStatus in taskStatuses %}
+
+    <div class="col-md-4 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="fs-5">{{ taskStatus.name|trans }} {{ entity.getTasksByStatus(taskStatus.id, app.user)|length }}</h4>
+            </div>
+            <div class="card-body row " >
+                <div class="col-12 task-draggable-div" data-task-status="{{ taskStatus.id }}" style="min-height: 80px !important;">
+
+                    {% for task in entity.getTasksByStatus(taskStatus.id, app.user) %}
+
+                        <div data-task-id="{{ task.id }}" class="d-flex border rounded row w-100 bg-light-info m-auto task-draggable" style="margin-bottom:10px !important; border-color: {{ task.currentStatus.status.color }} !important; color: {{ task.currentStatus.status.color }} !important; " id="task-{{ task.id }}">
+
+                            <div class="col-lg-8">
+                                <p class="media-heading">
+                                    <span  class="fw-bolder" >{{ task.title  }}</span>
+                                    <br>
+                                    <span class="badge" style="background-color: {{ task.currentStatus.status.color }} !important;">{{ task.currentStatus.status.name|trans }}</span>
+                                </p>
+                                <small class="notification-text">  {{ task.estimatedStartDate|UTCDateTimeFormat('d-m-Y / H:i')  }}</small>
+                            </div>
+                            <div class="col-lg-4">
+
+                                <button class="float-right btn btn-sm btn-flat-primary " onclick="addTimeToTask('{{ task.id }}')" data-bs-toggle="tooltip" data-placement="top" title="{{ 'Add Time'|trans }}">
+                                    <i data-feather='watch' ></i>
+                                </button>
+                                <button class="float-right btn btn-sm btn-flat-primary " onclick="showTask('{{ task.id }}')" data-bs-toggle="tooltip" data-placement="top" title="{{ 'Show'|trans }}">
+                                    <i data-feather='eye' ></i>
+                                </button>
+                                <button class="float-right btn btn-sm btn-flat-danger " onclick="confirmDeleteTask('{{ task.id }}')" data-bs-toggle="tooltip" data-placement="top" title="{{ 'Delete'|trans }}">
+                                    <i data-feather='trash' ></i>
+                                </button>
+                                <button class="float-right btn btn-sm btn-flat-primary " onclick="openEditTaskModal('{{ task.id }}')" data-bs-toggle="tooltip" data-placement="top" title="{{ 'Edit'|trans }}">
+                                    <i data-feather='edit' ></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+                </div>
+                <a class="btn w-100 btn-outline-primary text-center hover " href="javascript:void(0);" onclick="openCreateTaskModal('{{ entityType == 'appointment' ? entity.id : null }}','{{ entityType == 'event' ? entity.id : null }}', '{{ entityType == 'client' ? entity : null }}', '{{ taskStatus.id }}')"><i data-feather="plus-circle"></i> {{ 'Create Task'|trans }}</a>
+            </div>
+        </div>
+    </div>
+
+{% endfor %}

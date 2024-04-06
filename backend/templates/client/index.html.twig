@@ -1,0 +1,283 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Listado de Proyectos{% endblock %}
+
+{#{% block page_title %}Listado de Proyectos{% endblock %}#}
+
+{% block body %}
+<!-- users list start -->
+<div class="container-fluid">
+    <!-- list section start -->
+    <div class="card">
+
+        <div class="card-datatable overflow-inherit table-responsive card-body">
+            <div class="overflow-auto">
+                <table class="user-list-table table ">
+                <thead class="thead-light">
+                <tr>
+                    <th class="d-none d-md-table-cell">
+                        <a href="{{ filterService.orderBy("logo", filterService.getInversedOrder("logo")) }}">
+                            Logo{% if filterService.isOrdered("logo") %}
+                            <i data-feather="{{ filterService.getOrder("logo").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ filterService.orderBy("name", filterService.getInversedOrder("name")) }}">
+                            Nombre{% if filterService.isOrdered("name") %}
+                            <i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                        </a>
+                    </th>
+
+                    <th >
+                        <a href="{{ filterService.orderBy("announcementName", filterService.getInversedOrder("announcementName")) }}">
+                            Convocatoria {% if filterService.isOrdered("announcementName") %}
+                            <i data-feather="{{ filterService.getOrder("announcementName").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                        </a>
+                    </th>
+
+                    <th >
+                        <a href="{{ filterService.orderBy("center", filterService.getInversedOrder("center")) }}">
+                            Centro {% if filterService.isOrdered("center") %}
+                            <i data-feather="{{ filterService.getOrder("center").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                        </a>
+                    </th>
+
+                    <th>
+                        <a href="{{ filterService.orderBy("representative", filterService.getInversedOrder("representative")) }}">
+                            Representante{% if filterService.isOrdered("representative") %}
+                            <i data-feather="{{ filterService.getOrder("representative").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                        </a>
+                    </th>
+
+                    <th class="">
+                        <a href="">
+                            Datos de Contacto
+                        </a>
+                    </th>
+
+                    <th>
+                        <a href="{{ filterService.orderBy("status", filterService.getInversedOrder("status")) }}">
+                            Estado{% if filterService.isOrdered("status") %}
+                            <i data-feather="{{ filterService.getOrder("status").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                        </a>
+                    </th>
+
+                    <th>
+                        <a href="">
+                            Acciones
+                        </a>
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for client in clients %}
+                    <tr>
+                        <td class="d-none d-md-table-cell">
+                            <div class="media">
+                                <div class="align-self-center mr-1">
+                                    <img data-bs-toggle="tooltip" data-html="true" data-placement="bottom" title='{{ client.name }}' class="avatar-img imgProfile" alt="{{ client.name }}" style="object-fit: contain;"
+                                         src="{% if client.logo != null %}{{ documentImage.DocumentImage(client.logo) }}
+                                     {% else %}{{ asset('assets/images/no-image.png') }}{% endif %}" >
+
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ client.name ?: '-' }}</td>
+                        <td>{{ client.announcementName }}</td>
+                        <td>{{ client.center.name ?: '-' }}</td>
+                        <td>{{ client.representative ?: '-' }}</td>
+                        <td>
+                            <div class="d-flex align-items-center mb-2"><i data-feather="mail" class="me-2" style="width: 15px"></i>{{ client.email ?: '-' }}</div>
+                            <div class="d-flex align-items-center"><i data-feather="phone" class="me-2" style="width: 15px"></i>{{ client.phone ?: '-' }}</div>
+                        </td>
+                        <td>
+                            {% if client.status and not client.alumni %}
+                                <span id="active-pill_{{ client.id }}" class="badge text-capitalize badge-success badge-pill"> Activo </span>
+                            {% elseif client.status and client.alumni %}
+                                <span id="active-pill_{{ client.id }}" class="badge text-capitalize badge-warning badge-pill"> Alumni </span>
+                            {% else %}
+                                <span id="active-pill_{{ client.id }}" class="badge text-capitalize badge-danger badge-pill"> Inactivo </span>
+                            {% endif %}
+                            {% if userPermission.can('edit', 'clients') %}
+                            <div id="inactive-pills_{{ client.id }}" style="display: none">
+                                <div class="col-12">
+                                    <span class="badge text-capitalize badge-light-success badge-pill inactive-pill" data-value="1" data-client="{{ client.id }}"> Activo </span>
+                                </div>
+                                <div class="col-12">
+                                    <span class="badge text-capitalize badge-light-warning badge-pill inactive-pill" data-value="2" data-client="{{ client.id }}"> Alumni </span>
+                                </div>
+                                <div class="col-12">
+                                    <span class="badge text-capitalize badge-light-secondary badge-pill inactive-pill" data-value="0" data-client="{{ client.id }}"> Inactivo </span>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-inline-flex gap-2 text-nowrap">
+                                {% if userPermission.can('show', 'clients') %}
+                                    <a href="{{ path('client_show', {'client': client.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ 'Show'|trans }}">
+                                        <i class="align-middle" data-feather='eye'></i>
+                                    </a>
+                                {% endif %}
+                                {% if userPermission.can('edit', 'clients') %}
+                                    <a href="{{ path('user_all_surveys', {'client': client.id}) }}" methods="POST" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ 'Cuestionarios'|trans }}">
+                                        <i class="align-middle" data-feather='file'></i>
+                                    </a>
+                                    <a href="{{ path('client_edit', {'client': client.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ 'Edit'|trans }}">
+                                        <i class="align-middle" data-feather='edit'></i>
+                                    </a>
+                                {% endif %}
+{#                                <a href="{{ path('client_change_status', {'client': client.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cambiar alumni"><i class="align-middle" data-feather='power'></i><span class="align-middle"></span></a>#}
+                                {% if userPermission.can('delete', 'clients') %}
+                                    <a href="#" onclick="$('#deleteForm_client_{{ client.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ 'Delete'|trans }}">
+                                        <i class="align-middle" data-feather='trash-2'></i>
+                                    </a>
+                                    <form method="post" id="deleteForm_client_{{ client.id }}"
+                                          action="{{ path('client_delete', {'client': client.id}) }}"
+                                          class="d-none deleteForm" >
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ client.id) }}">
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="d-none">
+                            <div class="dropdown-basic">
+                                <div class="dropdown">
+                                    <button class="dropbtn bg-transparent text-dark p-0 m-0"
+                                            type="button"
+                                            data-bs-original-title="" title="">
+                                        <i data-feather='align-justify'></i>
+                                    </button>
+                                    <div class="dropdown-content " style="top: 20px">
+                                        {% if userPermission.can('show', 'clients') %}
+                                            <a href="{{ path('client_show', {'client': client.id}) }}">
+                                                <i class="align-middle" data-feather='eye'></i>
+                                                <span class="ms-1 align-middle"> {{ 'Show'|trans }}</span>
+                                            </a>
+                                        {% endif %}
+                                        {% if userPermission.can('edit', 'clients') %}
+                                            <a href="{{ path('client_edit', {'client': client.id}) }}">
+                                                <i class="align-middle" data-feather='edit'></i>
+                                                <span class="align-middle">{{ 'Edit'|trans }}</span>
+                                            </a>
+                                        {% endif %}
+{#                                        <a href="{{ path('client_change_status', {'client': client.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cambiar alumni"><i class="align-middle" data-feather='power'></i><span class="align-middle"></span></a>#}
+                                        {% if userPermission.can('delete', 'clients') %}
+                                            <div class="dropdown-divider"></div>
+                                            <a href="#" onclick="$('#deleteForm_client_{{ client.id }}').submit()">
+                                                <i class="align-middle" data-feather='trash-2'></i>
+                                                <span class="align-middle">{{ 'Delete'|trans }}</span>
+                                            </a>
+                                            <form method="post" id="deleteForm_client_{{ client.id }}"
+                                                  action="{{ path('client_delete', {'client': client.id}) }}"
+                                                  class="d-none deleteForm" >
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ client.id) }}">
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8">{{ 'No results found'|trans }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+            </div>
+            {% include 'extra/filter_limit.html.twig' %}
+            <div class="d-flex justify-content-end mr-4 mt-2">
+                {% include 'extra/pagination.html.twig' with {
+                    filterService: filterService,
+                    currentPage: filterService.page,
+                    paginationPath: 'client_index',
+                    lastPage: lastPage,
+                    showAlwaysFirstAndLast: true
+                } only %}
+            </div>
+        </div>
+    </div>
+    <!-- list section end -->
+</div>
+
+{% endblock %}
+
+{% block action_buttons %}
+
+    <li class="level-menu outside d-flex align-items-center">
+        {% if userPermission.can('create', 'clients') %}
+            <a class="nav-link bg-primary-color" href="{{ path('client_new') }}">
+                <i data-feather="plus-circle" style="stroke: white"></i>
+            </a>
+        {% endif %}
+
+        <a class="nav-link cursor-pointer mr-1 bg-primary-color" href="#" onclick="toggleFilter()">
+            <i data-feather="filter" style="stroke: white"></i>
+        </a>
+        <h5 class="mb-0 ms-3 w-auto">Listado de Proyectos</h5>
+    </li>
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let clients = document.querySelectorAll('[id^="active-pill_"]');
+            clients.forEach(function(client) {
+                let currentBadge = client;
+                console.log(client);
+
+                let choosingBadgesDiv = document.getElementById('inactive-pills_' + client.id.split('_')[1]);
+
+                currentBadge.addEventListener('click', function () {
+                    if (choosingBadgesDiv.style.display === 'none') {
+                        choosingBadgesDiv.style.display = 'inline';
+                    } else {
+                        choosingBadgesDiv.style.display = 'none';
+                    }
+                });
+
+                let inactiveBadges = document.querySelectorAll('.inactive-pill[data-client="' + client.id.split('_')[1] + '"]');
+                inactiveBadges.forEach(function (inactiveBadge) {
+                    inactiveBadge.addEventListener('click', function () {
+                        let active = this.getAttribute('data-value');
+                        let clientId = this.getAttribute('data-client');
+
+                        $.ajax({
+                            url: '{{ path('client_change_status_or_alumni') }}',
+                            type: 'POST',
+                            dataType: 'json',
+                            delay: 250,
+                            data: {
+                                active: active,
+                                clientId: clientId
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    location.reload();
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.log(textStatus, errorThrown);
+                            }
+                        })
+                    })
+                });
+            });
+        });
+
+    </script>
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'extra/filters/client_filter.html.twig' %}
+{% endblock %}

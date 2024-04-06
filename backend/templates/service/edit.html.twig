@@ -1,0 +1,156 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'Editar Tipos de Mentorías'|trans }}{% endblock %}
+
+{% block page_title %}
+    {{ 'Edit Service'|trans }}
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+
+        <div class="card">
+            <div class="card-body">
+                <div class="tab-content">
+                    <!-- Account Tab starts -->
+                    <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
+                        <form name="service" method="post">
+                            <div id="service" class="row">
+                                <div class="col-6 p-t-15">
+                                    <label for="service_name" class="required">{{ 'Name'|trans }} *</label>
+                                    <input type="text"
+                                           id="service_name"
+                                           name="service[name]"
+                                           required="required"
+                                           maxlength="255"
+                                           class="form-control mb-2"
+                                           autocomplete="off" value="{{ service.name|default('') }}">
+                                    {% include 'extra/form_type_error.html.twig' with {'element': form.name } only %}
+                                </div>
+                                <div class="col-6 p-t-15 d-none">
+                                    <label for="service_price" class="required">{{ 'Price'|trans }} *</label>
+                                    <input type="text"
+                                           id="service_price"
+                                           name="service[price]"
+                                           required="required"
+                                           class="form-control mb-2"
+                                           autocomplete="off" min="0"
+                                           step=".01" value="{{ service.price|default('0') }}">
+                                    {% include 'extra/form_type_error.html.twig' with {'element': form.price } only %}
+                                </div>
+                                <div class="col-6 p-t-15">
+                                    <label for="service_needed_time" class="required">{{ 'Duration'|trans }}
+                                        ({{ 'Minutes'|trans }}) *</label>
+                                    <input type="text"
+                                           id="service_needed_time"
+                                           name="service[needed_time]"
+                                           required="required"
+                                           class="form-control mb-2"
+                                           autocomplete="off" min="0"
+                                           step="1" value="{{ service.neededTime|default('0') }}">
+                                    {% include 'extra/form_type_error.html.twig' with {'element': form.needed_time } only %}
+                                </div>
+
+                                <!--<div class="col-6 p-t-15">
+            <label for="service_division" class="required">{{ 'Division'|trans }} *</label>
+            <select id="service_division"
+                name="service[division]"
+                class="form-check mb-2 select2 select2-hidden-accessible"
+                autocomplete="off"
+                data-select2-id="service_division"
+                tabindex="-1"
+                aria-hidden="true">
+                {% for division in divisions %}
+                    <option {% if service.division %}{% if service.division.id == division.id %}selected="selected"{% endif %}{% endif %} value="{{ division.id }}">{{ division.name }}</option>
+                {% endfor %}
+            </select>
+            {% include 'extra/form_type_error.html.twig' with {'element': form.division } only %}
+        </div>-->
+                                <div class="col-6 p-t-15 d-none">
+                                    <label for="service_professionals">{{ (configuration.user_nomenclature ~ 's')|trans }}</label>
+                                    <select id="service_professionals"
+                                            name="service[professionals][]"
+                                            class="form-check mb-2 select2 select2-hidden-accessible"
+                                            autocomplete="off" multiple=""
+                                            data-select2-id="service_professionals"
+                                            tabindex="-1" aria-hidden="true">
+                                        {% for user in users %}
+                                            <option value="{{ user.id }}"
+                                                    {% if user in service.professionals %}selected="selected"{% endif %}>{{ user.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% include 'extra/form_type_error.html.twig' with {'element': form.professionals } only %}
+                                </div>
+
+                                {% if configuration.invoice %}
+
+                                    <div class="col-6 p-t-15">
+                                        <label for="service_iva">{{ 'VAT'|trans }} *</label>
+                                        <input type="text"
+                                               id="service_iva"
+                                               name="service[iva]"
+                                               required="required"
+                                               class="form-control mb-2"
+                                               autocomplete="off" min="0"
+                                               step=".01" value="{{ service.iva|default(configuration.invoice_vat) }}">
+                                    </div>
+
+                                    <div class="col-6 p-t-15">
+                                        <div class="form-check">
+
+                                            <input type="checkbox"
+                                                   id="service_iva_applied"
+                                                   name="service[iva_applied]"
+                                                    {% if service.ivaApplied %} checked {% endif %}
+                                                   class="form-check-input mb-2"
+                                                   value="true">
+                                            <label for="service_iva_applied">{{ 'VAT Applied?'|trans }}</label>
+                                        </div>
+
+                                    </div>
+
+                                {% endif %}
+
+                                <div class="col-6 p-t-15">
+                                    <label for="service_color">{{ 'Color'|trans }}</label>
+                                    <input type="color" id="service_color"
+                                           name="service[color]" class="ml-2 mb-2"
+                                           autocomplete="off" value="{{ service.color }}">
+                                </div>
+                                {% include 'extra/form_type_error.html.twig' with {'element': form.color } only %}
+
+                                {{ form_row(form._token) }}
+                            </div>
+                            <div class="row d-flex justify-content-end mt-2">
+                                <div class="mr-2 text-end">
+                                    <button class="btn btn-primary text-white waves-effect waves-float waves-light">{{ 'Update'|trans }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+
+        $(function () {
+
+            $('.select2').select2();
+
+        });
+    </script>
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside">
+
+        <a class="nav-link cursor-pointer"
+           href="{{ userPermission.can('list', 'services') ? path('service_index') : '#' }}">
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+    </li>
+{% endblock %}

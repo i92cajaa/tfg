@@ -1,0 +1,43 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'Crear Tipos de Mentorías'|trans }}{% endblock %}
+
+{% block page_title %}
+    {{ 'Create Service'|trans }}
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- Account Tab starts -->
+                <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
+                    {{ include('service/_form.html.twig', {'button_label':'Create'|trans}) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+
+        $(function() {
+
+            $('.select2').select2();
+
+        });
+    </script>
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside">
+
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'services') ? path('service_index') : '#' }}"  >
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+    </li>
+{% endblock %}

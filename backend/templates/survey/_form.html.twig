@@ -1,0 +1,28 @@
+Fix<form name="survey" enctype="multipart/form-data" method="post" autocomplete="off">
+    <div class="w-100 row">
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.name) }}">{{ field_label(form.name) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.name) }}" id="{{ field_name(form.name) }}" name="{{ field_name(form.name) }}" value="{{ field_value(form.name) }}" required>
+            {% for error in field_errors(form.name) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.entity) }}">{{ field_label(form.entity) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.entity) }}" id="{{ field_name(form.entity) }}"
+                   name="{{ field_name(form.entity) }}" value="{{ field_value(form.entity) }}" required>
+            {% for error in field_errors(form.entity) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        {{ form_row(form._token) }}
+
+    </div>
+    <div class="row d-flex justify-content-end mt-2">
+        <div class="mr-2 text-end">
+            <button class="btn btn-primary text-white waves-effect waves-float waves-light">{{ button_label }}</button>
+        </div>
+    </div>
+</form>

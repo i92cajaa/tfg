@@ -1,0 +1,98 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">{{ 'Edit Task'|trans }}</h5>
+    <button type="button" class="close btn bg-transparent" data-bs-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form action="{{ path('task_process_edit') }}" method="POST" id="editTaskForm" class="w-100 row mt-2">
+        <input type="hidden" name="_token" value="{{ csrf_token('edit-task') }}"/>
+        <input type="hidden" name="id" value="{{ task.id }}"/>
+
+        {% if userPermission.can('assign_tasks','users') %}
+            <div class="form-group col-md-12" >
+                <div class="form-group">
+                    <label for="editTaskName">{{ configuration.user_nomenclature|trans }} *</label>
+                    <select type="text" class="form-control select2" id="editTaskUser" name="user" required="required">
+                        {% for user in users %}
+                            <option value="{{ user.id }}" {% if user.id == task.user.id %}selected="selected"{% endif %}>{{ user.fullName }} {% if user.id == app.user.id %} ({{'You'|trans}}){% endif %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        {% else %}
+            <input type="hidden" name="user" value="{{ task.user.id }}">
+        {% endif %}
+
+        <div class="form-group col-md-12" >
+            <div class="form-group">
+                <label for="status">Estado</label>
+                <select type="text" class="form-control select2" id="status" name="status" required="required">
+                    {% for statusKey in status %}
+                        <option value="{{ statusKey.id }}" {% if task.currentStatus.status.id is same as statusKey.id %}selected{% endif %}>
+                            {{ statusKey.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group col-md-12" >
+            <div class="form-group">
+                <label for="editTaskName">{{ 'Estimated Start Date'|trans }} *</label>
+                <input type="text" class="form-control flatpickr-basic" id="editTaskEstimatedStartDate" name="estimated_start_date" required="required" value="{{ task.estimatedStartDate|UTCDateTimeFormat('d/m/Y H:i') }}" />
+            </div>
+        </div>
+
+        <div class="form-group col-md-12" >
+            <div class="form-group">
+                <label for="editTaskName">{{ 'Title'|trans }} *</label>
+                <input type="text" class="form-control" id="editTaskTitle" name="title" required="required" value="{{ task.title }}" />
+            </div>
+        </div>
+
+        <div class="form-group col-md-12" >
+            <div class="form-group">
+                <label for="editTaskDescription">{{ 'Description'|trans }}</label>
+                <div class="quill-editor" id="editTaskDescriptionEditor"
+                     data-input-id="editTaskDescription">{{ task.description|raw }}</div>
+                <input type="hidden" id="editTaskDescription" name="description" value="{{ task.description }}">
+            </div>
+        </div>
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close'|trans }}</button>
+    <button type="button" class="btn btn-primary" onclick="document.getElementById('editTaskForm').submit()">{{ 'Edit'|trans }}</button>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+
+        $('.select2').select2();
+        if (feather) {
+            feather.replace({
+                width: 14,
+                height: 14
+            });
+        }
+
+        let basicPickr = $('#editTaskEstimatedStartDate');
+        if (basicPickr.length) {
+            basicPickr.flatpickr({
+                locale: locale,
+                dateFormat: 'd/m/Y H:i',
+                defaultDate: '{{ task.estimatedStartDate|UTCDateTimeFormat('d/m/Y H:i') }}',
+                enableTime: true,
+            });
+        }
+
+        instanceEditor(document.getElementById('editTaskDescriptionEditor'));
+
+
+    });
+
+
+</script>

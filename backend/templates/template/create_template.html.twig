@@ -1,0 +1,74 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">{{ 'Crear Cuestionario'|trans }} {{ templateType.name }}</h5>
+    <button type="button" class="close bg-transparent" data-bs-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form action="{{ path('template_new') }}" method="POST" enctype="multipart/form-data" id="createTemplateForm" class="w-100 row mt-2">
+        <input type="hidden" name="_token" value="{{ csrf_token('create-template') }}"/>
+
+        <input type="hidden" value="{{ event }}" id="client_template" name="event">
+        <input type="hidden" value="{{ client }}" id="client_template" name="client">
+        <input type="hidden" value="{{ appointment }}" id="appointment_template" name="appointment">
+        <input type="hidden" value="{{ templateType.id }}" id="template_type" name="template_type">
+
+        {% for index, templateLineType in templateType.templateLineTypes %}
+            <div class=" col-12">
+                <div class="form-group">
+                <label class="form-control-label {% if templateLineType.type == 'Título' %} font-weight-bolder {% endif %}" {% if templateLineType.type == 'Título' %}style="font-weight: bold;"{% endif %} for="{{ index }}">{{templateLineType.name}}</label>
+                <input type="hidden" name="template_lines[{{ index }}][name]" value="{{ templateLineType.name}}">
+                <input type="hidden" name="template_lines[{{ index }}][type]" value="{{ templateLineType.type}}">
+                {% include 'template/render_template_form_field.html.twig' with {'entity': templateLineType, 'formName': 'template_lines[' ~ index ~ '][value]', 'id': index} %}
+                </div>
+            </div>
+        {% endfor %}
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close'|trans }}</button>
+    <button type="button" class="btn btn-primary" onclick="document.getElementById('createTemplateForm').submit()">
+        {{ 'Create'|trans }}</button>
+</div>
+
+
+<script>
+
+    $(document).ready(function() {
+
+        flatpickr('.flatpickr_date',{
+            locale: locale,
+            mode: "single",
+            dateFormat: "d-m-Y",
+        })
+
+        flatpickr('.flatpickr_time',{
+            locale: locale,
+            noCalendar: true,
+            enableTime: true,
+            dateFormat: 'h:i'
+        })
+
+        $('.select2').select2();
+
+        let quills = document.getElementsByClassName('quill-editor');
+
+        for(let i = 0; i < quills.length; i++){
+            instanceEditor(quills[i]);
+        }
+
+
+        if (feather) {
+            feather.replace({
+                width: 14,
+                height: 14
+            });
+        }
+
+
+
+    });
+
+
+</script>

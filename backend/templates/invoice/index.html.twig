@@ -1,0 +1,274 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'List Invoices'|trans }}{% endblock %}
+
+{% block page_title %}{{ 'List Invoices'|trans }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <!-- list section start -->
+
+    <ul class="nav nav-pills p-b-10" >
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center {% if not filterService.getFilterValue("entity") or filterService.getFilterValue("entity") == constant('App\\Entity\\Client\\Client::ENTITY') %}active{% endif %}" id="info-tab"
+               href="#" onclick="changeTab('{{ constant('App\\Entity\\Client\\Client::ENTITY') }}')" aria-controls="account"  aria-selected="true">
+                <i data-feather="heart"></i><span class="d-none d-sm-block">{{ (configuration.client_nomenclature ~ 's')|trans }}</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center {% if filterService.getFilterValue("entity") == constant('App\\Entity\\User\\User::ENTITY') %}active{% endif %}" id="info-tab"
+               href="#" onclick="changeTab('{{ constant('App\\Entity\\User\\User::ENTITY') }}')" aria-controls="account"  aria-selected="true">
+                <i data-feather="user"></i><span class="d-none d-sm-block">{{ (configuration.user_nomenclature ~ 's')|trans }}</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="card">
+        <div class="card-datatable overflow-inherit table-responsive card-body">
+
+            {% include 'extra/filter_limit.html.twig' %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            <a>
+                                <input name="all" type="checkbox" id="checkAll" form="selectForm">
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ filterService.orderBy("invoice_position", filterService.getInversedOrder("invoice_position")) }}">
+                                {{ 'Number'|trans }} {% if filterService.isOrdered("invoice_position") %}<i data-feather="{{ filterService.getOrder("invoice_position").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ filterService.orderBy("name", filterService.getInversedOrder("name")) }}">
+                                {% if filterService.getFilterValue("entity") == constant('App\\Entity\\Client\\Client::ENTITY') %}
+                                    {{ configuration.client_nomenclature|trans }}
+                                {% elseif filterService.getFilterValue("entity") == constant('App\\Entity\\User\\User::ENTITY') %}
+                                    {{ configuration.user_nomenclature|trans }}
+                                {% endif %}
+                                {% if filterService.isOrdered("name") %}<i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ filterService.orderBy("phone", filterService.getInversedOrder("phone")) }}">
+                                {% if filterService.getFilterValue("entity") == constant('App\\Entity\\Client\\Client::ENTITY') %}
+                                    {{ ('Phone')|trans }}
+                                {% elseif filterService.getFilterValue("entity") == constant('App\\Entity\\User\\User::ENTITY') %}
+                                    {{ ('Phone')|trans }}
+                                {% endif %}
+                                {% if filterService.isOrdered("phone") %}<i data-feather="{{ filterService.getOrder("phone").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ filterService.orderBy("address", filterService.getInversedOrder("address")) }}">
+                                {% if filterService.getFilterValue("entity") == constant('App\\Entity\\Client\\Client::ENTITY') %}
+                                    {{ ('Address')|trans }} <!-- configuration.client_nomenclature ~ -->
+                                {% elseif filterService.getFilterValue("entity") == constant('App\\Entity\\User\\User::ENTITY') %}
+                                    {{ ('Address')|trans }}
+                                {% endif %}
+                                {% if filterService.isOrdered("address") %}<i data-feather="{{ filterService.getOrder("address").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ filterService.orderBy("invoice_date", filterService.getInversedOrder("invoice_date")) }}">
+                                {{ 'Invoice Date'|trans }} {% if filterService.isOrdered("invoice_date") %}<i data-feather="{{ filterService.getOrder("invoice_date").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ filterService.orderBy("amount", filterService.getInversedOrder("amount")) }}">
+                                {{ 'Total price'|trans }} {% if filterService.isOrdered("amount") %}<i data-feather="{{ filterService.getOrder("amount").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ filterService.orderBy("amount_with_iva", filterService.getInversedOrder("amount_with_iva")) }}">
+                                {{ 'Price With VAT'|trans }} {% if filterService.isOrdered("amount_with_iva") %}<i data-feather="{{ filterService.getOrder("amount_with_iva").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a>
+                                {{ 'Actions'|trans }}
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for invoice in invoices['data'] %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="checkInvoice" name="invoices[]" value="{{ invoice.id }}" form="selectForm">
+                        </td>
+                        <td>{{ invoice.invoiceNumber }}</td>
+                        <td>
+                            {{ invoice.name }}
+                        </td>
+                        <td>
+                            {{ invoice.phone }}
+                        </td>
+                        <td>
+                            {{ invoice.address }}
+                        </td>
+                        <td>
+                            {{ invoice.invoiceDate|UTCDateTimeFormat('d-m-Y') }}
+                        </td>
+                        <td>
+                            {{ invoice.amount|number_format(2) }}€
+                        </td>
+                        <th>
+                            {{ invoice.amountWithIva|number_format(2) }}€
+                        </th>
+                        <td>
+                            <div class="dropdown-basic ">
+                                <div class="dropdown">
+                                    <button class="dropbtn bg-transparent text-dark p-0 m-0" type="button" data-bs-original-title="" title="">
+                                        <i data-feather='align-justify'></i>
+                                    </button>
+                                    <div class="dropdown-content " style="top: 20px">
+                                        {% if userPermission.can('show', 'invoices') %}
+                                            <a class="dropdown-item" href="{{ path('invoice_show', {'invoice': invoice.id}) }}"><i class="align-middle" data-feather='eye'></i><span class=" ms-1 align-middle">{{ 'Show'|trans }}</span></a>
+                                        {% endif %}
+
+{#                                        {% if userPermission.can('edit', 'invoices') %}#}
+{#                                            <a class="dropdown-item" href="{{ path('invoice_show', {'invoice': invoice.id}) }}"><i data-feather='edit'></i>{{ 'Edit'|trans }}</a>#}
+{#                                        {% endif %}#}
+
+                                        {% if userPermission.can('export', 'invoices') %}
+                                            <a class="dropdown-item" target="_blank" href="{{ path('invoice_export_pdf', {'invoice': invoice.id}) }}"><i class="align-middle" data-feather='file-text'></i><span class="align-middle"> {{ 'Print invoice'|trans }}</span></a>
+                                        {% endif %}
+                                        {% if userPermission.can('delete', 'invoices') %}
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" onclick="$('#deleteForm_invoice_{{ invoice.id }}').submit()"><i class="align-middle" data-feather='delete'></i> <span class="align-middle">{{ 'Delete'|trans }}</span></a>
+                                            <form method="post" id="deleteForm_invoice_{{ invoice.id }}" class="deleteForm d-none" action="{{ path('invoice_delete', {'invoice': invoice.id}) }}">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ invoice.id) }}">
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="9">{{ 'No results found'|trans }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <form class="d-none" method="post" id="selectForm">
+                <input type="hidden" name="_token" value="{{ csrf_token('generate-pdf-zip') }}">
+            </form>
+            <div class="d-flex justify-content-end mr-4 mt-2">
+                {% include 'extra/pagination.html.twig' with {
+                    filterService: filterService,
+                    currentPage: filterService.page,
+                    paginationPath: 'invoice_index',
+                    lastPage: lastPage,
+                    showAlwaysFirstAndLast: true
+                } only %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            document.getElementById('checkAll').addEventListener('click', function (element) {
+                let source = element.target;
+                document.querySelectorAll('.checkInvoice').forEach((element) => {
+                    element.checked = source.checked
+                })
+            });
+
+        });
+
+        function changeTab(entity){
+            document.getElementById('filter_entity').value = entity;
+
+            document.getElementById('filter_form').submit()
+        }
+
+        {% if userPermission.can('export', 'invoices') %}
+        function generatePdfZip()
+        {
+            let form = document.getElementById('selectForm');
+            form.action = '{{ path('invoice_export_pdf_multiple') }}';
+            form.method = "POST";
+
+            let filters = document.createElement("input");
+            filters.type = "text";
+            filters.name = "filter_form";
+            filters.value = $('#filter_form').serialize();
+            form.appendChild(filters);
+            form.submit();
+
+
+            let swal = Swal.fire({
+                title: '{{ 'Generating documents'|trans }}',
+                html: '{{ 'This process may take a few minutes depending on the number of invoices selected'|trans }}',// add html attribute if you want or remove
+                allowOutsideClick: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading()
+                },
+            });
+
+            let downloadedInterval = setInterval(function () {
+                let value = getCookie('downloaded');
+                if(value == 'true'){
+                    clearInterval(downloadedInterval);
+                    swal.close();
+                    Swal.fire({
+                        icon: 'success',
+                        title: '{{ 'Documents have been generated successfully'|trans }}',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    document.cookie = 'downloaded=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                }
+            }, 100);
+
+        }
+        {% endif %}
+
+        function getCookie(cookieName) {
+            let cookie = [];
+            document.cookie.split(';').forEach(function(el) {
+                let [key,value] = el.split('=');
+                cookie[key.trim()] = value;
+            })
+            return cookie[cookieName];
+        }
+
+    </script>
+
+{% endblock %}
+
+{% block action_buttons %}
+
+    <li class="level-menu outside">
+
+        {% if userPermission.can('export', 'invoices') %}
+            <a class="nav-link cursor-pointer mr-1" onclick="generatePdfZip()">
+                <i class="ficon" data-feather="download"></i>
+            </a>
+        {% endif %}
+
+        <a class="nav-link cursor-pointer mr-1" href="#" onclick="toggleFilter()" >
+            <i data-feather="filter"></i>
+        </a>
+    </li>
+
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'extra/invoice_filter.html.twig' %}
+{% endblock %}

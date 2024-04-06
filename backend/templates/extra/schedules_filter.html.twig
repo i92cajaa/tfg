@@ -1,0 +1,66 @@
+<div class="card">
+    <h3 class="card-header mb-0">Filtros</h3>
+    <form id="filter_form" name="form-filter-users w-100">
+        <fieldset class="">
+            <div class="d-flex justify-content-end align-items-center mx-50 row pt-0 pb-2">
+                <input type="hidden" class="form-control" name="{{ filterService.filterField('verification_ids') }}" value="" form="filter_form">
+
+                <div class="form-group-feedback form-group-feedback-right col-6">
+                    <label for="users">Usuarios</label>
+                    <br>
+
+                    <select name="{{ filterService.filterField('user') }}[]" data-boundary="window" class="select select2" id="users">
+                        <option value="" {% if filterService.getFilterValue('user') != null %}{% if filterService.getFilterValue('user')[0] != null %}selected{% endif %}{% endif %}>Selecciona una opción</option>
+                        {% for user in users %}
+                            <option value="{{ user.id }}" {% if filterService.getFilterValue('user') != null %}{% if filterService.getFilterValue('user')[0] == user.id %}selected{% endif %}{% endif %}>{{ user.name }} {{ user.surnames }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+                {#
+                <div class="form-group-feedback form-group-feedback-right col-3">
+                    <label for="{{ filterService.filterField('time_from') }}">Hora de inicio</label>
+                    <input type="text" class="form-control flat-picker" placeholder="Hora de inicio" name="{{ filterService.filterField('time_from') }}" value="{{ filterService.getFilterValue('time_from') }}" form="filter_form">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right col-3">
+                    <label for="{{ filterService.filterField('time_to') }}">Hora de fin</label>
+                    <input type="text" class="form-control flat-picker" placeholder="Hora de fin" name="{{ filterService.filterField('time_to') }}" value="{{ filterService.getFilterValue('time_to') }}" form="filter_form">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+                #}
+                <div class="form-group-feedback form-group-feedback-right col-6">
+                    <label for="week_day">Día de la semana</label>
+                    <br>
+                    <select name="{{ filterService.filterField('week_day') }}[]" data-boundary="window" class="select select2" id="week_day">
+                        <option value="" selected>Selecciona una opción</option>
+                        <option value="1">Lunes</option>
+                        <option value="2">Martes</option>
+                        <option value="3">Miércoles</option>
+                        <option value="4">Jueves</option>
+                        <option value="5">Viernes</option>
+                        <option value="6">Sábado</option>
+                        <option value="0">Domingo</option>
+                    </select>
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                {{ filterService.filterFormField() | raw }}
+
+                <div class="form-group-feedback form-group-feedback-right text-end col-3">
+                    <button type="submit" class="btn add-new text-white btn-primary mt-2">{{ 'Apply Filter'|trans }}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
