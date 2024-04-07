@@ -2,62 +2,77 @@
 
 namespace App\Entity\Center;
 
-use App\Entity\Client\Client;
+use App\Entity\Area\Area;
 use App\Entity\Document\Document;
+use App\Entity\User\User;
 use App\Repository\CenterRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CenterRepository::class)]
 class Center
 {
+
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
+
     #[ORM\Id]
     #[ORM\Column(type: 'string', unique: true, nullable: false)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    private ?string $id = null;
+    private string $id;
+
+    // ----------------------------------------------------------------
+    // Relationships
+    // ----------------------------------------------------------------
 
     #[ORM\OneToOne(targetEntity: Document::class)]
-    private ?Document $logo =null;
+    private ?Document $logo = null;
 
-    #[ORM\OneToMany(mappedBy:"center", targetEntity: Client::class, cascade:["persist", "remove"])]
-    private Collection $clients;
+    #[ORM\OneToMany(mappedBy:"center", targetEntity: User::class, cascade:["persist", "remove"])]
+    private Collection $users;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[ORM\ManyToOne(targetEntity: Area::class, inversedBy: 'centers')]
+    #[ORM\JoinColumn(name: "area_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
+    private Area $area;
 
-    #[ORM\Column(length: 255)]
-    private ?string $address = null;
+    // ----------------------------------------------------------------
+    // Fields
+    // ----------------------------------------------------------------
 
-    #[ORM\Column(length: 255)]
-    private ?string $city = null;
+    #[ORM\Column(name:"name", type:"string", length:255, nullable:false)]
+    private string $name;
 
-    #[ORM\Column(length: 255)]
-    private ?string $phone = null;
+    #[ORM\Column(name:"address", type:"string", length:255, nullable:false)]
+    private string $address;
 
-    #[ORM\Column(type: 'string', length:255, nullable: true)]
-    private ?string $color = null;
+    #[ORM\Column(name:"phone", type:"string", length:255, nullable:false)]
+    private string $phone;
 
+    #[ORM\Column(name:"color", type: 'string', length:255, nullable: false)]
+    private string $color;
 
-public function __construct()
-{
-//    $this->logo = null;
-}
+    // ----------------------------------------------------------------
+    // Magic Methods
+    // ----------------------------------------------------------------
 
-    /**
-     * @return Collection
-     */
-    public function getClients(): Collection
+    public function __construct()
     {
-        return $this->clients;
+        $this->users = new ArrayCollection();
     }
 
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
+
     /**
-     * @param Collection $clients
+     * @return string
      */
-    public function setClients(Collection $clients): void
+    public function getId(): string
     {
-        $this->clients = $clients;
+        return $this->id;
     }
 
     /**
@@ -69,97 +84,58 @@ public function __construct()
     }
 
     /**
-     * @param Document|null $logo
+     * @return Collection
      */
-    public function setLogo(?Document $logo): void
+    public function getUsers(): Collection
     {
-        $this->logo = $logo;
+        return $this->users;
     }
-
-
 
     /**
-     * @return string|null
+     * @return Area
      */
-    public function getId(): ?string
+    public function getArea(): Area
     {
-        return $this->id;
+        return $this->area;
     }
 
-    public function getName(): ?string
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
+    /**
+     * @return string
+     */
+    public function getAddress(): string
     {
         return $this->address;
     }
 
-    public function setAddress(string $address): self
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
     /**
-     * @return string|null
+     * @return string
      */
-    public function getCity(): ?string
-    {
-        return $this->city;
-    }
-
-    /**
-     * @param string|null $city
-     */
-    public function setCity(?string $city): void
-    {
-        $this->city = $city;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPhone(): ?string
+    public function getPhone(): string
     {
         return $this->phone;
     }
 
     /**
-     * @param string|null $phone
+     * @return string
      */
-    public function setPhone(?string $phone): void
-    {
-        $this->phone = $phone;
-    }
-
-    public function getColor(): ?string
+    public function getColor(): string
     {
         return $this->color;
     }
 
-    public function setColor(?string $color): void
-    {
-        $this->color = $color;
-    }
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
 
-
-
-
-
-    public function getFullName(){
-
-        return $this->getName() .' ('.$this->getCity().')';
-    }
-
-
+    // ----------------------------------------------------------------
+    // Other Methods
+    // ----------------------------------------------------------------
 }

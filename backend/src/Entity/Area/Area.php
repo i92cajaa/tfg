@@ -1,21 +1,58 @@
 <?php
 
 namespace App\Entity\Area;
+use App\Entity\Center\Center;
 use App\Repository\AreaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AreaRepository::class)]
 class Area
 {
+
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
+
     #[ORM\Id]
     #[ORM\Column(type: 'string', unique: true, nullable: false)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private string $id;
 
+    // ----------------------------------------------------------------
+    // Relationships
+    // ----------------------------------------------------------------
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[ORM\OneToMany(mappedBy: "area", targetEntity: Center::class, cascade: ["persist", "remove"])]
+    private ?Collection $centers;
+
+    // ----------------------------------------------------------------
+    // Fields
+    // ----------------------------------------------------------------
+
+    #[ORM\Column(name:"name", type:"string", length:255, nullable:false)]
+    private string $name;
+
+    #[ORM\Column(name:"city", type:"string", length:255, nullable:false)]
+    private string $city;
+
+    #[ORM\Column(name:"color", type:"string", length:255, nullable:false)]
+    private string $color;
+
+    // ----------------------------------------------------------------
+    // Magic Methods
+    // ----------------------------------------------------------------
+
+    public function __construct()
+    {
+        $this->centers = new ArrayCollection();
+    }
+
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
 
     /**
      * @return string
@@ -25,22 +62,121 @@ class Area
         return $this->id;
     }
 
+    /**
+     * @return Collection|null
+     */
+    public function getCenters(): ?Collection
+    {
+        return $this->centers;
+    }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string|null $name
+     * @return string
      */
-    public function setName(?string $name): void
+    public function getCity(): string
     {
-        $this->name = $name;
+        return $this->city;
     }
 
+    /**
+     * @return string
+     */
+    public function getColor(): string
+    {
+        return $this->color;
+    }
 
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
+
+    /**
+     * @param string $id
+     * @return $this
+     */
+    public function setId(string $id): Area
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function setName(string $name): Area
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @param string $city
+     * @return $this
+     */
+    public function setCity(string $city): Area
+    {
+        $this->city = $city;
+        return $this;
+    }
+
+    /**
+     * @param string $color
+     * @return $this
+     */
+    public function setColor(string $color): Area
+    {
+        $this->color = $color;
+        return $this;
+    }
+
+    // ----------------------------------------------------------------
+    // Other Methods
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO ADD CENTER TO THIS AREA
+     * ES: FUNCIÓN PARA AÑADIR UN CENTRO AL ÁREA
+     *
+     * @param Center $center
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function addCenter(Center $center): Area
+    {
+        if (!$this->centers->contains($center)) {
+            $this->centers->add($center);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO REMOVE CENTER FROM THIS AREA
+     * ES: FUNCIÓN PARA BORRAR UN CENTRO DEL ÁREA
+     *
+     * @param Center $center
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function removeCenter(Center $center): Area
+    {
+        if ($this->centers->contains($center)) {
+            $this->centers->removeElement($center);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
 }
