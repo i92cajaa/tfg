@@ -5,6 +5,7 @@ namespace App\Entity\Client;
 use App\Entity\Appointment\Appointment;
 use App\Entity\Center\Center;
 use App\Entity\Document\Document;
+use App\Entity\Notification\Notification;
 use App\Entity\Service\Service;
 use App\Entity\Template\Template;
 use App\Entity\User\User;
@@ -20,10 +21,14 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
-class Client extends EntityWithCreatedAndUpdatedDates implements PasswordAuthenticatedUserInterface
+class Client implements PasswordAuthenticatedUserInterface
 {
 
     const ENTITY = 'client';
+
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
 
     #[ORM\Id]
     #[ORM\Column(type: 'string', unique: true, nullable: false)]
@@ -31,272 +36,90 @@ class Client extends EntityWithCreatedAndUpdatedDates implements PasswordAuthent
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private string $id;
 
-    // Campos
-    #[ORM\Column(type:"string", length: 255, nullable: false)]
+    // ----------------------------------------------------------------
+    // Relationships
+    // ----------------------------------------------------------------
+
+    #[ORM\OneToMany(mappedBy:"client", targetEntity: Booking::class, cascade:["persist", "remove"])]
+    private array|Collection $bookings;
+
+    #[ORM\OneToMany(mappedBy:"client", targetEntity: Notification::class, cascade:["persist", "remove"])]
+    private array|Collection $notifications;
+
+    // ----------------------------------------------------------------
+    // Fields
+    // ----------------------------------------------------------------
+
+    #[ORM\Column(name:"name", type:"string", length:255, nullable:false)]
     private string $name;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $socialName;
 
-    #[ORM\Column(type:"string", length: 255, nullable: false)]
-    private string $members;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $girlMembers;
-    #[ORM\Column(type:"string", length: 255, nullable: false)]
-    private string $announcement;
-    #[ORM\Column(type:"string", length: 255, nullable: false)]
-    private string $speciality;
-    #[ORM\Column(type:"string", length: 255, nullable: false)]
-    private string $description;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private string $goals;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $province;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $cif;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $incorporationYear;
-    #[ORM\Column]
-    private ?string $password;
+    #[ORM\Column(name:"surnames", type:"string", length:255, nullable:false)]
+    private string $surnames;
 
+    #[ORM\Column(name:"email", type:"string", length:255, nullable:true)]
+    private ?string $email = null;
 
-    #[ORM\Column(type:"string", length: 255, nullable: false)]
-    private string $representative;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $position;
-    #[ORM\Column(type:"string", length: 255, nullable: false)]
+    #[ORM\Column(name:"dni", type:"string", length:255, nullable:false)]
+    private string $dni;
+
+    #[ORM\Column(name:"password", type:"string", length:255, nullable:false)]
+    private string $password;
+
+    #[ORM\Column(name:"phone", type:"string", length:255, nullable:false)]
     private string $phone;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $age;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $gender;
-    #[ORM\Column(type:"string", length: 255, unique:true, nullable: false)]
-    private string $email;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $representative2;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $position2;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $phone2;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $email2;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $age2;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $gender2;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $representative3;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $position3;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $phone3;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $email3;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $age3;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $gender3;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $supportType;
-    #[ORM\Column(type:"string", length: 255, nullable: true)]
-    private ?string $comment;
 
+    #[ORM\Column(name:"created_at", type:"datetime", length:255, nullable:false)]
+    private DateTime $createdAt;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(name:"updated_at", type:"datetime", length:255, nullable:true)]
+    private ?DateTime $updatedAt = null;
+
+    #[ORM\Column(name:"last_login", type:"datetime", length:255, nullable:true)]
+    private ?DateTime $lastLogin = null;
+
+    #[ORM\Column(name:"status", type:"boolean", length:255, nullable:false)]
     private bool $status;
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $alumni;
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $newCompany;
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $digitalStartup;
-    #[ORM\OneToOne(targetEntity: Document::class)]
-    private ?Document $logo;
 
-    #[ORM\OneToMany(mappedBy:"client", targetEntity: ClientHasDocument::class, cascade:["persist", "remove"])]
-    private ?Collection $documents;
+    #[ORM\Column(name:"temporal_hash", type:"string", length:255, nullable:true)]
+    private string $temporalHash;
 
-    #[ORM\OneToOne(targetEntity: Document::class)]
-    private ?Document $document_adhesion;
-
-    #[ORM\OneToOne(targetEntity: Document::class)]
-    private ?Document $document_confidencial;
-
-    #[ORM\ManyToOne(targetEntity:Center::class)]
-    #[ORM\JoinColumn(name:"center_id", referencedColumnName: "id")]
-    private Center $center;
-
-    #[ORM\OneToMany(mappedBy:"client", targetEntity: Appointment::class)]
-    private Collection $appointments;
-    #[ORM\OneToMany(mappedBy:"client", targetEntity: Template::class)]
-    private Collection $templates;
-
-    #[ORM\OneToMany(mappedBy:"client", targetEntity: UserHasClient::class, cascade:["persist", "remove"])]
-    private Collection $users;
+    // ----------------------------------------------------------------
+    // Magic Methods
+    // ----------------------------------------------------------------
 
     public function __construct()
     {
-        $this->name = '';
-        $this->socialName = '';
-        $this->members = '';
-        $this->description = '';
-        $this->password = '';
-        $this->representative = '';
-        $this->position = '';
-        $this->province = '';
-        $this->age='';
-        $this->gender=null;
-        $this->age2=null;
-        $this->gender2=null;
-        $this->age3=null;
-        $this->gender3=null;
-        $this->announcement='';
-        $this->girlMembers = '';
-        $this->cif = '';
-        $this->digitalStartup = false;
-        $this->comment = '';
-        $this->incorporationYear = '';
-        $this->newCompany = false;
-        $this->supportType = '';
-        $this->phone = '';
-        $this->email = '';
-        $this->speciality = '';
+        $this->bookings = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
         $this->createdAt = UTCDateTime::setUTC(UTCDateTime::create());
-        $this->status =  true;
-        $this->alumni =false;
-        $this->appointments = new ArrayCollection();
-        $this->templates = new ArrayCollection();
-        $this->users = new ArrayCollection();
-        $this->documents = null;
-        $this->logo = null;
-        $this->document_adhesion = null;
-        $this->document_confidencial = null;
-        $this->goals = '';
     }
 
-    public function __toString()
-    {
-        return $this->getId();
-    }
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
 
-    public function getId(): ?string
+    /**
+     * @return string
+     */
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    public function setUsers(Collection $users): Client
-    {
-        $this->users = $users;
-        return $this;
-    }
-
-    public function getUser(){
-        return $this->users->last() ? $this->users->last()->getUser() : null;
-    }
-
-    public function getUsersByClient($arrayMode = true):array
-    {
-        if($arrayMode){
-            $arrayUser = [];
-            $users = $this->users;
-            foreach($users as $user){
-                $arrayUser[] = $user->getUser();
-            }
-
-            return $arrayUser;
-        }
-        return $this->users->toArray();
-    }
-
-    public function addUser(?User $user){
-
-        $this->users->clear();
-
-        if($user){
-            $userHasClient = (new UserHasClient())
-                ->setUser($user)
-                ->setClient($this);
-
-            if(!$this->users->contains($userHasClient)){
-                $this->users->add($userHasClient);
-            }
-        }
-
-        return $this;
-    }
-
-
-
     /**
-     * @return Collection
+     * @return array|Collection
      */
-    public function getAppointments(): Collection
+    public function getBookings(): array|Collection
     {
-        return $this->appointments;
-    }
-
-    public function addAppointment(Appointment $appointment): self
-    {
-        if (!$this->appointments->contains($appointment)) {
-            $this->appointments[] = $appointment;
-            $appointment->setClient($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAppointment(Appointment $appointment): self
-    {
-        if ($this->appointments->removeElement($appointment)) {
-            // set the owning side to null (unless already changed)
-            if ($appointment->getClient() === $this) {
-                $appointment->setClient(null);
-            }
-        }
-
-        return $this;
+        return $this->bookings;
     }
 
     /**
-     * @return Collection|Template[]
+     * @return array|Collection
      */
-    public function getTemplates(): Collection
+    public function getNotifications(): array|Collection
     {
-        return $this->templates;
-    }
-
-    public function addTemplate(Template $template): self
-    {
-        if (!$this->templates->contains($template)) {
-            $this->templates[] = $template;
-            $template->setClient($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTemplate(Template $template): self
-    {
-        if ($this->templates->removeElement($template)) {
-            // set the owning side to null (unless already changed)
-            if ($template->getClient() === $this) {
-                $template->setClient(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return DateTime|null
-     */
-    public function getCreatedAt(): ?DateTime
-    {
-        return $this->createdAt;
+        return $this->notifications;
     }
 
     /**
@@ -308,299 +131,35 @@ class Client extends EntityWithCreatedAndUpdatedDates implements PasswordAuthent
     }
 
     /**
-     * @param string $name
+     * @return string
      */
-    public function setName(string $name): void
+    public function getSurnames(): string
     {
-        $this->name = $name;
+        return $this->surnames;
     }
 
     /**
-     * @return Center
+     * @return string|null
      */
-    public function getCenter(): Center
+    public function getEmail(): ?string
     {
-        return $this->center;
-    }
-
-    /**
-     * @param Center $center
-     */
-    public function setCenter(Center $center): void
-    {
-        $this->center = $center;
+        return $this->email;
     }
 
     /**
      * @return string
      */
-    public function getRepresentative(): string
+    public function getDni(): string
     {
-        return $this->representative;
-    }
-
-    /**
-     * @param string $representative
-     */
-    public function setRepresentative(string $representative): void
-    {
-        $this->representative = $representative;
-    }
-
-    public function getSocialName(): ?string
-    {
-        return $this->socialName;
-    }
-
-    public function setSocialName(?string $socialName): void
-    {
-        $this->socialName = $socialName;
-    }
-
-    public function getGirlMembers(): ?string
-    {
-        return $this->girlMembers;
-    }
-
-    public function setGirlMembers(?string $girlMembers): void
-    {
-        $this->girlMembers = $girlMembers;
-    }
-
-    public function getProvince(): ?string
-    {
-        return $this->province;
-    }
-
-    public function setProvince(?string $province): void
-    {
-        $this->province = $province;
-    }
-
-    public function getCif(): ?string
-    {
-        return $this->cif;
-    }
-
-    public function setCif(?string $cif): void
-    {
-        $this->cif = $cif;
-    }
-
-    public function getIncorporationYear(): ?string
-    {
-        return $this->incorporationYear;
-    }
-
-    public function setIncorporationYear(?string $incorporationYear): void
-    {
-        $this->incorporationYear = $incorporationYear;
-    }
-
-    public function getSupportType(): ?string
-    {
-        return $this->supportType;
-    }
-
-    public function setSupportType(?string $supportType): void
-    {
-        $this->supportType = $supportType;
-    }
-
-    public function getComment(): ?string
-    {
-        return $this->comment;
-    }
-
-    public function setComment(?string $comment): void
-    {
-        $this->comment = $comment;
-    }
-
-    public function getNewCompany(): ?bool
-    {
-        return $this->newCompany;
-    }
-
-    public function setNewCompany(?bool $newCompany): void
-    {
-        $this->newCompany = $newCompany;
-    }
-
-    public function getDigitalStartup(): ?bool
-    {
-        return $this->digitalStartup;
-    }
-
-    public function setDigitalStartup(?bool $digitalStartup): void
-    {
-        $this->digitalStartup = $digitalStartup;
-    }
-
-
-
-    public function getAge(): ?string
-    {
-        return $this->age;
-    }
-
-    public function setAge(?string $age): void
-    {
-        $this->age = $age;
-    }
-
-
-
-    public function getGender(): ?string
-    {
-        return $this->gender;
-    }
-
-    public function setGender(?string $gender): void
-    {
-        $this->gender = $gender;
-    }
-
-
-
-
-    /**
-     * @return string
-     */
-    public function getMembers(): string
-    {
-        return $this->members;
-    }
-
-    /**
-     * @param string $members
-     */
-    public function setMembers(string $members): void
-    {
-        $this->members = $members;
-    }
-
-
-
-    /**
-     * @return string
-     */
-    public function getAnnouncement(): string
-    {
-        return $this->announcement;
-    }
-
-    /**
-     * @param string $announcement
-     */
-    public function setAnnouncement(string $announcement): void
-    {
-        $this->announcement = $announcement;
-    }
-
-    public function announcementName(){
-        $announcementValue = $this->announcement;
-        if (is_numeric($this->announcement)) {
-
-            $announcementArray = Util::announcement;
-            $announcementValue=$announcementArray[$this->announcement];
-        }
-        return $announcementValue;
-    }
-
-
-
-    /**
-     * @return string
-     */
-    public function getSpeciality(): string
-    {
-        return $this->speciality;
-    }
-
-    /**
-     * @param string $speciality
-     */
-    public function setSpeciality(string $speciality): void
-    {
-        $this->speciality = $speciality;
+        return $this->dni;
     }
 
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getPassword(): string
     {
-        return $this->description;
-    }
-
-    /**
-     * @param string $description
-     */
-    public function setDescription(string $description): void
-    {
-        $this->description = $description;
-    }
-
-    /**
-     * @return Document|null
-     */
-    public function getLogo(): ?Document
-    {
-        return $this->logo;
-    }
-
-    /**
-     * @param Document|null $logo
-     */
-    public function setLogo(?Document $logo): void
-    {
-        $this->logo = $logo;
-    }
-
-    /**
-     * @return array
-     */
-    public function getDocuments(User $user): array
-    {
-       return $user->getDocuments();
-    }
-
-    /**
-     * @param Collection|null $documents
-     */
-    public function setDocuments(?Collection $documents): void
-    {
-        $this->documents = $documents;
-    }
-
-    public function getPassword(): ?string
-    {
-        return (string) $this->password;
-    }
-
-    /**
-     * @param string|null $password
-     */
-    public function setPassword(?string $password): void
-    {
-        $this->password = $password;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPosition(): string
-    {
-        return $this->position;
-    }
-
-    /**
-     * @param string $position
-     */
-    public function setPosition(string $position): void
-    {
-        $this->position = $position;
+        return $this->password;
     }
 
     /**
@@ -612,327 +171,267 @@ class Client extends EntityWithCreatedAndUpdatedDates implements PasswordAuthent
     }
 
     /**
-     * @param string $phone
+     * @return \DateTimeInterface
      */
-    public function setPhone(string $phone): void
+    public function getCreatedAt(): \DateTimeInterface
     {
-        $this->phone = $phone;
+        return UTCDateTime::format($this->createdAt);
     }
 
     /**
-     * @return string
+     * @return \DateTimeInterface|null
      */
-    public function getEmail(): string
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
-        return $this->email;
+        return UTCDateTime::format($this->updatedAt);
     }
 
     /**
-     * @param string $email
+     * @return \DateTimeInterface|null
      */
-    public function setEmail(string $email): void
+    public function getLastLogin(): ?\DateTimeInterface
     {
-        $this->email = $email;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getRepresentative2(): ?string
-    {
-        return $this->representative2;
-    }
-
-    /**
-     * @param string|null $representative2
-     */
-    public function setRepresentative2(?string $representative2): void
-    {
-        $this->representative2 = $representative2;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPosition2(): ?string
-    {
-        return $this->position2;
-    }
-
-    /**
-     * @param string|null $position2
-     */
-    public function setPosition2(?string $position2): void
-    {
-        $this->position2 = $position2;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPhone2(): ?string
-    {
-        return $this->phone2;
-    }
-
-    /**
-     * @param string|null $phone2
-     */
-    public function setPhone2(?string $phone2): void
-    {
-        $this->phone2 = $phone2;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getEmail2(): ?string
-    {
-        return $this->email2;
-    }
-
-    /**
-     * @param string|null $email2
-     */
-    public function setEmail2(?string $email2): void
-    {
-        $this->email2 = $email2;
-    }
-
-
-
-    /**
-     * @return string|null
-     */
-    public function getRepresentative3(): ?string
-    {
-        return $this->representative3;
-    }
-
-    /**
-     * @param string|null $representative3
-     */
-    public function setRepresentative3(?string $representative3): void
-    {
-        $this->representative3 = $representative3;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPosition3(): ?string
-    {
-        return $this->position3;
-    }
-
-    /**
-     * @param string|null $position3
-     */
-    public function setPosition3(?string $position3): void
-    {
-        $this->position3 = $position3;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPhone3(): ?string
-    {
-        return $this->phone3;
-    }
-
-    /**
-     * @param string|null $phone3
-     */
-    public function setPhone3(?string $phone3): void
-    {
-        $this->phone3 = $phone3;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getEmail3(): ?string
-    {
-        return $this->email3;
-    }
-
-    /**
-     * @param string|null $email3
-     */
-    public function setEmail3(?string $email3): void
-    {
-        $this->email3 = $email3;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAge2(): ?string
-    {
-        return $this->age2;
-    }
-
-    /**
-     * @param string|null $age2
-     */
-    public function setAge2(?string $age2): void
-    {
-        $this->age2 = $age2;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getGender2(): ?string
-    {
-        return $this->gender2;
-    }
-
-    /**
-     * @param string|null $gender2
-     */
-    public function setGender2(?string $gender2): void
-    {
-        $this->gender2 = $gender2;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAge3(): ?string
-    {
-        return $this->age3;
-    }
-
-    /**
-     * @param string|null $age3
-     */
-    public function setAge3(?string $age3): void
-    {
-        $this->age3 = $age3;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getGender3(): ?string
-    {
-        return $this->gender3;
-    }
-
-    /**
-     * @param string|null $gender3
-     */
-    public function setGender3(?string $gender3): void
-    {
-        $this->gender3 = $gender3;
+        return UTCDateTime::format($this->lastLogin);
     }
 
     /**
      * @return bool
      */
-    public function isStatus(): bool
+    public function getStatus(): bool
     {
         return $this->status;
     }
 
     /**
-     * @param bool $status
+     * @return string|null
      */
-    public function setStatus(bool $status): void
+    public function getTemporalHash(): ?string
+    {
+        return $this->temporalHash;
+    }
+
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
+
+    /**
+     * @param string $id
+     * @return $this
+     */
+    public function setId(string $id): Client
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @param array|Collection $bookings
+     * @return $this
+     */
+    public function setBookings(array|Collection $bookings): Client
+    {
+        $this->bookings = $bookings;
+        return $this;
+    }
+
+    /**
+     * @param array|Collection $notifications
+     * @return $this
+     */
+    public function setNotifications(array|Collection $notifications): Client
+    {
+        $this->notifications = $notifications;
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function setName(string $name): Client
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @param string $surnames
+     * @return $this
+     */
+    public function setSurnames(string $surnames): Client
+    {
+        $this->surnames = $surnames;
+        return $this;
+    }
+
+    /**
+     * @param string|null $email
+     * @return $this
+     */
+    public function setEmail(?string $email): Client
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * @param string $dni
+     * @return $this
+     */
+    public function setDni(string $dni): Client
+    {
+        $this->dni = $dni;
+        return $this;
+    }
+
+    /**
+     * @param string $password
+     * @return $this
+     */
+    public function setPassword(string $password): Client
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * @param string $phone
+     * @return $this
+     */
+    public function setPhone(string $phone): Client
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $createdAt
+     * @return $this
+     */
+    public function setCreatedAt(?\DateTimeInterface $createdAt): Client
+    {
+        $this->createdAt = UTCDateTime::setUTC($createdAt);
+        return $this;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $updatedAt
+     * @return $this
+     */
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): Client
+    {
+        $this->updatedAt = UTCDateTime::setUTC($updatedAt);
+        return $this;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $lastLogin
+     * @return $this
+     */
+    public function setLastLogin(?\DateTimeInterface $lastLogin): Client
+    {
+        $this->lastLogin = UTCDateTime::setUTC($lastLogin);
+        return $this;
+    }
+
+    /**
+     * @param bool $status
+     * @return $this
+     */
+    public function setStatus(bool $status): Client
     {
         $this->status = $status;
-    }
-
-    public function getAlumni(): ?bool
-    {
-        return $this->alumni;
-    }
-
-    public function setAlumni(?bool $alumni): void
-    {
-        $this->alumni = $alumni;
-    }
-
-
-    public function addDocument(Document $document): self
-    {
-        if ($this->documents == null){
-            $this->documents = new ArrayCollection();
-        }
-        if (!in_array($document,$this->getDocuments())) {
-            $clientHasDocument = (new ClientHasDocument());
-            $clientHasDocument->setDocument($document);
-            $clientHasDocument->setClient($this);
-            if($this->documents != null){
-                $this->documents->add($clientHasDocument);
-            }
-
-        }
-
-        return $this;
-    }
-
-    public function removeService(Service $service): self
-    {
-        foreach ($this->documents as $clientHasDocument){
-            if ($clientHasDocument->getDocument() == $service) {
-                $this->documents->removeElement($clientHasDocument);
-            }
-        }
-
         return $this;
     }
 
     /**
-     * @return string
+     * @param string $temporalHash
+     * @return $this
      */
-    public function getGoals(): string|array
+    public function setTemporalHash(string $temporalHash): Client
     {
-        return explode(',', $this->goals);
+        $this->temporalHash = $temporalHash;
+        return $this;
     }
 
-    public function getGoalsIdentity(): array{
-        $allGoals = [];
-        foreach ($this->getGoals() as $goal){
-            if ($goal !== null && $goal !== '') {
-                $allGoals [] = Util::goals_array[$goal];
-            }
+    // ----------------------------------------------------------------
+    // Other Methods
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO ADD A BOOKING TO THE CLIENT
+     * ES: FUNCIÓN PARA AÑADIR UNA RESERVA AL CLIENTE
+     *
+     * @param Booking $booking
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function addBooking(Booking $booking): Client
+    {
+        if (!$this->bookings->contains($booking)) {
+            $this->bookings->add($booking);
         }
 
-        return $allGoals;
+        return $this;
     }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
     /**
-     * @param string $goals
+     * EN: FUNCTION TO REMOVE A BOOKING FROM THE CLIENT
+     * ES: FUNCIÓN PARA BORRAR UNA RESERVA DEL CLIENTE
+     *
+     * @param Booking $booking
+     * @return $this
      */
-    public function setGoals(array $goals): void
+    // ----------------------------------------------------------------
+    public function removeBooking(Booking $booking): Client
     {
-        $this->goals = implode(',', $goals);
-    }
-
-    /**
-     * @return Document|null
-     */
-    public function getDocumentAdhesion(): ?Document
-    {
-        if ($this->getUser()){
-            return $this->getUser()->getDocumentAdhesion();
+        if ($this->bookings->contains($booking)) {
+            $this->bookings->removeElement($booking);
         }
-        return null;
-    }
 
-    /**
-     * @return Document|null
-     */
-    public function getDocumentConfidencial(): ?Document
-    {
-        if ($this->getUser()){
-            return $this->getUser()->getDocumentConfidencial();
-        }
-        return null;
+        return $this;
     }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO ADD A NOTIFICATION TO THE CLIENT
+     * ES: FUNCIÓN PARA AÑADIR UNA NOTIFICACIÓN AL CLIENTE
+     *
+     * @param Notification $notification
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function addNotification(Notification $notification): Client
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO REMOVE A NOTIFICATION FROM THE CLIENT
+     * ES: FUNCIÓN PARA BORRAR UNA NOTIFICACIÓN DEL CLIENTE
+     *
+     * @param Notification $notification
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function removeNotification(Notification $notification): Client
+    {
+        if ($this->notifications->contains($notification)) {
+            $this->notifications->removeElement($notification);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
 
 }

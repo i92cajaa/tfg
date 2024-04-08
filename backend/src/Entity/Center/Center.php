@@ -32,7 +32,7 @@ class Center
     private ?Document $logo = null;
 
     #[ORM\OneToMany(mappedBy:"center", targetEntity: User::class, cascade:["persist", "remove"])]
-    private Collection $users;
+    private array|Collection $users;
 
     #[ORM\ManyToOne(targetEntity: Area::class, inversedBy: 'centers')]
     #[ORM\JoinColumn(name: "area_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
@@ -84,9 +84,9 @@ class Center
     }
 
     /**
-     * @return Collection
+     * @return array|Collection
      */
-    public function getUsers(): Collection
+    public function getUsers(): array|Collection
     {
         return $this->users;
     }
@@ -156,10 +156,10 @@ class Center
     }
 
     /**
-     * @param Collection $users
+     * @param array|Collection $users
      * @return $this
      */
-    public function setUsers(Collection $users): Center
+    public function setUsers(array|Collection $users): Center
     {
         $this->users = $users;
         return $this;

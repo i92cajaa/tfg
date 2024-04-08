@@ -2,13 +2,12 @@
 
 namespace App\Entity\Client;
 
-use App\Entity\Document\Document;
-use App\Repository\ClientHasDocumentRepository;
+use App\Entity\Schedule\Schedule;
+use App\Repository\BookingRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-
-#[ORM\Entity(repositoryClass: ClientHasDocumentRepository::class)]
-class ClientHasDocument
+#[ORM\Entity(repositoryClass: BookingRepository::class)]
+class Booking
 {
 
     // ----------------------------------------------------------------
@@ -16,14 +15,14 @@ class ClientHasDocument
     // ----------------------------------------------------------------
 
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'documents')]
+    #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'bookings')]
     #[ORM\JoinColumn(name: "client_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
     private Client $client;
 
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: Document::class, inversedBy: 'clients')]
-    #[ORM\JoinColumn(name: "document_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
-    private Document $document;
+    #[ORM\ManyToOne(targetEntity: Schedule::class, inversedBy: 'bookings')]
+    #[ORM\JoinColumn(name: "schedule_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
+    private Schedule $schedule;
 
     // ----------------------------------------------------------------
     // Getter Methods
@@ -38,11 +37,11 @@ class ClientHasDocument
     }
 
     /**
-     * @return Document
+     * @return Schedule
      */
-    public function getDocument(): Document
+    public function getSchedule(): Schedule
     {
-        return $this->document;
+        return $this->schedule;
     }
 
     // ----------------------------------------------------------------
@@ -51,23 +50,21 @@ class ClientHasDocument
 
     /**
      * @param Client $client
-     * @return ClientHasDocument
+     * @return $this
      */
-    public function setClient(Client $client): ClientHasDocument
+    public function setClient(Client $client): Booking
     {
         $this->client = $client;
-
         return $this;
     }
 
     /**
-     * @param Document $document
-     * @return ClientHasDocument
+     * @param Schedule $schedule
+     * @return $this
      */
-    public function setDocument(Document $document): ClientHasDocument
+    public function setSchedule(Schedule $schedule): Booking
     {
-        $this->document = $document;
-
+        $this->schedule = $schedule;
         return $this;
     }
 }

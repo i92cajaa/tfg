@@ -26,7 +26,7 @@ class Area
     // ----------------------------------------------------------------
 
     #[ORM\OneToMany(mappedBy: "area", targetEntity: Center::class, cascade: ["persist", "remove"])]
-    private ?Collection $centers;
+    private array|Collection $centers;
 
     // ----------------------------------------------------------------
     // Fields
@@ -63,9 +63,9 @@ class Area
     }
 
     /**
-     * @return Collection|null
+     * @return array|Collection
      */
-    public function getCenters(): ?Collection
+    public function getCenters(): array|Collection
     {
         return $this->centers;
     }
@@ -105,6 +105,16 @@ class Area
     public function setId(string $id): Area
     {
         $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @param array|Collection $centers
+     * @return $this
+     */
+    public function setCenters(array|Collection $centers): Area
+    {
+        $this->centers = $centers;
         return $this;
     }
 
