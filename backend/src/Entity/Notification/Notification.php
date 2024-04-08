@@ -3,6 +3,7 @@ namespace App\Entity\Notification;
 
 
 use App\Entity\Appointment\Appointment;
+use App\Entity\Client\Client;
 use App\Entity\User\User;
 use App\Repository\NotificationRepository;
 use App\Shared\Classes\UTCDateTime;
@@ -15,31 +16,57 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 class Notification
 {
 
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
+
+    const FULL_CLASS = 'full_class';
+    const NEW_CLASS_PETITION = 'new_class_petition';
+
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
+
     #[ORM\Id]
     #[ORM\Column(type: 'string', unique: true, nullable: false)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private $id;
 
-    // Relaciones
+    // ----------------------------------------------------------------
+    // Relationships
+    // ----------------------------------------------------------------
 
     #[ORM\ManyToOne(targetEntity:User::class, inversedBy: "notifications")]
     #[ORM\JoinColumn(name: "user_id", referencedColumnName:"id", nullable:true, onDelete:"CASCADE")]
-    private ?User $user;
+    private ?User $user = null;
 
-    // Campos
+    #[ORM\ManyToOne(targetEntity:Client::class, inversedBy: "notifications")]
+    #[ORM\JoinColumn(name: "client_id", referencedColumnName:"id", nullable:true, onDelete:"CASCADE")]
+    private ?Client $client = null;
+
+    // ----------------------------------------------------------------
+    // Fields
+    // ----------------------------------------------------------------
 
     #[ORM\Column(type: 'text', nullable: false)]
     private string $message;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: false)]
+    private string $type;
+
     #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $link;
+    private ?string $link = null;
 
     #[ORM\Column(type: 'boolean', nullable: false, options:["default"=> 0])]
     private bool $seen;
 
     #[ORM\Column(type: 'datetime', nullable: false)]
-    private ?DateTime $createdAt;
+    private DateTime $createdAt;
+
+    // ----------------------------------------------------------------
+    // Magic Methods
+    // ----------------------------------------------------------------
 
     public function __construct()
     {
@@ -47,12 +74,32 @@ class Notification
         $this->seen              = false;
     }
 
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
+
     /**
      * @return string
      */
     public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return Client|null
+     */
+    public function getClient(): ?Client
+    {
+        return $this->client;
     }
 
     /**
@@ -72,6 +119,26 @@ class Notification
     }
 
     /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSeen(): bool
+    {
+        return $this->seen;
+    }
+
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
+
+    /**
      * @param string $message
      * @return Notification
      */
@@ -79,14 +146,6 @@ class Notification
     {
         $this->message = $message;
         return $this;
-    }
-
-    /**
-     * @return User|null
-     */
-    public function getUser(): ?User
-    {
-        return $this->user;
     }
 
     /**
@@ -99,13 +158,7 @@ class Notification
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isSeen(): bool
-    {
-        return $this->seen;
-    }
+
 
     /**
      * @return string|null

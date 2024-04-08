@@ -24,6 +24,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 class Client implements PasswordAuthenticatedUserInterface
 {
 
+    // ----------------------------------------------------------------
+    // Constants
+    // ----------------------------------------------------------------
+
     const ENTITY = 'client';
 
     // ----------------------------------------------------------------
@@ -68,20 +72,20 @@ class Client implements PasswordAuthenticatedUserInterface
     #[ORM\Column(name:"phone", type:"string", length:255, nullable:false)]
     private string $phone;
 
-    #[ORM\Column(name:"created_at", type:"datetime", length:255, nullable:false)]
+    #[ORM\Column(name:"created_at", type:"datetime", nullable:false)]
     private DateTime $createdAt;
 
-    #[ORM\Column(name:"updated_at", type:"datetime", length:255, nullable:true)]
+    #[ORM\Column(name:"updated_at", type:"datetime", nullable:true)]
     private ?DateTime $updatedAt = null;
 
-    #[ORM\Column(name:"last_login", type:"datetime", length:255, nullable:true)]
+    #[ORM\Column(name:"last_login", type:"datetime", nullable:true)]
     private ?DateTime $lastLogin = null;
 
-    #[ORM\Column(name:"status", type:"boolean", length:255, nullable:false)]
+    #[ORM\Column(name:"status", type:"boolean", nullable:false)]
     private bool $status;
 
     #[ORM\Column(name:"temporal_hash", type:"string", length:255, nullable:true)]
-    private string $temporalHash;
+    private ?string $temporalHash = null;
 
     // ----------------------------------------------------------------
     // Magic Methods
@@ -92,6 +96,7 @@ class Client implements PasswordAuthenticatedUserInterface
         $this->bookings = new ArrayCollection();
         $this->notifications = new ArrayCollection();
         $this->createdAt = UTCDateTime::setUTC(UTCDateTime::create());
+        $this->status = true;
     }
 
     // ----------------------------------------------------------------

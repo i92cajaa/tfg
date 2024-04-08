@@ -2,12 +2,10 @@
 
 namespace App\Entity\Document;
 
+use App\Entity\Client\Client;
 use App\Entity\Client\ClientHasDocument;
 use App\Repository\DocumentRepository;
 use App\Shared\Classes\UTCDateTime;
-use phpDocumentor\Reflection\Types\This;
-use Symfony\Component\Uid\Uuid;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,8 +13,17 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 class Document
 {
+
+    // ----------------------------------------------------------------
+    // Constants
+    // ----------------------------------------------------------------
+
     const STATUS_REMOVED = false;
     const STATUS_ENABLED = true;
+
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
 
     #[ORM\Id]
     #[ORM\Column(type: 'string', unique: true, nullable: false)]
@@ -24,8 +31,16 @@ class Document
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private string $id;
 
+    // ----------------------------------------------------------------
+    // Relationships
+    // ----------------------------------------------------------------
+
     #[ORM\OneToMany(mappedBy: "document", targetEntity: ClientHasDocument::class, cascade: ["persist", "remove"])]
-    private ?Collection $clients;
+    private array|Collection $clients;
+
+    // ----------------------------------------------------------------
+    // Fields
+    // ----------------------------------------------------------------
 
     #[ORM\Column(name:"original_name", type:"string", length:255, nullable:false)]
     private string $originalName;
@@ -48,27 +63,19 @@ class Document
     #[ORM\Column(name:"status", type:"boolean", nullable:false)]
     private bool $status;
 
-    #[ORM\Column(name:"is_startup_survey", type:"boolean", nullable:true, options: ['default' => false])]
-    private ?bool $isStartupSurvey;
-
-    #[ORM\Column(name:"is_mentor_survey", type:"boolean", nullable:true, options: ['default' => false])]
-    private ?bool $isMentorSurvey;
-
-    #[ORM\Column(name:"mentor_survey_points", type:"float", nullable:true, options: ['default' => NULL])]
-    private ?float $totalPointsMentorSurvey;
-
-    #[ORM\ManyToOne(targetEntity: SurveyRange::class, inversedBy: Document::class)]
-    #[ORM\JoinColumn(name: "survey_range_id", referencedColumnName: "id", onDelete: 'SET NULL')]
-    private ?SurveyRange $surveyRange;
-
-    #[ORM\Column(name: "mentored_time", type: "float", nullable: true, options: ['default' => NULL])]
-    private ?float $mentoredTime;
+    // ----------------------------------------------------------------
+    // Magic Methods
+    // ----------------------------------------------------------------
 
     public function __construct()
     {
         $this->createdAt = UTCDateTime::setUTC(UTCDateTime::create());
         $this->status    = true;
     }
+
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
 
     /**
      * @return string
@@ -87,6 +94,76 @@ class Document
     }
 
     /**
+     * @return string
+     */
+    public function getExtension(): string
+    {
+        return $this->extension;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileName(): string
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubdirectory(): string
+    {
+        return $this->subdirectory;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getStatus(): bool
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMimetype(): ?string
+    {
+        return $this->mimeType;
+    }
+
+    /**
+     * @return Collection|null
+     */
+    public function getClients(): array|Collection
+    {
+        return $this->clients;
+    }
+
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
+
+    /**
+     * @param string $id
+     * @return $this
+     */
+    public function setId(string $id): Document
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
      * @param string $originalName
      * @return Document
      */
@@ -94,14 +171,6 @@ class Document
     {
         $this->originalName = $originalName;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getExtension(): string
-    {
-        return $this->extension;
     }
 
     /**
@@ -115,14 +184,6 @@ class Document
     }
 
     /**
-     * @return string
-     */
-    public function getFileName(): string
-    {
-        return $this->fileName;
-    }
-
-    /**
      * @param string $fileName
      * @return Document
      */
@@ -130,14 +191,6 @@ class Document
     {
         $this->fileName = $fileName;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubdirectory(): string
-    {
-        return $this->subdirectory;
     }
 
     /**
@@ -151,29 +204,13 @@ class Document
     }
 
     /**
-     * @return DateTime
-     */
-    public function getCreatedAt(): DateTime
-    {
-        return $this->createdAt;
-    }
-
-    /**
      * @param DateTime $createdAt
      * @return Document
      */
-    public function setCreatedAt(DateTime $createdAt)
+    public function setCreatedAt(DateTime $createdAt): Document
     {
         $this->createdAt = $createdAt;
         return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getStatus(): bool
-    {
-        return $this->status;
     }
 
     /**
@@ -187,14 +224,6 @@ class Document
     }
 
     /**
-     * @return string|null
-     */
-    public function getMimetype(): ?string
-    {
-        return $this->mimeType;
-    }
-
-    /**
      * @param string|null $mimetype
      * @return Document
      */
@@ -205,112 +234,55 @@ class Document
     }
 
     /**
-     * @return Collection|null
-     */
-    public function getClients(): ?Collection
-    {
-        return $this->clients;
-    }
-
-    /**
-     * @param Collection|null $clients
-     */
-    public function setClients(?Collection $clients): void
-    {
-        $this->clients = $clients;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function isStartUpSurvey() : ?bool
-    {
-        return $this->isStartupSurvey;
-    }
-
-    /**
-     * @param bool|null $isStartupSurvey
-     * @return $this
-     */
-    public function setIsStartupSurvey(?bool $isStartupSurvey) : Document
-    {
-        $this->isStartupSurvey = $isStartupSurvey;
-
-        return $this;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function isMentorSurvey() : ?bool
-    {
-        return $this->isMentorSurvey;
-    }
-
-    /**
-     * @param bool|null $isMentorSurvey
-     * @return $this
-     */
-    public function setIsMentorSurvey(?bool $isMentorSurvey) : Document
-    {
-        $this->isMentorSurvey = $isMentorSurvey;
-
-        return $this;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getTotalPointsMentorSurvey() : ?float
-    {
-        return $this->totalPointsMentorSurvey;
-    }
-
-    /**
-     * @param float|null $totalPointsMentorSurvey
-     * @return $this
-     */
-    public function setTotalPointsMentorSurvey(?float $totalPointsMentorSurvey) : Document
-    {
-        $this->totalPointsMentorSurvey = $totalPointsMentorSurvey;
-
-        return $this;
-    }
-
-    /**
-     * @return SurveyRange|null
-     */
-    public function getSurveyRange() : ?SurveyRange
-    {
-        return $this->surveyRange;
-    }
-
-    /**
-     * @param SurveyRange|null $surveyRange
-     * @return $this
-     */
-    public function setSurveyRange(?SurveyRange $surveyRange) : Document
-    {
-        $this->surveyRange = $surveyRange;
-
-        return $this;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getMentoredTime(): ?float
-    {
-        return $this->mentoredTime;
-    }
-
-    /**
-     * @param float|null $mentoredTime
+     * @param array|Collection $clients
      * @return Document
      */
-    public function setMentoredTime(?float $mentoredTime): Document
+    public function setClients(array|Collection $clients): Document
     {
-        $this->mentoredTime = $mentoredTime;
+        $this->clients = $clients;
         return $this;
     }
+
+    // ----------------------------------------------------------------
+    // Other Methods
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO ADD CLIENT TO DOCUMENT
+     * ES: FUNCIÓN PARA AÑADIR CLIENTE AL DOCUMENTO
+     *
+     * @param Client $client
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function addClient(Client $client): Document
+    {
+        if (!$this->clients->contains($client)) {
+            $this->clients->add($client);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO REMOVE CLIENT FROM DOCUMENT
+     * ES: FUNCIÓN PARA BORRAR CLIENTE DEL DOCUMENTO
+     *
+     * @param Client $client
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function removeClient(Client $client): Document
+    {
+        if ($this->clients->contains($client)) {
+            $this->clients->removeElement($client);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
 }
