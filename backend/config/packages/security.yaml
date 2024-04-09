@@ -17,7 +17,7 @@ security:
         app_client_provider:
             entity:
                 class: App\Entity\Client\Client
-                property: email
+                property: dni
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/

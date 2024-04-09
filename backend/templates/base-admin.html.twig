@@ -82,7 +82,7 @@
 
             <div class="header-logo-wrapper col-auto p-0">
                 <div class="logo-wrapper">
-                    <a href="{{ path('appointment_index') }}">
+                    <a href="#">
                         <img class="img-fluid"  src="{{ configuration.logo_small ? path('document_render', {'document':  configuration.logo_small}) : asset('assets/images/logo/logo.png') }}" alt="">
                     </a>
                 </div>
@@ -122,11 +122,11 @@
         <!-- Page Sidebar Start-->
         <div class="sidebar-wrapper {% if not app.user.menuExpanded %} close_icon {% endif %}">
             <div>
-                <div class="logo-wrapper"><a href="{{ path('appointment_index') }}"><img class="img-fluid for-light" style="height: 50px !important;" src="{{ configuration.logo_big ? path('document_render', {'document':  configuration.logo_big}) : asset('assets/images/logo/logo.png') }}" alt=""><img class="img-fluid for-dark" style="height: 50px !important;" src="{{ configuration.logo_big ? path('document_render', {'document':  configuration.logo_big}) : asset('assets/images/logo/logo.png') }}" alt=""></a>
+                <div class="logo-wrapper"><a href="#"><img class="img-fluid for-light" style="height: 50px !important;" src="{{ configuration.logo_big ? path('document_render', {'document':  configuration.logo_big}) : asset('assets/images/logo/logo.png') }}" alt=""><img class="img-fluid for-dark" style="height: 50px !important;" src="{{ configuration.logo_big ? path('document_render', {'document':  configuration.logo_big}) : asset('assets/images/logo/logo.png') }}" alt=""></a>
                     <div class="back-btn"><i class="fa fa-angle-left"></i></div>
                     <div class="toggle-sidebar" style="right: 15px; top:15px;" onclick="toggleMenu()"><i class="status_toggle middle sidebar-toggle" data-feather="grid"> </i></div>
                 </div>
-                <div class="logo-icon-wrapper"><a href="{{ path('appointment_index') }}"><img class="img-fluid" width="40" src="{{ configuration.logo_small ? path('document_render', {'document':  configuration.logo_small}) : asset('assets/images/logo/logo-icon.png') }}" alt=""></a></div>
+                <div class="logo-icon-wrapper"><a href="#"><img class="img-fluid" width="40" src="{{ configuration.logo_small ? path('document_render', {'document':  configuration.logo_small}) : asset('assets/images/logo/logo-icon.png') }}" alt=""></a></div>
                 <nav class="sidebar-main">
                     <div class="left-arrow" id="left-arrow"><i data-feather="arrow-left"></i></div>
                     <div id="sidebar-menu">
@@ -134,7 +134,7 @@
                             <li class="back-btn"><a><img class="img-fluid" width="40" src="{{ configuration.logo_small ? path('document_render', {'document':  configuration.logo_small}) : asset('assets/images/logo/logo-icon.png') }}" alt=""></a>
                                 <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
                             </li>
-                            {% if app.user.isSandetel or app.user.isSuperadmin %}
+                            {% if app.user.isSuperadmin %}
                             <li class="sidebar-list">
                                     <a href="{{ path('user_dashboard') }}" class="sidebar-link sidebar-title link-nav nav-active{}" data-button-id="dashboard">
                                         <i data-feather="pie-chart"></i>
@@ -143,9 +143,9 @@
                                 </li>
                             {% endif %}
 
-                            {% if userPermission.can('list', 'appointments') %}
+                            {% if userPermission.can('list', 'user') %}
                                 <li class="sidebar-list">
-                                    <a href="{{ path('appointment_list') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'appointment_' and 'request_' not in app.request.attributes.get( '_route' ) != 'appointment_index'  %}nav-active{% endif %}" data-original-title="" title="">
+                                    <a href="#" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'appointment_' and 'request_' not in app.request.attributes.get( '_route' ) != 'appointment_index'  %}nav-active{% endif %}" data-original-title="" title="">
                                         <i data-feather="layers"></i>
                                         <span>Mentorías</span>
                                     </a>
@@ -160,20 +160,11 @@
 {#                            </li>#}
 
                             <li class="sidebar-list">
-                                <a href="{{ path('appointment_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) == 'appointment_index' %}nav-active{% endif %}" data-original-title="" title="">
+                                <a href="#" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) == 'appointment_index' %}nav-active{% endif %}" data-original-title="" title="">
                                     <i data-feather="calendar"></i>
                                     <span>{{ 'Calendar'|trans }}</span>
                                 </a>
                             </li>
-
-                            {% if app.user.isProject %}
-                                <li class="sidebar-list">
-                                    <a href="{{ path('user_all_surveys') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'appointment_' and 'request_' not in app.request.attributes.get( '_route' ) != 'appointment_index'  %}nav-active{% endif %}" data-original-title="" title="">
-                                        <i data-feather="file"></i>
-                                        <span>Cuestionarios</span>
-                                    </a>
-                                </li>
-                            {% endif %}
 
                             {% if userPermission.can('list', 'users') %}
                                 <li class="sidebar-list">
@@ -206,7 +197,7 @@
                             {% endif %}
 
 
-                            {% if app.user.isAdmin and not app.user.isDirector and not app.user.isSandetel %}
+                            {% if app.user.isAdmin %}
                                 <li class="sidebar-main-title">
                                     <div>
                                         <h6 >{{ 'Administration'|trans }}</h6>
@@ -216,7 +207,7 @@
 
                                 {% if userPermission.can('list', 'services') %}
                                     <li class="sidebar-list">
-                                        <a href="{{ path('service_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'service_' %}nav-active{% endif %}" data-original-title="" title="">
+                                        <a href="#" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'service_' %}nav-active{% endif %}" data-original-title="" title="">
                                             <i data-feather="server"></i>
                                             <span>Tipos de Mentorías</span>
                                         </a>
@@ -225,7 +216,7 @@
 
                                 {% if userPermission.can('list', 'services') %}
                                     <li class="sidebar-list">
-                                        <a href="{{ path('survey_range_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'survey_range_' %}nav-active{% endif %}" data-original-title="" title="">
+                                        <a href="#" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'survey_range_' %}nav-active{% endif %}" data-original-title="" title="">
                                             <i data-feather="calendar"></i>
                                             <span>Rangos de Cuestionarios</span>
                                         </a>
@@ -536,314 +527,6 @@
                 console.log("ERROR");
             }
         });
-
-    }
-
-    //Tareas
-
-    function openCreateTaskModal(appointment, event, client, status)
-    {
-
-        $.ajax({
-            url: '{{ path('task_get_create_template') }}',
-            type: 'post',
-            dataType: 'json',
-            delay: 250,
-            data: {
-                _token: '{{ csrf_token('get-create-task-template') }}',
-                appointment: appointment,
-                client: client,
-                event: event,
-                status: status
-            },
-            success: function (response) {
-                if(response.success){
-                    $('#taskModalContent').html(response.data);
-                    if (feather) {
-                        feather.replace({
-                            width: 14,
-                            height: 14
-                        });
-                    }
-
-                    $('#taskModal').modal('show');
-
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(textStatus, errorThrown);
-            }
-        })
-
-    }
-
-    function openEditTaskModal(id){
-
-        $.ajax({
-            url: '{{ path('task_get_edit_template') }}',
-            type: 'post',
-            dataType: 'json',
-            delay: 250,
-            data: {
-                _token: '{{ csrf_token('get-edit-task-template') }}',
-                id: id, // search term
-            },
-            success: function (response) {
-                if(response.success){
-
-                    $('#taskModalContent').html(response.data);
-
-                    if (feather) {
-                        feather.replace({
-                            width: 14,
-                            height: 14
-                        });
-                    }
-
-                    $('#taskModal').modal('show');
-
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(textStatus, errorThrown);
-            }
-        })
-
-    }
-
-    function changeStatusTask(taskId)
-    {
-        const inputOptions = new Promise((resolve) => {
-            setTimeout(() => {
-                resolve({
-                    {% for status in taskStatuses %}
-                    '{{ status.id }}':'{{ status.name|trans }}',
-                    {% endfor %}
-                })
-
-            }, 1000)
-
-        })
-
-        swal.fire({
-            title: '{{ 'Change Status'|trans }}',
-            text: '{{ 'Select the status to which you want to change the task'|trans }}',
-            input: 'select',
-            inputAttributes: {
-                id: 'swal-input-select'
-            },
-            inputOptions: inputOptions,
-            inputValidator: (value) => {
-                if (!value) {
-                    return '{{ 'You need to select an option'|trans }}'
-                }
-            },
-            showCancelButton: true,
-            confirmButtonText: '{{ 'Change Status'|trans }}',
-            cancelButtonText: '{{ 'Cancel'|trans }}',
-            showLoaderOnConfirm: true,
-            preConfirm: async (type) => {
-                return type;
-            },
-            allowOutsideClick: () => !Swal.isLoading()
-        }).then((result) => {
-            if(result.isConfirmed){
-
-                $.ajax({
-                    url: '{{ path('task_change_status') }}',
-                    type: 'post',
-                    dataType: 'json',
-                    delay: 250,
-                    data: {
-                        _token: '{{ csrf_token('change-status-task') }}',
-                        id: taskId, // search term
-                        status: result.value
-                    },
-                    success: function (response) {
-                        Swal.fire(
-                            '{{ 'Task Updated'|trans }}',
-                            '{{ 'Task status has been changed successfully'|trans }}',
-                            'success'
-                        )
-
-
-                        if (calendar){
-                            calendar.refetchEvents();
-                        }
-
-
-                    }
-                })
-            }
-        })
-    }
-
-    function addTimeToTask(taskId)
-    {
-        swal.fire({
-            title: '{{ 'Add Time'|trans }}',
-            text: '{{'Select the time you want to add to the task'|trans}}',
-            input: 'text',
-            inputAttributes: {
-                id: 'swal-input-flatpickr'
-            },
-            willOpen: () => {
-
-                $('#swal-input-flatpickr').flatpickr({
-                    locale: locale,
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: "H:i",
-                    time_24hr: true,
-                    defaultHour: 0,
-                    defaultMinute: 0,
-
-                })
-            },
-            inputValidator: (value) => {
-                if (!value) {
-                    return '{{ 'You need to add time'|trans }}'
-                }
-            },
-            showCancelButton: true,
-            confirmButtonText: '{{ 'Add Time'|trans }}',
-            cancelButtonText: '{{ 'Cancel'|trans }}',
-            showLoaderOnConfirm: true,
-            preConfirm: async (type) => {
-                return type;
-            },
-            allowOutsideClick: () => !Swal.isLoading()
-        }).then((result) => {
-            if(result.isConfirmed){
-
-                $.ajax({
-                    url: '{{ path('task_add_time') }}',
-                    type: 'post',
-                    dataType: 'json',
-                    delay: 250,
-                    data: {
-                        _token: '{{ csrf_token('add-time-task') }}',
-                        id: taskId, // search term
-                        time: result.value
-                    },
-                    success: function (response) {
-                        Swal.fire(
-                            '{{ 'Task Updated' }}',
-                            '{{ 'Time has been recorded for the selected task'|trans }}',
-                            'success'
-                        )
-
-                        if(calendar){
-                            calendar.refetchEvents();
-                        }
-
-
-                    }
-                })
-            }
-        })
-    }
-
-    // Event click function
-    function showTask(taskId) {
-
-        $.ajax({
-            url: '{{ path('task_get_by_id') }}',
-            type: 'post',
-            dataType: 'json',
-            delay: 250,
-            data: {
-                _token: '{{ csrf_token('get-task') }}',
-                id: taskId, // search term
-            },
-            success: function (response) {
-                let task = response.data;
-                let resourceHTML = '';
-                if (task.appointment) {
-                    resourceHTML = `
-                        <div class="col-md-12">
-                            <h3>{{ 'Appointment Assigned'|trans }}</h3>
-                            <p><a class="text-primary" href="{% if userPermission.can('show', 'appointments') %}{{ path('appointment_show') }}/${task.appointment}{% else %}#{% endif %}">${task.appointmentDate}</a></p>
-                        </div>
-                    `
-                }
-
-                if (task.client) {
-                    resourceHTML = `
-                        <div class="col-md-12">
-                            <h3>{{ configuration.client_nomenclature ~ ' Assigned'|trans }}</h3>
-                            <p><a class="text-primary" href="{% if userPermission.can('show', 'clients') %}{{ path('client_show') }}/${task.client}{% else %}#{% endif %}">${task.clientFullName}</a></p>
-                        </div>
-                    `
-                }
-                console.log(task.client);
-                Swal.fire({
-                    title: '<strong>'+ task.title.toUpperCase() + '</strong>',
-                    html:
-                        `
-                            <hr>
-                            <div class="d-flex flex-row flex-wrap justify-content-center my-2 gap-3 ">
-                                ${resourceHTML}
-                                <div class="col-auto">
-                                    <h3>Usuario</h3>
-                                    <p>${task.userFullName}</p>
-                                </div>
-                                <div class="col-auto">
-                                    <h3>Fecha Inicio</h3>
-                                    <p style="text-align: left; width: fit-content; margin: auto;">
-                                        <i class="fa fa-calendar-o" style="font-size: 15px; margin-right: 5px;"></i>${task.estimated_start_date} <br>
-                                        <i class="icofont icofont-clock-time" style="font-size: 15px; margin-right: 5px;"></i>${task.estimated_start_time}
-                                    </p>
-                                </div>
-                                <div class="col-12">
-                                    <h3>{{ 'Description'|trans }}</h3>
-                                    ${task.description}
-                                </div>
-                            </div>
-                            `
-                    ,
-                    width: 600,
-                    showCloseButton: true,
-                    showConfirmButton: false,
-                    closeButtonText: '{{ 'Close'|trans }}',
-                });
-            }
-        });
-    }
-
-    async function confirmDeleteTask(taskId){
-        let form = document.createElement("form");
-
-        form.method =  "post";
-        form.id = "deleteTaskForm"+taskId;
-
-        form.action = "{{ path('task_delete') }}/" + taskId;
-
-        let token = document.createElement("input");
-        token.type = "hidden";
-        token.name = "_token";
-        token.value = "{{ csrf_token('delete-task') }}";
-
-        form.appendChild(token);
-        document.body.appendChild(form);
-
-        await Swal.fire({
-            title: '{{ 'Are You Sure?'|trans }}',
-            text: "{{ 'The Task Will Be Deleted'|trans }}.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: primaryColor,
-            cancelButtonColor: '#d33',
-            confirmButtonText: '{{ 'Delete'|trans }}',
-            cancelButtonText: '{{ 'Cancel'|trans }}'
-        }).then((result) => {
-            if (result.isConfirmed === true) {
-
-                form.submit();
-            }
-        });
-
-        $('#deleteTaskForm'+taskId).remove();
 
     }
 

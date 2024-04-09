@@ -71,7 +71,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td><a href="{{ path('user_show', {'user': user}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" class="cursor-pointer">{{ user.name }} {{ user.surnames }}</a></td>
+                                <td><a href="{{ path('user_show', {'user': user.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" class="cursor-pointer">{{ user.name }} {{ user.surnames }}</a></td>
                                 <td>
                                     <div class="d-flex align-items-center mb-2"><i data-feather="mail" class="me-2" style="width: 15px"></i>{{ user.email }}</div>
                                     <div class="d-flex align-items-center"><i data-feather="phone" class="me-2" style="width: 15px"></i>{{ user.phone }}</div>
@@ -93,7 +93,7 @@
                                 <td class="text-nowrap">
                                     <div class="d-inline-flex gap-1">
                                         {% if userPermission.can('show', 'users') %}
-                                            <a href="{{ path('user_show', {'user': user}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
+                                            <a href="{{ path('user_show', {'user': user.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
                                         {% endif %}
                                         {% if userPermission.can('edit', 'users') %}
                                             <a href="{{ path('user_edit', {'user': user.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
@@ -119,7 +119,7 @@
                                             </button>
                                             <div class="dropdown-content " style="top: 20px">
                                                 {% if userPermission.can('show', 'users') %}
-                                                    <a href="{{ path('user_show', {'user': user}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
+                                                    <a href="{{ path('user_show', {'user': user.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
                                                 {% endif %}
                                                 {% if userPermission.can('edit', 'users') %}
                                                     <a href="{{ path('user_edit', {'user': user.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>

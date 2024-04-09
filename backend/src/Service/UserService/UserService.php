@@ -3,25 +3,18 @@
 namespace App\Service\UserService;
 
 use App\Entity\Client\ClientHasDocument;
-use App\Entity\Document\SurveyRange;
 use App\Repository\ClientHasDocumentRepository;
 use App\Repository\SurveyRangeRepository;
 use App\Service\FilterService;
-use App\Service\TemplateService\TemplateTypeService;
 use DateTime;
-use App\Entity\Appointment\Appointment;
 use App\Entity\Area\Area;
 use App\Entity\Center\Center;
 use App\Entity\Client\Client;
 use App\Entity\Document\Document;
 use App\Entity\Role\Role;
 use App\Entity\Role\RoleHasPermission;
-use App\Entity\Schedules\Schedules;
-use App\Entity\Service\Division;
-use App\Entity\Service\Service;
 use App\Entity\Status\Status;
 use App\Entity\User\User;
-use App\Entity\User\UserHasClient;
 use App\Entity\User\UserHasPermission;
 use App\Form\UserPasswordUpdateType;
 use App\Form\UserType;
@@ -35,16 +28,13 @@ use App\Repository\SchedulesRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\StatusRepository;
 use App\Repository\AreaRepository;
-use App\Repository\UserHasClientRepository;
 use App\Service\DocumentService\DocumentService;
 use App\Service\PermissionService\PermissionService;
 use App\Shared\Classes\AbstractService;
 use App\Shared\Classes\UTCDateTime;
-use App\Shared\Utils\UploadFile;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
-use DateTimeZone;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -77,11 +67,6 @@ class UserService extends AbstractService
     private UserRepository $userRepository;
 
     /**
-     * @var UserHasClientRepository
-     */
-    private UserHasClientRepository $userHasClientRepository;
-
-    /**
      * @var RoleRepository
      */
     private RoleRepository $roleRepository;
@@ -95,28 +80,6 @@ class UserService extends AbstractService
      */
     private CenterRepository $centerRepository;
 
-
-    /**
-     * @var ServiceRepository
-     */
-
-    private ServiceRepository $serviceRepository;
-
-    /**
-     * @var AppointmentRepository
-     */
-    private AppointmentRepository $appointmentRepository;
-
-    /**
-     * @var SchedulesRepository
-     */
-    private SchedulesRepository $schedulesRepository;
-
-    /**
-     * @var DivisionRepository
-     */
-    private DivisionRepository $divisionRepository;
-
     /**
      * @var ClientRepository
      */
@@ -128,24 +91,18 @@ class UserService extends AbstractService
     private StatusRepository $statusRepository;
 
     /**
-     * @var DocumentRepository|\Doctrine\ORM\EntityRepository
+     * @var EntityRepository|DocumentRepository
      */
-    private DocumentRepository $documentRepository;
+    private DocumentRepository|EntityRepository $documentRepository;
 
     /**
-     * @var ClientHasDocumentRepository|\Doctrine\ORM\EntityRepository
+     * @var ClientHasDocumentRepository|EntityRepository
      */
-    private ClientHasDocumentRepository $clientHasDocumentRepository;
-
-    /**
-     * @var SurveyRangeRepository
-     */
-    private SurveyRangeRepository $surveyRangeRepository;
+    private ClientHasDocumentRepository|EntityRepository $clientHasDocumentRepository;
 
     public function __construct(
         private readonly DocumentService $documentService,
         private readonly PermissionService $permissionService,
-        private readonly TemplateTypeService $templateTypeService,
 
         EntityManagerInterface $em,
 
@@ -160,19 +117,13 @@ class UserService extends AbstractService
         protected KernelInterface $kernel
     ) {
         $this->userRepository = $em->getRepository(User::class);
-        $this->userHasClientRepository = $em->getRepository(UserHasClient::class);
         $this->roleRepository = $em->getRepository(Role::class);
         $this->areaRepository = $em->getRepository(Area::class);
         $this->centerRepository = $em->getRepository(Center::class);
-        $this->appointmentRepository = $em->getRepository(Appointment::class);
-        $this->schedulesRepository = $em->getRepository(Schedules::class);
-        $this->serviceRepository = $em->getRepository(Service::class);
-        $this->divisionRepository = $em->getRepository(Division::class);
         $this->clientRepository = $em->getRepository(Client::class);
         $this->statusRepository = $em->getRepository(Status::class);
         $this->documentRepository = $em->getRepository(Document::class);
         $this->clientHasDocumentRepository = $em->getRepository(ClientHasDocument::class);
-        $this->surveyRangeRepository = $em->getRepository(SurveyRange::class);
 
         parent::__construct(
             $requestStack,
@@ -202,7 +153,7 @@ class UserService extends AbstractService
         $users = $this->userRepository->findUsers($this->filterService);
         $roles = $this->roleRepository->findAll();
 
-
+        //dd($users);
 
         return $this->render('user/index.html.twig', [
             'totalResults' => $users['totalRegisters'],

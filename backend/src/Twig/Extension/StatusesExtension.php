@@ -4,7 +4,7 @@
 namespace App\Twig\Extension;
 
 
-use App\Entity\Task\Task;
+use App\Entity\Schedule\Schedule;
 use App\Repository\ConfigRepository;
 use App\Repository\StatusRepository;
 use App\Shared\Utils\DocumentImage;
@@ -30,7 +30,7 @@ class StatusesExtension extends AbstractExtension implements GlobalsInterface
     {
 
         return [
-            'taskStatuses' => $this->statusRepository->findBy(['entityType' => Task::ENTITY])
+            'scheduleStatuses' => $this->statusRepository->findBy(['entityType' => Schedule::ENTITY])
         ];
     }
 

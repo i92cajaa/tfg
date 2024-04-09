@@ -120,9 +120,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $query = $this->createQueryBuilder('u')
             ->leftJoin('u.center', 'center')
             ->leftJoin('u.roles', 'userHasRole')
-            ->leftJoin('userHasRole.role', 'role')
-            ->leftJoin('u.services', 'userHasService')
-            ->leftJoin('userHasService.service', 'service');
+            ->leftJoin('userHasRole.role', 'role');
 
 
 

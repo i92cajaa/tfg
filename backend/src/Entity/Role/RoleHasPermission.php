@@ -19,7 +19,7 @@ class RoleHasPermission
     // ----------------------------------------------------------------
 
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: Role::class, cascade:["persist"], inversedBy: 'users')]
+    #[ORM\ManyToOne(targetEntity: Role::class, cascade:["persist"], inversedBy: 'permissions')]
     #[ORM\JoinColumn(name: "role_id", referencedColumnName:"id", onDelete: 'CASCADE')]
     private Role $role;
 

@@ -4,7 +4,6 @@
 namespace App\Service\ClientService;
 
 
-use App\Entity\Appointment\Appointment;
 use App\Entity\Center\Center;
 use App\Entity\Client\Client;
 use App\Entity\Client\ClientHasDocument;
@@ -64,31 +63,14 @@ class ClientService extends AbstractService
     private ClientRepository $clientRepository;
 
     /**
-     * @var PaymentMethodRepository
-     */
-    private PaymentMethodRepository $paymentRepository;
-
-    /**
      * @var CenterRepository
      */
     private CenterRepository $centerRepository;
 
     /**
-     * @var AppointmentRepository
-     */
-    private AppointmentRepository $appointmentRepository;
-    /**
-     * @var ServiceRepository
-     */
-    private ServiceRepository $serviceRepository;
-    /**
      * @var UserRepository
      */
     private UserRepository $userRepository;
-    /**
-     * @var DivisionRepository
-     */
-    private DivisionRepository $divisionRepository;
 
     private DocumentRepository $documentRepository;
 
@@ -99,11 +81,8 @@ class ClientService extends AbstractService
 
     private ClientHasDocumentRepository $clientHasDocumentRepository;
 
-    private UserHasClientRepository $userHasClientRepository;
-
 
     public function __construct(
-        private readonly TemplateTypeService $templateTypeService,
         private readonly DocumentService $documentService,
         private readonly UserService $userService,
         private readonly MailService   $mailService,
@@ -241,7 +220,7 @@ class ClientService extends AbstractService
     {
         $clients = [];
         foreach ($this->getUser()->getRoleIds() as $roleId) {
-            if ($roleId == Role::ROLE_DIRECTOR){
+            if ($roleId == Role::ROLE_ADMIN){
                 $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
                 $clients = $this->clientRepository->findClients($this->filterService,$this->getUser()->getId(),$this->getUser()->isAdmin());
             }else{
@@ -494,5 +473,11 @@ class ClientService extends AbstractService
         $this->clientRepository->persist($client);
 
         return new JsonResponse(['data' => $status,'success' => true, 'message' => 'done'], 200);
+    }
+
+    public function rememberPassword(): Response
+    {
+
+        return $this->render('security/rememberPassword.html.twig',);
     }
 }

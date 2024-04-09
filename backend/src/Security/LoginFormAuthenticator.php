@@ -62,7 +62,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         $this->entityManager->persist($user);
 
         // For example:
-        return new RedirectResponse($this->urlGenerator->generate('appointment_index'));
+        return new RedirectResponse($this->urlGenerator->generate('user_index'));
         //throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
     }
 

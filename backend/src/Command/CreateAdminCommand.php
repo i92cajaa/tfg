@@ -6,6 +6,7 @@ use App\Entity\Permission\Permission;
 use App\Entity\Role\Role;
 use App\Entity\User\User;
 use App\Entity\User\UserHasPermission;
+use App\Entity\User\UserHasRole;
 use App\Repository\PermissionRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
@@ -79,10 +80,8 @@ class CreateAdminCommand extends Command
         $user->setSurnames("Admin");
         $user->setEmail($email);
         $role = $this->roleRepository->find(Role::ROLE_SUPERADMIN);
-        $user->addRole($role);
-        $user->setDarkMode(false);
+        $user->addRole((new UserHasRole())->setUser($user)->setRole($role));
         $user->setStatus(true);
-        $user->setVip(true);
         $user->setCalendarInterval("00:30");
 
         $permissions = $this->permissionRepository->findAll();

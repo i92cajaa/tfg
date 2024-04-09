@@ -13,9 +13,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
     // ----------------------------------------------------------------
@@ -94,6 +95,9 @@ class User implements PasswordAuthenticatedUserInterface
     #[ORM\Column(name: "locale", type: "string", length: 255, unique: false, nullable:false)]
     private string $locale;
 
+    #[ORM\Column(name: "menu_expanded", type: "boolean", length: 255, unique: false, nullable:false)]
+    private bool $menuExpanded;
+
     #[ORM\Column(name: "calendar_interval", type: "string", length: 255, unique: false, nullable:true)]
     private ?string $calendarInterval = null;
 
@@ -108,6 +112,7 @@ class User implements PasswordAuthenticatedUserInterface
     {
         $this->status = true;
         $this->locale = 'ES';
+        $this->menuExpanded = false;
         $this->createdAt = UTCDateTime::setUTC(UTCDateTime::create());
 
         $this->roles = new ArrayCollection();
@@ -148,7 +153,7 @@ class User implements PasswordAuthenticatedUserInterface
     /**
      * @return array|Collection
      */
-    public function getRoles(): array|Collection
+    public function getRolesCollection(): array|Collection
     {
         return $this->roles;
     }
@@ -271,6 +276,14 @@ class User implements PasswordAuthenticatedUserInterface
     public function getLocale(): string
     {
         return $this->locale;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMenuExpanded(): bool
+    {
+        return $this->menuExpanded;
     }
 
     /**
@@ -460,6 +473,16 @@ class User implements PasswordAuthenticatedUserInterface
     public function setLocale(string $locale): User
     {
         $this->locale = $locale;
+        return $this;
+    }
+
+    /**
+     * @param bool $menuExpanded
+     * @return $this
+     */
+    public function setManuExpanded(bool $menuExpanded): User
+    {
+        $this->menuExpanded = $menuExpanded;
         return $this;
     }
 
@@ -828,4 +851,39 @@ class User implements PasswordAuthenticatedUserInterface
     }
     // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
+    // UserInterface Methods
+    // ----------------------------------------------------------------
+
+    public function eraseCredentials(): void
+    {
+        //No se borran credenciales
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->getId();
+    }
+
+    public function getRoles(): array
+    {
+        $rolesArray = [];
+        foreach ($this->roles as $role) {
+            $rolesArray[] = $role->getRole()->getName();
+        }
+
+        return $rolesArray;
+    }
+
+    public function getPermissionsArray(): array
+    {
+        $permissions = [];
+        foreach ($this->getPermissions() as $userPermission) {
+            $permission                       = $userPermission->getPermission();
+            $group                            = $permission->getGroup();
+            $permissions[$group->getName()][] = $permission->getAction();
+        }
+
+        return $permissions;
+    }
 }
