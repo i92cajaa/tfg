@@ -13,6 +13,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: RoleHasPermissionRepository::class)]
 class RoleHasPermission
 {
+
+    // ----------------------------------------------------------------
+    // Primary Keys
+    // ----------------------------------------------------------------
+
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Role::class, cascade:["persist"], inversedBy: 'users')]
     #[ORM\JoinColumn(name: "role_id", referencedColumnName:"id", onDelete: 'CASCADE')]
@@ -23,6 +28,10 @@ class RoleHasPermission
     #[ORM\JoinColumn(name: "permission_id", referencedColumnName:"id", onDelete: 'CASCADE')]
     private Permission $permission;
 
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
+
     /**
      * @return Role
      */
@@ -30,6 +39,18 @@ class RoleHasPermission
     {
         return $this->role;
     }
+
+    /**
+     * @return Permission
+     */
+    public function getPermission(): Permission
+    {
+        return $this->permission;
+    }
+
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
 
     /**
      * @param Role $role
@@ -42,14 +63,6 @@ class RoleHasPermission
     }
 
     /**
-     * @return Permission
-     */
-    public function getPermission(): Permission
-    {
-        return $this->permission;
-    }
-
-    /**
      * @param Permission $permission
      * @return RoleHasPermission
      */
@@ -57,11 +70,6 @@ class RoleHasPermission
     {
         $this->permission = $permission;
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getId().'';
     }
 
 }

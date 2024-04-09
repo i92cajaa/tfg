@@ -12,12 +12,25 @@ use Doctrine\Common\Collections\Collection;
 class PermissionGroup
 {
 
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
-    // Campos
+    // ----------------------------------------------------------------
+    // Relationships
+    // ----------------------------------------------------------------
+
+    #[ORM\OneToMany(mappedBy:"group", targetEntity: Permission::class)]
+    private array|Collection $permissions;
+
+    // ----------------------------------------------------------------
+    // Fields
+    // ----------------------------------------------------------------
 
     #[ORM\Column(length: 180, nullable: false)]
     private string $name;
@@ -25,15 +38,18 @@ class PermissionGroup
     #[ORM\Column(length: 180, nullable: false)]
     private string $label;
 
-    // Colecciones
-
-    #[ORM\OneToMany(mappedBy:"group", targetEntity: Permission::class)]
-    private Collection $permissions;
+    // ----------------------------------------------------------------
+    // Magic Methods
+    // ----------------------------------------------------------------
 
     public function __construct()
     {
         $this->permissions = new ArrayCollection();
     }
+
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
 
     /**
      * @return int
@@ -41,6 +57,14 @@ class PermissionGroup
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getPermissions(): Collection
+    {
+        return $this->permissions;
     }
 
     /**
@@ -59,15 +83,9 @@ class PermissionGroup
         return $this->label;
     }
 
-    /**
-     * @param string $label
-     * @return PermissionGroup
-     */
-    public function setLabel(string $label): PermissionGroup
-    {
-        $this->label = $label;
-        return $this;
-    }
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
 
     /**
      * @param string $name
@@ -80,17 +98,38 @@ class PermissionGroup
     }
 
     /**
-     * @return ArrayCollection
+     * @param string $label
+     * @return PermissionGroup
      */
-    public function getPermissions(): Collection
+    public function setLabel(string $label): PermissionGroup
     {
-        return $this->permissions;
+        $this->label = $label;
+        return $this;
     }
 
     /**
-     * @param Permission $permission
-     * @return PermissionGroup
+     * @param array|Collection $permissions
+     * @return $this
      */
+    public function setPermissions(array|Collection $permissions): PermissionGroup
+    {
+        $this->permissions = $permissions;
+        return $this;
+    }
+
+    // ----------------------------------------------------------------
+    // Other Methods
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO ADD PERMISSION TO GROUP
+     * ES: FUNCIÓN PARA AÑADIR PERMISO A GRUPO
+     *
+     * @param Permission $permission
+     * @return $this
+     */
+    // ----------------------------------------------------------------
     public function addPermission(Permission $permission): self
     {
         if (!$this->permissions->contains($permission))
@@ -98,11 +137,17 @@ class PermissionGroup
 
         return $this;
     }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
     /**
+     * EN: FUNCTION TO REMOVE PERMISSION FROM GROUP
+     * ES: FUNCIÓN PARA BORRAR PERMISO DE GRUPO
+     *
      * @param Permission $permission
-     * @return PermissionGroup
+     * @return $this
      */
+    // ----------------------------------------------------------------
     public function removePermission(Permission $permission): self
     {
         if (!$this->permissions->contains($permission))
@@ -110,6 +155,6 @@ class PermissionGroup
 
         return $this;
     }
-
+    // ----------------------------------------------------------------
 
 }

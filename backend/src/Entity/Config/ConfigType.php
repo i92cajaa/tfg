@@ -2,11 +2,6 @@
 
 namespace App\Entity\Config;
 
-use App\Entity\Document\Document;
-use App\Entity\Invoice\Invoice;
-use App\Entity\Meeting\Meeting;
-use App\Entity\Payment\PaymentMethod;
-use App\Entity\Appointment\AppointmentModel;
 use App\Repository\ConfigTypeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,6 +9,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ConfigTypeRepository::class)]
 class ConfigType
 {
+
+    // ----------------------------------------------------------------
+    // Constants
+    // ----------------------------------------------------------------
+
     const SOURCE_TYPE = 'file';
     const TEXT_TYPE = 'text';
     const NUMBER_TYPE = 'number';
@@ -37,7 +37,6 @@ class ConfigType
     const SMTP_PASSWORD_TAG = 'smtp_password';
     const USER_NOMENCLATURE_TAG = 'user_nomenclature';
     const CLIENT_NOMENCLATURE_TAG = 'client_nomenclature';
-    const BILLING_MODULE_TAG = Invoice::ENTITY;
     const BILLING_SERIE_TAG = 'invoice_serie';
     const BILLING_USER_SERIE_TAG = 'invoice_user_serie';
     const BILLING_VAT_TAG = 'invoice_vat';
@@ -48,28 +47,23 @@ class ConfigType
     const BILLING_PHONE_TAG = 'invoice_phone';
     const CALENDAR_INTERVAL_TAG = 'calendar_interval';
     const COMPLETE_ON_PAY_TAG = 'complete_on_pay';
-    const PAYMENT_MODULE_TAG = PaymentMethod::ENTITY;
-
-    const MEETING_MODULE_TAG = Meeting::ENTITY;
     const MEETING_CLIENT_ID = 'meeting_client_id';
     const MEETING_CLIENT_SECRET_ID = 'meeting_client_secret_id';
     const MEETING_TENANT_ID = 'meeting_tenant_id';
     const MEETING_SERVICE_USER_ID = 'meeting_service_user_id';
 
-    const MODULES = [
-        Invoice::ENTITY,
-        PaymentMethod::ENTITY,
-        Meeting::ENTITY,
-    ];
-
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
-
-    // Campos
+    // ----------------------------------------------------------------
+    // Fields
+    // ----------------------------------------------------------------
 
     #[ORM\Column(name:"name", type:"string", length: 255, nullable: false)]
     private string $name;
@@ -95,6 +89,10 @@ class ConfigType
     #[ORM\Column(name:"order_number", type:"integer", length: 255, nullable: true)]
     private ?int $order = null;
 
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
+
     /**
      * @return int
      */
@@ -112,6 +110,66 @@ class ConfigType
     }
 
     /**
+     * @return string|null
+     */
+    public function getDefaultValue(): ?string
+    {
+        return $this->defaultValue;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isModule(): bool
+    {
+        return $this->module;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTag(): string
+    {
+        return $this->tag;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getModuleDependant(): ?string
+    {
+        return $this->moduleDependant;
+    }
+
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
+
+    /**
      * @param int|null $order
      * @return ConfigType
      */
@@ -119,14 +177,6 @@ class ConfigType
     {
         $this->order = $order;
         return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDefaultValue(): ?string
-    {
-        return $this->defaultValue;
     }
 
     /**
@@ -140,14 +190,6 @@ class ConfigType
     }
 
     /**
-     * @return bool
-     */
-    public function isModule(): bool
-    {
-        return $this->module;
-    }
-
-    /**
      * @param bool $module
      * @return ConfigType
      */
@@ -155,14 +197,6 @@ class ConfigType
     {
         $this->module = $module;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
     }
 
     /**
@@ -176,14 +210,6 @@ class ConfigType
     }
 
     /**
-     * @return string
-     */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
      * @param string $type
      * @return ConfigType
      */
@@ -191,14 +217,6 @@ class ConfigType
     {
         $this->type = $type;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTag(): string
-    {
-        return $this->tag;
     }
 
     /**
@@ -212,14 +230,6 @@ class ConfigType
     }
 
     /**
-     * @return string|null
-     */
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    /**
      * @param string|null $description
      * @return ConfigType
      */
@@ -227,14 +237,6 @@ class ConfigType
     {
         $this->description = $description;
         return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getModuleDependant(): ?string
-    {
-        return $this->moduleDependant;
     }
 
     /**
@@ -246,7 +248,5 @@ class ConfigType
         $this->moduleDependant = $moduleDependant;
         return $this;
     }
-
-
 
 }

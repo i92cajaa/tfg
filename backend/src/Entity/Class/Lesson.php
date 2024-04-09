@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Entity\Center;
+namespace App\Entity\Class;
 
-use App\Entity\Area\Area;
-use App\Entity\Class\Lesson;
+use App\Entity\Center\Center;
 use App\Entity\Document\Document;
-use App\Entity\User\User;
-use App\Repository\CenterRepository;
+use App\Entity\Schedule\Schedule;
+use App\Entity\User\UserHasLesson;
+use App\Repository\LessonRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: CenterRepository::class)]
-class Center
+#[ORM\Entity(repositoryClass: LessonRepository::class)]
+class Lesson
 {
 
     // ----------------------------------------------------------------
@@ -30,17 +30,17 @@ class Center
     // ----------------------------------------------------------------
 
     #[ORM\OneToOne(targetEntity: Document::class)]
-    private ?Document $logo = null;
+    private Document $image;
 
-    #[ORM\OneToMany(mappedBy:"center", targetEntity: User::class, cascade:["persist", "remove"])]
+    #[ORM\ManyToOne(targetEntity: Center::class, inversedBy: 'lessons')]
+    #[ORM\JoinColumn(name: "center_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
+    private Center $center;
+
+    #[ORM\OneToMany(mappedBy:"lesson", targetEntity: UserHasLesson::class, cascade:["persist", "remove"])]
     private array|Collection $users;
 
-    #[ORM\ManyToOne(targetEntity: Area::class, inversedBy: 'centers')]
-    #[ORM\JoinColumn(name: "area_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
-    private Area $area;
-
-    #[ORM\OneToMany(mappedBy:"center", targetEntity: Lesson::class, cascade:["persist", "remove"])]
-    private array|Collection $lessons;
+    #[ORM\OneToMany(mappedBy:"lesson", targetEntity: Schedule::class, cascade:["persist", "remove"])]
+    private array|Collection $schedules;
 
     // ----------------------------------------------------------------
     // Fields
@@ -49,14 +49,11 @@ class Center
     #[ORM\Column(name:"name", type:"string", length:255, nullable:false)]
     private string $name;
 
-    #[ORM\Column(name:"address", type:"string", length:255, nullable:false)]
-    private string $address;
+    #[ORM\Column(name:"description", type:"string", length:255, nullable:true)]
+    private ?string $description;
 
-    #[ORM\Column(name:"phone", type:"string", length:255, nullable:false)]
-    private string $phone;
-
-    #[ORM\Column(name:"color", type: 'string', length:255, nullable: false)]
-    private string $color;
+    #[ORM\Column(name:"status", type:"boolean", nullable:false)]
+    private bool $status = true;
 
     // ----------------------------------------------------------------
     // Magic Methods
@@ -65,7 +62,7 @@ class Center
     public function __construct()
     {
         $this->users = new ArrayCollection();
-        $this->lessons = new ArrayCollection();
+        $this->schedules = new ArrayCollection();
     }
 
     // ----------------------------------------------------------------
@@ -81,11 +78,19 @@ class Center
     }
 
     /**
-     * @return Document|null
+     * @return Document
      */
-    public function getLogo(): ?Document
+    public function getImage(): Document
     {
-        return $this->logo;
+        return $this->image;
+    }
+
+    /**
+     * @return Center
+     */
+    public function getCenter(): Center
+    {
+        return $this->center;
     }
 
     /**
@@ -97,19 +102,11 @@ class Center
     }
 
     /**
-     * @return Area
-     */
-    public function getArea(): Area
-    {
-        return $this->area;
-    }
-
-    /**
      * @return array|Collection
      */
-    public function getLessons(): array|Collection
+    public function getSchedules(): array|Collection
     {
-        return $this->lessons;
+        return $this->schedules;
     }
 
     /**
@@ -121,27 +118,19 @@ class Center
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getAddress(): string
+    public function getDescription(): ?string
     {
-        return $this->address;
+        return $this->description;
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getPhone(): string
+    public function isStatus(): bool
     {
-        return $this->phone;
-    }
-
-    /**
-     * @return string
-     */
-    public function getColor(): string
-    {
-        return $this->color;
+        return $this->status;
     }
 
     // ----------------------------------------------------------------
@@ -149,22 +138,22 @@ class Center
     // ----------------------------------------------------------------
 
     /**
-     * @param string $id
+     * @param Document $image
      * @return $this
      */
-    public function setId(string $id): Center
+    public function setImage(Document $image): Lesson
     {
-        $this->id = $id;
+        $this->image = $image;
         return $this;
     }
 
     /**
-     * @param Document $logo
+     * @param Center $center
      * @return $this
      */
-    public function setLogo(Document $logo): Center
+    public function setCenter(Center $center): Lesson
     {
-        $this->logo = $logo;
+        $this->center = $center;
         return $this;
     }
 
@@ -172,29 +161,19 @@ class Center
      * @param array|Collection $users
      * @return $this
      */
-    public function setUsers(array|Collection $users): Center
+    public function setUsers(array|Collection $users): Lesson
     {
         $this->users = $users;
         return $this;
     }
 
     /**
-     * @param Area $area
+     * @param array|Collection $schedules
      * @return $this
      */
-    public function setArea(Area $area): Center
+    public function setSchedules(array|Collection $schedules): Lesson
     {
-        $this->area = $area;
-        return $this;
-    }
-
-    /**
-     * @param array|Collection $lessons
-     * @return $this
-     */
-    public function setLessons(array|Collection $lessons): Center
-    {
-        $this->lessons = $lessons;
+        $this->schedules = $schedules;
         return $this;
     }
 
@@ -202,39 +181,29 @@ class Center
      * @param string $name
      * @return $this
      */
-    public function setName(string $name): Center
+    public function setName(string $name): Lesson
     {
         $this->name = $name;
         return $this;
     }
 
     /**
-     * @param string $address
+     * @param string|null $description
      * @return $this
      */
-    public function setAddress(string $address): Center
+    public function setDescription(?string $description): Lesson
     {
-        $this->address = $address;
+        $this->description = $description;
         return $this;
     }
 
     /**
-     * @param string $phone
+     * @param bool $status
      * @return $this
      */
-    public function setPhone(string $phone): Center
+    public function setStatus(bool $status): Lesson
     {
-        $this->phone = $phone;
-        return $this;
-    }
-
-    /**
-     * @param string $color
-     * @return $this
-     */
-    public function setColor(string $color): Center
-    {
-        $this->color = $color;
+        $this->status = $status;
         return $this;
     }
 
@@ -244,17 +213,17 @@ class Center
 
     // ----------------------------------------------------------------
     /**
-     * EN: FUNCTION TO ADD AN USER TO THIS CENTER
-     * ES: FUNCIÓN PARA AÑADIR UN USUARIO AL CENTRO
+     * EN: FUNCTION TO ADD USER TO LESSON
+     * ES: FUNCIÓN PARA AÑADIR USUARIO A CLASE
      *
-     * @param User $user
+     * @param UserHasLesson $userHasLesson
      * @return $this
      */
     // ----------------------------------------------------------------
-    public function addUser(User $user): Center
+    public function addUser(UserHasLesson $userHasLesson): Lesson
     {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
+        if (!$this->users->contains($userHasLesson)) {
+            $this->users->add($userHasLesson);
         }
 
         return $this;
@@ -263,17 +232,17 @@ class Center
 
     // ----------------------------------------------------------------
     /**
-     * EN: FUNCTION TO REMOVE AN USER FROM THIS CENTER
-     * ES: FUNCIÓN PARA BORRAR UN USUARIO DEL CENTRO
+     * EN: FUNCTION TO REMOVE USER FROM LESSON
+     * ES: FUNCIÓN PARA BORRAR USUARIO DE CLASE
      *
-     * @param User $user
+     * @param UserHasLesson $userHasLesson
      * @return $this
      */
     // ----------------------------------------------------------------
-    public function removeUser(User $user): Center
+    public function removeUser(UserHasLesson $userHasLesson): Lesson
     {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
+        if ($this->users->contains($userHasLesson)) {
+            $this->users->removeElement($userHasLesson);
         }
 
         return $this;
@@ -282,17 +251,17 @@ class Center
 
     // ----------------------------------------------------------------
     /**
-     * EN: FUNCTION TO ADD A LESSON TO THIS CENTER
-     * ES: FUNCIÓN PARA AÑADIR UNA CLASE AL CENTRO
+     * EN: FUNCTION TO ADD SCHEDULE TO LESSON
+     * ES: FUNCIÓN PARA AÑADIR HORARIO A CLASE
      *
-     * @param Lesson $lesson
+     * @param Schedule $schedule
      * @return $this
      */
     // ----------------------------------------------------------------
-    public function addLesson(Lesson $lesson): Center
+    public function addSchedule(Schedule $schedule): Lesson
     {
-        if (!$this->lessons->contains($lesson)) {
-            $this->lessons->add($lesson);
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules->add($schedule);
         }
 
         return $this;
@@ -301,20 +270,21 @@ class Center
 
     // ----------------------------------------------------------------
     /**
-     * EN: FUNCTION TO REMOVE A LESSON FROM THIS CENTER
-     * ES: FUNCIÓN PARA BORRAR UNA CLASE DEL CENTRO
+     * EN: FUNCTION TO REMOVE SCHEDULE FROM LESSON
+     * ES: FUNCIÓN PARA BORRAR HORARIO DE CLASE
      *
-     * @param Lesson $lesson
+     * @param Schedule $schedule
      * @return $this
      */
     // ----------------------------------------------------------------
-    public function removeLesson(Lesson $lesson): Center
+    public function removeSchedule(Schedule $schedule): Lesson
     {
-        if ($this->lessons->contains($lesson)) {
-            $this->lessons->removeElement($lesson);
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules->add($schedule);
         }
 
         return $this;
     }
     // ----------------------------------------------------------------
+
 }

@@ -14,18 +14,32 @@ use Doctrine\ORM\Mapping as ORM;
 class Permission
 {
 
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
-    // Relaciones
+    // ----------------------------------------------------------------
+    // Relationships
+    // ----------------------------------------------------------------
 
     #[ORM\ManyToOne(targetEntity: PermissionGroup::class, inversedBy: 'permissions')]
     #[ORM\JoinColumn(name: "group_id", referencedColumnName:"id", onDelete: 'CASCADE')]
     private PermissionGroup $group;
 
-    // Campos
+    #[ORM\OneToMany(mappedBy:"permission", targetEntity: UserHasPermission::class)]
+    private array|Collection $permissionUsers;
+
+    #[ORM\OneToMany(mappedBy:"permission", targetEntity: RoleHasPermission::class)]
+    private array|Collection $permissionRoles;
+
+    // ----------------------------------------------------------------
+    // Fields
+    // ----------------------------------------------------------------
 
     #[ORM\Column(type:'string' ,length: 180, nullable: false)]
     private string $label;
@@ -39,16 +53,9 @@ class Permission
     #[ORM\Column(type: 'boolean', length: 180, nullable: false, options:['default' => false])]
     private bool $adminManaged = false;
 
-    #[ORM\Column(name:"module_dependant", type: 'string', length: 200, nullable: true)]
-    private ?string $moduleDependant = null;
-
-    // Colecciones
-
-    #[ORM\OneToMany(mappedBy:"permission", targetEntity: UserHasPermission::class)]
-    private Collection $permissionUsers;
-
-    #[ORM\OneToMany(mappedBy:"permission", targetEntity: RoleHasPermission::class)]
-    private Collection $permissionRoles;
+    // ----------------------------------------------------------------
+    // Magic Methods
+    // ----------------------------------------------------------------
 
     public function __construct()
     {
@@ -56,12 +63,48 @@ class Permission
         $this->permissionRoles = new ArrayCollection();
     }
 
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
+
     /**
      * @return int
      */
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @return PermissionGroup
+     */
+    public function getGroup(): PermissionGroup
+    {
+        return $this->group;
+    }
+
+    /**
+     * @return array|Collection
+     */
+    public function getPermissionUsers(): array|Collection
+    {
+        return $this->permissionUsers;
+    }
+
+    /**
+     * @return array|Collection
+     */
+    public function getPermissionRoles(): array|Collection
+    {
+        return $this->permissionRoles;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabel(): string
+    {
+        return $this->label;
     }
 
     /**
@@ -73,21 +116,53 @@ class Permission
     }
 
     /**
-     * @param string $action
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdminManaged(): bool
+    {
+        return $this->adminManaged;
+    }
+
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
+
+    /**
+     * @param PermissionGroup $group
      * @return Permission
      */
-    public function setAction(string $action): Permission
+    public function setGroup(PermissionGroup $group): Permission
     {
-        $this->action = $action;
+        $this->group = $group;
         return $this;
     }
 
     /**
-     * @return string
+     * @param array|Collection $permissionUsers
+     * @return Permission
      */
-    public function getLabel(): string
+    public function setPermissionUsers(array|Collection $permissionUsers): Permission
     {
-        return $this->label;
+        $this->permissionUsers = $permissionUsers;
+        return $this;
+    }
+
+    /**
+     * @param array|Collection $permissionRoles
+     * @return Permission
+     */
+    public function setPermissionRoles(array|Collection $permissionRoles): Permission
+    {
+        $this->permissionRoles = $permissionRoles;
+        return $this;
     }
 
     /**
@@ -101,65 +176,13 @@ class Permission
     }
 
     /**
-     * @return bool
-     */
-    public function isAdminManaged(): bool
-    {
-        return $this->adminManaged;
-    }
-
-    /**
-     * @param bool $adminManaged
+     * @param string $action
      * @return Permission
      */
-    public function setAdminManaged(bool $adminManaged): Permission
+    public function setAction(string $action): Permission
     {
-        $this->adminManaged = $adminManaged;
+        $this->action = $action;
         return $this;
-    }
-
-    /**
-     * @return PermissionGroup
-     */
-    public function getGroup(): PermissionGroup
-    {
-        return $this->group;
-    }
-
-    /**
-     * @param PermissionGroup $group
-     * @return Permission
-     */
-    public function setGroup(PermissionGroup $group): Permission
-    {
-        $this->group = $group;
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getPermissionUsers(): ArrayCollection
-    {
-        return $this->permissionUsers;
-    }
-
-    /**
-     * @param ArrayCollection|Collection $permissionUsers
-     * @return Permission
-     */
-    public function setPermissionUsers(ArrayCollection|Collection $permissionUsers): self
-    {
-        $this->permissionUsers = $permissionUsers;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDescription(): ?string
-    {
-        return $this->description;
     }
 
     /**
@@ -173,44 +196,93 @@ class Permission
     }
 
     /**
-     * @return ArrayCollection|Collection
-     */
-    public function getPermissionRoles(): ArrayCollection|Collection
-    {
-        return $this->permissionRoles;
-    }
-
-    /**
-     * @param ArrayCollection|Collection $permissionRoles
+     * @param bool $adminManaged
      * @return Permission
      */
-    public function setPermissionRoles($permissionRoles): self
+    public function setAdminManaged(bool $adminManaged): Permission
     {
-        $this->permissionRoles = $permissionRoles;
+        $this->adminManaged = $adminManaged;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getModuleDependant(): ?string
-    {
-        return $this->moduleDependant;
-    }
+    // ----------------------------------------------------------------
+    // Other Methods
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
     /**
-     * @param string|null $moduleDependant
-     * @return Permission
+     * EN: FUNCTION TO ADD USER TO PERMISSION
+     * ES: FUNCIÓN PARA AÑADIR USUARIO A PERMISO
+     *
+     * @param UserHasPermission $userHasPermission
+     * @return $this
      */
-    public function setModuleDependant(?string $moduleDependant): Permission
+    // ----------------------------------------------------------------
+    public function addUserPermission(UserHasPermission $userHasPermission): Permission
     {
-        $this->moduleDependant = $moduleDependant;
+        if (!$this->permissionUsers->contains($userHasPermission)) {
+            $this->permissionUsers->add($userHasPermission);
+        }
+
         return $this;
     }
+    // ----------------------------------------------------------------
 
-    public function __toString(): string
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO REMOVE USER FROM PERMISSION
+     * ES: FUNCIÓN PARA BORRAR USUARIO DE PERMISO
+     *
+     * @param UserHasPermission $userHasPermission
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function removeUserPermission(UserHasPermission $userHasPermission): Permission
     {
-        return (string) $this->getId();
+        if ($this->permissionUsers->contains($userHasPermission)) {
+            $this->permissionUsers->removeElement($userHasPermission);
+        }
+
+        return $this;
     }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO ADD ROLE TO PERMISSION
+     * ES: FUNCIÓN PARA AÑADIR ROL A PERMISO
+     *
+     * @param RoleHasPermission $roleHasPermission
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function addRolePermission(RoleHasPermission $roleHasPermission): Permission
+    {
+        if (!$this->permissionRoles->contains($roleHasPermission)) {
+            $this->permissionRoles->add($roleHasPermission);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO REMOVE ROLE FROM PERMISSION
+     * ES: FUNCIÓN PARA BORRAR ROL DE PERMISO
+     *
+     * @param RoleHasPermission $roleHasPermission
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function removeRolePermission(RoleHasPermission $roleHasPermission): Permission
+    {
+        if ($this->permissionRoles->contains($roleHasPermission)) {
+            $this->permissionRoles->removeElement($roleHasPermission);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
 
 }

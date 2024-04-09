@@ -103,14 +103,6 @@ class Notification
     }
 
     /**
-     * @return DateTime|null
-     */
-    public function getCreatedAt(): ?DateTime
-    {
-        return $this->createdAt;
-    }
-
-    /**
      * @return string
      */
     public function getMessage(): string
@@ -127,6 +119,17 @@ class Notification
     }
 
     /**
+     * @return string|null
+     */
+    public function getLink(): ?string
+    {
+        if($this->link == null){
+            return '#';
+        }
+        return $this->link;
+    }
+
+    /**
      * @return bool
      */
     public function isSeen(): bool
@@ -134,9 +137,37 @@ class Notification
         return $this->seen;
     }
 
+    /**
+     * @return DateTime|null
+     */
+    public function getCreatedAt(): ?DateTime
+    {
+        return $this->createdAt;
+    }
+
     // ----------------------------------------------------------------
     // Setter Methods
     // ----------------------------------------------------------------
+
+    /**
+     * @param User|null $user
+     * @return Notification
+     */
+    public function setUser(?User $user): Notification
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * @param Client|null $client
+     * @return $this
+     */
+    public function setClient(?Client $client): Notification
+    {
+        $this->client = $client;
+        return $this;
+    }
 
     /**
      * @param string $message
@@ -149,26 +180,13 @@ class Notification
     }
 
     /**
-     * @param User|null $user
-     * @return Notification
+     * @param string $type
+     * @return $this
      */
-    public function setUser(?User $user): Notification
+    public function setType(string $type): Notification
     {
-        $this->user = $user;
+        $this->type = $type;
         return $this;
-    }
-
-
-
-    /**
-     * @return string|null
-     */
-    public function getLink(): ?string
-    {
-        if($this->link == null){
-            return '#';
-        }
-        return $this->link;
     }
 
     /**
@@ -190,7 +208,5 @@ class Notification
         $this->seen = $seen;
         return $this;
     }
-
-
 
 }

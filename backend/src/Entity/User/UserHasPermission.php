@@ -14,6 +14,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class UserHasPermission
 {
 
+    // ----------------------------------------------------------------
+    // Primary Keys
+    // ----------------------------------------------------------------
+
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: User::class, cascade:["persist"], inversedBy: 'permissions')]
     #[ORM\JoinColumn(name: "user_id", referencedColumnName:"id", onDelete: 'CASCADE')]
@@ -24,6 +28,9 @@ class UserHasPermission
     #[ORM\JoinColumn(name: "permission_id", referencedColumnName:"id", onDelete: 'CASCADE')]
     private Permission $permission;
 
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
 
     /**
      * @return User
@@ -34,16 +41,6 @@ class UserHasPermission
     }
 
     /**
-     * @param User $user
-     * @return UserHasPermission
-     */
-    public function setUser(User $user): self
-    {
-        $this->user = $user;
-        return $this;
-    }
-
-    /**
      * @return Permission
      */
     public function getPermission(): Permission
@@ -51,15 +48,28 @@ class UserHasPermission
         return $this->permission;
     }
 
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
+
+    /**
+     * @param User $user
+     * @return UserHasPermission
+     */
+    public function setUser(User $user): UserHasPermission
+    {
+        $this->user = $user;
+        return $this;
+    }
+
     /**
      * @param Permission $permission
      * @return UserHasPermission
      */
-    public function setPermission(Permission $permission): self
+    public function setPermission(Permission $permission): UserHasPermission
     {
         $this->permission = $permission;
         return $this;
     }
-
 
 }

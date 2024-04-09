@@ -10,7 +10,16 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ConfigRepository::class)]
 class Config
 {
+
+    // ----------------------------------------------------------------
+    // Constants
+    // ----------------------------------------------------------------
+
     const ENTITY = 'config';
+
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
 
     #[ORM\Id]
     #[ORM\Column(type: 'string', unique: true, nullable: false)]
@@ -18,7 +27,9 @@ class Config
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private string $id;
 
-    // Campos
+    // ----------------------------------------------------------------
+    // Fields
+    // ----------------------------------------------------------------
 
     #[ORM\Column(name:"name", type:"string", length: 255, nullable: false)]
     private string $name;
@@ -31,6 +42,10 @@ class Config
 
     #[ORM\Column(name:"value", type:"text", nullable: true)]
     private ?string $value;
+
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
 
     /**
      * @return string
@@ -49,6 +64,34 @@ class Config
     }
 
     /**
+     * @return string
+     */
+    public function getTag(): string
+    {
+        return $this->tag;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getValue(): ?string
+    {
+        return $this->value;
+    }
+
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
+
+    /**
      * @param string $name
      * @return Config
      */
@@ -56,14 +99,6 @@ class Config
     {
         $this->name = $name;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTag(): string
-    {
-        return $this->tag;
     }
 
     /**
@@ -77,14 +112,6 @@ class Config
     }
 
     /**
-     * @return string|null
-     */
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    /**
      * @param string|null $description
      * @return Config
      */
@@ -92,14 +119,6 @@ class Config
     {
         $this->description = $description;
         return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getValue(): ?string
-    {
-        return $this->value;
     }
 
     /**
@@ -111,6 +130,5 @@ class Config
         $this->value = $value;
         return $this;
     }
-
 
 }

@@ -13,24 +13,39 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: RoleRepository::class)]
 class Role
 {
+
+    // ----------------------------------------------------------------
+    // Constants
+    // ----------------------------------------------------------------
+
     const ROLE_SUPERADMIN = 1;
 
-    const ROLE_JEFE_ESTUDIOS = 1;
+    const ROLE_ADMIN = 2;
 
-    const ROLE_DIRECTOR = 2;
+    const ROLE_TEACHER = 3;
 
-    const ROLE_MENTOR = 3;
-
-    const ROLE_PROJECT = 4;
-
-    const ROLE_SANDETEL = 5;
+    // ----------------------------------------------------------------
+    // Primary Key
+    // ----------------------------------------------------------------
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
-    // Campos
+    // ----------------------------------------------------------------
+    // Relationships
+    // ----------------------------------------------------------------
+
+    #[ORM\OneToMany(mappedBy:"role", targetEntity: UserHasRole::class, cascade:["persist"])]
+    private array|Collection $users;
+
+    #[ORM\OneToMany(mappedBy:"role", targetEntity: RoleHasPermission::class, cascade:["persist"])]
+    private array|Collection $permissions;
+
+    // ----------------------------------------------------------------
+    // Fields
+    // ----------------------------------------------------------------
 
     #[ORM\Column(length: 180, nullable: false)]
     public string $name;
@@ -38,29 +53,25 @@ class Role
     #[ORM\Column(length: 180, nullable: false)]
     public string $color = '#000000';
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
     #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $admin;
 
     #[ORM\Column(length: 180, nullable: true)]
-    public ?string $description;
+    public ?string $description = null;
 
-    // Colecciones
-
-    #[ORM\OneToMany(mappedBy:"role", targetEntity: UserHasRole::class, cascade:["persist"])]
-    private Collection $users;
-
-
-    #[ORM\OneToMany(mappedBy:"role", targetEntity: RoleHasPermission::class, cascade:["persist"])]
-    private Collection $permissions;
+    // ----------------------------------------------------------------
+    // Magic Methods
+    // ----------------------------------------------------------------
 
     public function __construct()
     {
         $this->users       = new ArrayCollection();
         $this->permissions = new ArrayCollection();
     }
+
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
 
     /**
      * @return int
@@ -71,11 +82,65 @@ class Role
     }
 
     /**
+     * @return array|Collection
+     */
+    public function getUserHasRoles(): array|Collection
+    {
+        return $this->users;
+    }
+
+    /**
+     * @return array|Collection
+     */
+    public function getPermissions(): array|Collection
+    {
+        return $this->permissions;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isAdmin(): ?bool
+    {
+        return $this->admin;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
+
+    /**
+     * @param array|Collection $users
+     * @return Role
+     */
+    public function setUsers(array|Collection $users): Role
+    {
+        $this->users = $users;
+        return $this;
     }
 
     /**
@@ -89,14 +154,6 @@ class Role
     }
 
     /**
-     * @return string
-     */
-    public function getColor(): string
-    {
-        return $this->color;
-    }
-
-    /**
      * @param string $color
      * @return Role
      */
@@ -107,11 +164,13 @@ class Role
     }
 
     /**
-     * @return string|null
+     * @param bool|null $admin
+     * @return $this
      */
-    public function getDescription(): ?string
+    public function setAdmin(?bool $admin): Role
     {
-        return $this->description;
+        $this->admin = $admin;
+        return $this;
     }
 
     /**
@@ -124,51 +183,59 @@ class Role
         return $this;
     }
 
-    /**
-     * @return ArrayCollection|Collection|UserHasRole|array
-     */
-    public function getUserHasRoles(): ArrayCollection|Collection|UserHasRole|array
-    {
-        return $this->users;
-    }
+    // ----------------------------------------------------------------
+    // Other Methods
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
     /**
-     * @return UserHasRole|array|ArrayCollection
+     * EN: FUNCTION TO ADD USER TO ROLE
+     * ES: FUNCIÓN PARA AÑADIR USUARIO A ROL
+     *
+     * @param UserHasRole $userHasRole
+     * @return $this
      */
-    public function getUsers(): ArrayCollection|UserHasRole|array
+    // ----------------------------------------------------------------
+    public function addUser(UserHasRole $userHasRole): Role
     {
-        $users = [];
-        foreach ($this->getUserHasRoles() as $user) {
-            $user    = $user->getUser();
-            $users[] = $user;
+        if(!$this->users->contains($userHasRole)) {
+            $userHasRole->setRole($this);
+            $this->users->add($userHasRole);
         }
 
-        return array_unique($users);;
-    }
-
-    /**
-     * @param array|ArrayCollection|UserHasRole $users
-     * @return Role
-     */
-    public function setUsers(ArrayCollection|UserHasRole|array $users): Role
-    {
-        $this->users = $users;
         return $this;
     }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
     /**
-     * @return ArrayCollection|Collection|array|RoleHasPermission
+     * EN: FUNCTION TO REMOVE USER TO ROLE
+     * ES: FUNCIÓN PARA BORRAR USUARIO A ROL
+     *
+     * @param UserHasRole $userHasRole
+     * @return $this
      */
-    public function getPermissions(): ArrayCollection|Collection|array|RoleHasPermission
+    // ----------------------------------------------------------------
+    public function removeUser(UserHasRole $userHasRole): Role
     {
-        return $this->permissions;
-    }
+        if($this->users->contains($userHasRole)) {
+            $this->users->removeElement($userHasRole);
+        }
 
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
     /**
+     * EN: FUNCTION TO ADD PERMISSION TO ROLE
+     * ES: FUNCIÓN PARA AÑADIR PERMISO A ROL
+     *
      * @param RoleHasPermission $roleHasPermission
-     * @return Role
+     * @return $this
      */
-    public function addPermission(RoleHasPermission $roleHasPermission): self
+    // ----------------------------------------------------------------
+    public function addPermission(RoleHasPermission $roleHasPermission): Role
     {
         if(!$this->permissions->contains($roleHasPermission)) {
             $roleHasPermission->setRole($this);
@@ -177,90 +244,57 @@ class Role
 
         return $this;
     }
+    // ----------------------------------------------------------------
 
-
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO REMOVE PERMISSION FROM ROLE
+     * ES: FUNCIÓN PARA BORRAR PERMISO DE ROL
+     *
+     * @param RoleHasPermission $roleHasPermission
+     * @return $this
+     */
+    // ----------------------------------------------------------------
     public function removePermission(RoleHasPermission $roleHasPermission): self
     {
         if($this->permissions->contains($roleHasPermission))
             $this->permissions->removeElement($roleHasPermission);
         return $this;
     }
+    // ----------------------------------------------------------------
 
-    public function getPermissionObjects():array
-    {
-        $permissions = [];
-        foreach ($this->getPermissions() as $rolePermission) {
-            $permission    = $rolePermission->getPermission();
-            $permissions[] = $permission;
-        }
-
-        return $permissions;
-    }
-
+    // ----------------------------------------------------------------
     /**
+     * EN: FUNCTION TO SEE IF ROLE IS SUPERADMIN
+     * ES: FUNCIÓN PARA VER SI EL ROL ES SUPERADMIN
+     *
      * @return bool|null
      */
-    public function isAdmin(): ?bool
+    // ----------------------------------------------------------------
+    public function isSuperAdmin(): ?bool
     {
-        return $this->admin;
-    }
-
-    /**
-     * @param bool|null $admin
-     * @return Role
-     */
-    public function setAdmin(?bool $admin): Role
-    {
-        $this->admin = $admin;
-        return $this;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function isProject(): ?bool
-    {
-        if($this->getId()==self::ROLE_PROJECT){
+        if($this->getId() == self::ROLE_SUPERADMIN){
             return true;
         }
         return false;
     }
+    // ----------------------------------------------------------------
 
-
+    // ----------------------------------------------------------------
     /**
+     * EN: FUNCTION TO SEE IF ROLE IS TEACHER
+     * ES: FUNCIÓN PARA VER SI EL ROL ES PROFESOR
+     *
      * @return bool|null
      */
-    public function isDirector(): ?bool
+    // ----------------------------------------------------------------
+    public function isTeacher(): ?bool
     {
-        if($this->getId()==self::ROLE_DIRECTOR){
+        if($this->getId() == self::ROLE_TEACHER){
             return true;
         }
         return false;
     }
-
-    /**
-     * @return bool|null
-     */
-    public function isSandetel(): ?bool
-    {
-        if($this->getId()==self::ROLE_SANDETEL){
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function isMentor(): ?bool
-    {
-        if($this->getId()==self::ROLE_MENTOR){
-            return true;
-        }
-        return false;
-    }
-
-
-
+    // ----------------------------------------------------------------
 
 }

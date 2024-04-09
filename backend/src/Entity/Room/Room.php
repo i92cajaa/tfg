@@ -1,60 +1,51 @@
 <?php
 
-namespace App\Entity\Status;
+namespace App\Entity\Room;
 
-use App\Entity\Appointment\Appointment;
-use App\Entity\ClientRequest\ClientRequest;
+use App\Entity\Center\Center;
 use App\Entity\Schedule\Schedule;
-use App\Repository\StatusRepository;
+use App\Repository\RoomRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-
-#[ORM\Entity(repositoryClass: StatusRepository::class)]
-class Status
+#[ORM\Entity(repositoryClass: RoomRepository::class)]
+class Room
 {
-
-    // ----------------------------------------------------------------
-    // Constants
-    // ----------------------------------------------------------------
-
-    const STATUS_AVAILABLE = 1;
-    const STATUS_FULL = 2;
-    const STATUS_CANCELED = 3;
-    const STATUS_COMPLETED = 4;
 
     // ----------------------------------------------------------------
     // Primary Key
     // ----------------------------------------------------------------
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private int $id;
+    #[ORM\Column(type: 'string', unique: true, nullable: false)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private string $id;
 
     // ----------------------------------------------------------------
     // Relationships
     // ----------------------------------------------------------------
 
-    #[ORM\OneToMany(mappedBy:"status", targetEntity: Schedule::class)]
+    #[ORM\ManyToOne(targetEntity: Center::class, inversedBy: 'rooms')]
+    #[ORM\JoinColumn(name: "center_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
+    private Center $center;
+
+    #[ORM\OneToMany(mappedBy:"room", targetEntity: Schedule::class, cascade:["persist", "remove"])]
     private array|Collection $schedules;
 
     // ----------------------------------------------------------------
     // Fields
     // ----------------------------------------------------------------
 
-    #[ORM\Column(type:"string", length: 180, nullable: false)]
-    private string $name;
+    #[ORM\Column(name:"floor", type:"integer", nullable:false)]
+    private int $floor;
 
-    #[ORM\Column(type:"string", length: 255, nullable: false)]
-    private string $color;
+    #[ORM\Column(name:"number", type:"integer", nullable:false)]
+    private int $number;
 
-    #[ORM\Column(type:"string", length: 30, nullable: false)]
-    private string $entityType;
-
-    #[ORM\Column(type:"integer", length: 30, nullable: false)]
-    private int $statusOrder;
+    #[ORM\Column(name:"capacity", type:"integer", nullable:false)]
+    private int $capacity;
 
     // ----------------------------------------------------------------
     // Magic Methods
@@ -70,11 +61,19 @@ class Status
     // ----------------------------------------------------------------
 
     /**
-     * @return int|null
+     * @return string
      */
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * @return Center
+     */
+    public function getCenter(): Center
+    {
+        return $this->center;
     }
 
     /**
@@ -86,35 +85,27 @@ class Status
     }
 
     /**
-     * @return string|null
+     * @return int
      */
-    public function getName(): ?string
+    public function getFloor(): int
     {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getColor(): string
-    {
-        return $this->color;
+        return $this->floor;
     }
 
     /**
      * @return int
      */
-    public function getStatusOrder(): int
+    public function getNumber(): int
     {
-        return $this->statusOrder;
+        return $this->number;
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getEntityType(): string
+    public function getCapacity(): int
     {
-        return $this->entityType;
+        return $this->capacity;
     }
 
     // ----------------------------------------------------------------
@@ -122,53 +113,52 @@ class Status
     // ----------------------------------------------------------------
 
     /**
+     * @param Center $center
+     * @return $this
+     */
+    public function setCenter(Center $center): Room
+    {
+        $this->center = $center;
+        return $this;
+    }
+
+    /**
      * @param array|Collection $schedules
      * @return $this
      */
-    public function setSchedules(array|Collection $schedules): Status
+    public function setSchedules(array|Collection $schedules): Room
     {
         $this->schedules = $schedules;
         return $this;
     }
 
     /**
-     * @param string $name
+     * @param int $floor
      * @return $this
      */
-    public function setName(string $name): Status
+    public function setFloor(int $floor): Room
     {
-        $this->name = $name;
-
+        $this->floor = $floor;
         return $this;
     }
 
     /**
-     * @param string $color
+     * @param int $number
      * @return $this
      */
-    public function setColor(string $color): Status
+    public function setNumber(int $number): Room
     {
-        $this->color = $color;
+        $this->number = $number;
         return $this;
     }
 
     /**
-     * @param int $statusOrder
-     * @return Status
+     * @param int $capacity
+     * @return $this
      */
-    public function setStatusOrder(int $statusOrder): Status
+    public function setCapacity(int $capacity): Room
     {
-        $this->statusOrder = $statusOrder;
-        return $this;
-    }
-
-    /**
-     * @param string $entityType
-     * @return Status
-     */
-    public function setEntityType(string $entityType): Status
-    {
-        $this->entityType = $entityType;
+        $this->capacity = $capacity;
         return $this;
     }
 
@@ -178,14 +168,14 @@ class Status
 
     // ----------------------------------------------------------------
     /**
-     * EN: FUNCTION TO ADD SCHEDULE TO STATUS
-     * ES: FUNCIÓN PARA AÑADIR HORARIO A ESTADO
+     * EN: FUNCTION TO ADD SCHEDULE TO ROOM
+     * ES: FUNCIÓN PARA AÑADIR HORARIO A SALA
      *
      * @param Schedule $schedule
      * @return $this
      */
     // ----------------------------------------------------------------
-    public function addSchedule(Schedule $schedule): Status
+    public function addSchedule(Schedule $schedule): Room
     {
         if (!$this->schedules->contains($schedule)) {
             $this->schedules->add($schedule);
@@ -197,14 +187,14 @@ class Status
 
     // ----------------------------------------------------------------
     /**
-     * EN: FUNCTION TO REMOVE SCHEDULE FROM STATUS
-     * ES: FUNCIÓN PARA BORRAR HORARIO DE ESTADO
+     * EN: FUNCTION TO REMOVE SCHEDULE TO ROOM
+     * ES: FUNCIÓN PARA BORRAR HORARIO A SALA
      *
      * @param Schedule $schedule
      * @return $this
      */
     // ----------------------------------------------------------------
-    public function removeSchedule(Schedule $schedule): Status
+    public function removeSchedule(Schedule $schedule): Room
     {
         if ($this->schedules->contains($schedule)) {
             $this->schedules->removeElement($schedule);
@@ -213,5 +203,4 @@ class Status
         return $this;
     }
     // ----------------------------------------------------------------
-
 }

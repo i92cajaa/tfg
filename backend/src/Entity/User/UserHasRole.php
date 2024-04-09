@@ -15,6 +15,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class UserHasRole
 {
 
+    // ----------------------------------------------------------------
+    // Primary Keys
+    // ----------------------------------------------------------------
+
     #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: User::class, cascade:["persist"], inversedBy: 'roles')]
     #[ORM\JoinColumn(name: "user_id", referencedColumnName:"id", onDelete: 'CASCADE')]
@@ -25,6 +29,9 @@ class UserHasRole
     #[ORM\JoinColumn(name: "role_id", referencedColumnName:"id", onDelete: 'CASCADE')]
     private Role $role;
 
+    // ----------------------------------------------------------------
+    // Getter Methods
+    // ----------------------------------------------------------------
 
     /**
      * @return User
@@ -35,6 +42,18 @@ class UserHasRole
     }
 
     /**
+     * @return Role
+     */
+    public function getRole(): Role
+    {
+        return $this->role;
+    }
+
+    // ----------------------------------------------------------------
+    // Setter Methods
+    // ----------------------------------------------------------------
+
+    /**
      * @param User $user
      * @return UserHasRole
      */
@@ -42,14 +61,6 @@ class UserHasRole
     {
         $this->user = $user;
         return $this;
-    }
-
-    /**
-     * @return Role
-     */
-    public function getRole(): Role
-    {
-        return $this->role;
     }
 
     /**

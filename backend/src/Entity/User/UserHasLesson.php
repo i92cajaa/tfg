@@ -2,14 +2,12 @@
 
 namespace App\Entity\User;
 
-use App\Entity\User\User;
-use App\Entity\Document\Document;
-use App\Repository\UserHasDocumentRepository;
+use App\Entity\Class\Lesson;
+use App\Repository\UserHasLessonRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-
-#[ORM\Entity(repositoryClass: UserHasDocumentRepository::class)]
-class UserHasDocument
+#[ORM\Entity(repositoryClass: UserHasLessonRepository::class)]
+class UserHasLesson
 {
 
     // ----------------------------------------------------------------
@@ -17,14 +15,14 @@ class UserHasDocument
     // ----------------------------------------------------------------
 
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'documents')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'lessons')]
     #[ORM\JoinColumn(name: "user_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
     private User $user;
 
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: Document::class, inversedBy: 'users')]
-    #[ORM\JoinColumn(name: "document_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
-    private Document $document;
+    #[ORM\ManyToOne(targetEntity: Lesson::class, inversedBy: 'users')]
+    #[ORM\JoinColumn(name: "lesson_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
+    private Lesson $lesson;
 
     // ----------------------------------------------------------------
     // Getter Methods
@@ -39,11 +37,11 @@ class UserHasDocument
     }
 
     /**
-     * @return Document
+     * @return Lesson
      */
-    public function getDocument(): Document
+    public function getLesson(): Lesson
     {
-        return $this->document;
+        return $this->lesson;
     }
 
     // ----------------------------------------------------------------
@@ -52,22 +50,23 @@ class UserHasDocument
 
     /**
      * @param User $user
-     * @return UserHasDocument
+     * @return UserHasLesson
      */
-    public function setUser(User $user): UserHasDocument
+    public function setUser(User $user): UserHasLesson
     {
         $this->user = $user;
+
         return $this;
     }
 
     /**
-     * @param Document $document
-     * @return UserHasDocument
+     * @param Lesson $lesson
+     * @return UserHasLesson
      */
-    public function setDocument(Document $document): UserHasDocument
+    public function setLesson(Lesson $lesson): UserHasLesson
     {
-        $this->document = $document;
+        $this->lesson = $lesson;
+
         return $this;
     }
-
 }

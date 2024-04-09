@@ -2,17 +2,8 @@
 
 namespace App\Entity\Client;
 
-use App\Entity\Appointment\Appointment;
-use App\Entity\Center\Center;
-use App\Entity\Document\Document;
 use App\Entity\Notification\Notification;
-use App\Entity\Service\Service;
-use App\Entity\Template\Template;
-use App\Entity\User\User;
-use App\Entity\User\UserHasClient;
 use App\Shared\Classes\UTCDateTime;
-use App\Shared\Classes\EntityWithCreatedAndUpdatedDates;
-use App\Shared\Utils\Util;
 use DateTime;
 use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -54,37 +45,37 @@ class Client implements PasswordAuthenticatedUserInterface
     // Fields
     // ----------------------------------------------------------------
 
-    #[ORM\Column(name:"name", type:"string", length:255, nullable:false)]
+    #[ORM\Column(name:"name", type:"string", length:255, unique: false, nullable:false)]
     private string $name;
 
-    #[ORM\Column(name:"surnames", type:"string", length:255, nullable:false)]
+    #[ORM\Column(name:"surnames", type:"string", length:255, unique: false, nullable:false)]
     private string $surnames;
 
-    #[ORM\Column(name:"email", type:"string", length:255, nullable:true)]
+    #[ORM\Column(name:"email", type:"string", length:255, unique: true, nullable:true)]
     private ?string $email = null;
 
-    #[ORM\Column(name:"dni", type:"string", length:255, nullable:false)]
+    #[ORM\Column(name:"dni", type:"string", length:255, unique: true, nullable:false)]
     private string $dni;
 
-    #[ORM\Column(name:"password", type:"string", length:255, nullable:false)]
+    #[ORM\Column(name:"password", type:"string", length:255, unique: false, nullable:false)]
     private string $password;
 
-    #[ORM\Column(name:"phone", type:"string", length:255, nullable:false)]
+    #[ORM\Column(name:"phone", type:"string", length:255, unique: false, nullable:false)]
     private string $phone;
 
-    #[ORM\Column(name:"created_at", type:"datetime", nullable:false)]
+    #[ORM\Column(name:"created_at", type:"datetime", unique: false, nullable:false)]
     private DateTime $createdAt;
 
-    #[ORM\Column(name:"updated_at", type:"datetime", nullable:true)]
+    #[ORM\Column(name:"updated_at", type:"datetime", unique: false, nullable:true)]
     private ?DateTime $updatedAt = null;
 
-    #[ORM\Column(name:"last_login", type:"datetime", nullable:true)]
+    #[ORM\Column(name:"last_login", type:"datetime", unique: false, nullable:true)]
     private ?DateTime $lastLogin = null;
 
-    #[ORM\Column(name:"status", type:"boolean", nullable:false)]
+    #[ORM\Column(name:"status", type:"boolean", unique: false, nullable:false)]
     private bool $status;
 
-    #[ORM\Column(name:"temporal_hash", type:"string", length:255, nullable:true)]
+    #[ORM\Column(name:"temporal_hash", type:"string", length:255, unique: true, nullable:true)]
     private ?string $temporalHash = null;
 
     // ----------------------------------------------------------------
@@ -141,6 +132,14 @@ class Client implements PasswordAuthenticatedUserInterface
     public function getSurnames(): string
     {
         return $this->surnames;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullName(): string
+    {
+        return $this->name . ' ' . $this->surnames;
     }
 
     /**
