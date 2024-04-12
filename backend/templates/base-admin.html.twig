@@ -166,12 +166,21 @@
                                 </a>
                             </li>
 
-                            {% if userPermission.can('list', 'users') %}
+                            {% if userPermission.can('list', 'centers') %}
                                 <li class="sidebar-list">
                                         <a href="{{ path('center_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'center_' %}nav-active{% endif %}" data-original-title="" title="">
                                             <i data-feather="map-pin"></i>
                                             <span>Centros</span>
                                         </a>
+                                </li>
+                            {% endif %}
+
+                            {% if userPermission.can('list', 'areas') %}
+                                <li class="sidebar-list">
+                                    <a href="{{ path('area_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'area_' %}nav-active{% endif %}" data-original-title="" title="">
+                                        <i data-feather="map"></i>
+                                        <span>Áreas</span>
+                                    </a>
                                 </li>
                             {% endif %}
 

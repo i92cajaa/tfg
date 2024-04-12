@@ -33,8 +33,8 @@
                                     </a>
                                 </th>
                                 <th>
-                                    <a href="{{ filterService.orderBy("city", filterService.getInversedOrder("city")) }}">
-                                        Ciudad {% if filterService.isOrdered("city") %}<i data-feather="{{ filterService.getOrder("city").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                    <a href="{{ filterService.orderBy("area", filterService.getInversedOrder("area")) }}">
+                                        Área {% if filterService.isOrdered("area") %}<i data-feather="{{ filterService.getOrder("area").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
                                     </a>
                                 </th>
                                 <th>
@@ -58,7 +58,7 @@
                                 <td><img data-bs-toggle="tooltip" data-html="true" data-placement="bottom" title='' src="{% if center.logo != null %}{{ documentImage.DocumentImage(center.logo) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" class="" style="width: 90px !important;"  alt=""></td>
                                 <td>{{ center.name }}</td>
                                 <td style="width: 40%">{{ center.address }}</td>
-                                <td>{{ center.city }}</td>
+                                <td>{{ center.area.name }}</td>
                                 <td>{{ center.phone }}</td>
                                 <td class="text-nowrap">
                                     <div class="d-inline-flex gap-1">

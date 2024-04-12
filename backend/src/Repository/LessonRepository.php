@@ -20,6 +20,6 @@ class LessonRepository extends ServiceEntityRepository
 
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Schedule::class);
+        parent::__construct($registry, Lesson::class);
     }
 }

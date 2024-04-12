@@ -7,6 +7,8 @@ use App\Entity\Area\Area;
 use App\Service\FilterService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
@@ -25,6 +27,90 @@ class AreaRepository  extends ServiceEntityRepository
     {
         parent::__construct($registry, Area::class);
     }
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO CREATE A NEW AREA
+     * ES: FUNCIÓN PARA CREAR UN ÁREA NUEVA
+     *
+     * @param Area $entity
+     * @param bool $flush
+     * @return void
+     */
+    // ----------------------------------------------------------------
+    public function save(Area $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO DELETE AN AREA
+     * ES: FUNCIÓN PARA BORRAR UN ÁREA
+     *
+     * @param Area $entity
+     * @param bool $flush
+     * @return void
+     */
+    // ----------------------------------------------------------------
+    public function remove(Area $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO GET AN AREA'S DATA
+     * ES: FUNCIÓN PARA OBTENER LOS DATOS DE UN ÁREA
+     *
+     * @param string $id
+     * @param bool $array
+     * @return array|Area|null
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function findById(string $id, bool $array): array|Area|null
+    {
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.centers', 'centers')
+            ->addSelect('centers')
+            ->andWhere('a.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO GET AN AREA'S DATA (SIMPLE METHOD)
+     * ES: FUNCIÓN PARA OBTENER LOS DATOS DE UN ÁREA (MÉTODO SIMPLE)
+     *
+     * @param string $id
+     * @param bool $array
+     * @return array|Area
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function findByIdSimple(string $id, bool $array): array|Area
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
+    }
+    // ----------------------------------------------------------------
 
     // ----------------------------------------------------------------
     /**

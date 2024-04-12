@@ -5,6 +5,7 @@ namespace App\Form\Validator;
 use App\Entity\User\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -13,7 +14,7 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 class UserUniqueEmailValidator extends ConstraintValidator
 {
 
-    private UserRepository $userRepository;
+    private UserRepository|EntityRepository $userRepository;
 
     public function __construct(private readonly EntityManagerInterface $em)
     {
@@ -27,7 +28,6 @@ class UserUniqueEmailValidator extends ConstraintValidator
             if (!$constraint instanceof UserUniqueEmail) {
                 throw new UnexpectedTypeException($constraint, UserUniqueEmail::class);
             }
-            //dd($user);
 
             // custom constraints should ignore null and empty values to allow
             // other constraints (NotBlank, NotNull, etc.) to take care of that

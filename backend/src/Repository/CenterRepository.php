@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Center\Center;
 use App\Service\FilterService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -23,6 +25,16 @@ class CenterRepository extends ServiceEntityRepository
         parent::__construct($registry, Center::class);
     }
 
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO CREATE A NEW CENTER
+     * ES: FUNCIÓN PARA CREAR UN CENTRO NUEVO
+     *
+     * @param Center $entity
+     * @param bool $flush
+     * @return void
+     */
+    // ----------------------------------------------------------------
     public function save(Center $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
@@ -31,7 +43,18 @@ class CenterRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO DELETE A CENTER
+     * ES: FUNCIÓN PARA BORRAR UN CENTRO
+     *
+     * @param Center $entity
+     * @param bool $flush
+     * @return void
+     */
+    // ----------------------------------------------------------------
     public function remove(Center $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
@@ -40,8 +63,42 @@ class CenterRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+    // ----------------------------------------------------------------
 
-    public function findInvoices(FilterService $filterService, $showAll = false)
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO GET A CENTER'S DATA
+     * ES: FUNCIÓN PARA OBTENER LOS DATOS DE UN CENTRO
+     *
+     * @param string $id
+     * @param bool $array
+     * @return array|Center|null
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function findById(string $id, bool $array): array|Center|null
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.area', 'area')
+            ->addSelect('area')
+            ->andWhere('c.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO LIST ALL CENTERS
+     * ES: FUNCIÓN PARA LISTAR TODOS LOS CENTROS
+     *
+     * @param FilterService $filterService
+     * @param bool $showAll
+     * @return array|null
+     */
+    // ----------------------------------------------------------------
+    public function findCenters(FilterService $filterService, $showAll = false): ?array
     {
 
         $query = $this->createQueryBuilder('i')
@@ -104,8 +161,9 @@ class CenterRepository extends ServiceEntityRepository
 
         return [
             'totalRegisters' => $totalRegisters,
-            'data'           => $result,
+            'centers'        => $result,
             'lastPage'       => $lastPage
         ];
     }
+    // ----------------------------------------------------------------
 }

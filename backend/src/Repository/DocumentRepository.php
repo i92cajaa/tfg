@@ -57,12 +57,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->setExtension($extension)
             ->setMimetype($mimetype)
             ->setSubdirectory($subdirectory)
-            ->setStatus($status)
-            ->setIsStartupSurvey($isStartupSurvey)
-            ->setIsMentorSurvey($isMentorSurvey)
-            ->setTotalPointsMentorSurvey($totalPointsMentorSurvey)
-            ->setSurveyRange($surveyRange)
-            ->setMentoredTime($mentoredTime);
+            ->setStatus($status);
 
         $this->save($this->_em, $document);
 

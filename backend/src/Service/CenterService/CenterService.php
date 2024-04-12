@@ -3,16 +3,19 @@
 namespace App\Service\CenterService;
 
 
+use App\Entity\Area\Area;
 use App\Entity\Center\Center;
 use App\Entity\Role\Role;
 use App\Entity\User\User;
 use App\Form\CenterType;
+use App\Repository\AreaRepository;
 use App\Repository\CenterRepository;
 use App\Repository\RoleRepository;
-use App\Repository\UserRepository;
 use App\Service\DocumentService\DocumentService;
 use App\Shared\Classes\AbstractService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,28 +29,10 @@ use Twig\Environment;
 class CenterService extends AbstractService
 {
 
-    /**
-     * @var CenterRepository
-     */
-    private CenterRepository $centerRepository;
-
-    /**
-     * @var UserRepository
-     */
-    private UserRepository $userRepository;
-
-    /**
-     * @var RoleRepository
-     */
-    private RoleRepository $roleRepository;
-
-
-    /**
-     * @param CenterRepository $centerRepository
-     */
     public function __construct(
         private readonly DocumentService $documentService,
-        CenterRepository $centerRepository,
+        private readonly CenterRepository $centerRepository,
+        private readonly AreaRepository $areaRepository,
         EntityManagerInterface $em,
         RouterInterface       $router,
         Environment           $twig,
@@ -59,9 +44,6 @@ class CenterService extends AbstractService
         TranslatorInterface $translator
         )
     {
-        $this->userRepository = $em->getRepository(User::class);
-        $this->centerRepository = $em->getRepository(Center::class);
-        $this->roleRepository = $em->getRepository(Role::class);
         parent::__construct(
             $requestStack,
             $router,
@@ -75,22 +57,58 @@ class CenterService extends AbstractService
         );
     }
 
-
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO LIST ALL CENTERS
+     * ES: SERVICIO PARA LISTAR TODOS LOS CENTROS
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
     public function index(): Response
     {
 
-        $centers = $this->centerRepository->findInvoices($this->filterService, true);
+        $centers = $this->centerRepository->findCenters($this->filterService, true);
 
         return $this->render('center/index.html.twig', [
-            'center' => $centers,  // Asegúrate de que esta variable esté definida
+            'center' => $centers,
             'totalResults' => $centers['totalRegisters'],
             'lastPage' => 0,
             'currentPage' => $this->filterService->page,
-            'centers' => $centers['data'],
+            'centers' => $centers['centers'],
             'filterService' => $this->filterService,
         ]);
     }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO SHOW A CENTER'S DATA
+     * ES: SERVICIO PARA MOSTRAR LOS DATOS DE UN CENTRO
+     *
+     * @param string $centerId
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function show(string $centerId): Response
+    {
+        $center = $this->centerRepository->findById($centerId, false);
+
+        return $this->render('center/show.html.twig', [
+            'center' => $center
+        ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO CREATE A NEW CENTER
+     * ES: SERVICIO PARA CREAR UN CENTRO NUEVO
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
     public function new():Response{
         $center = new Center();
         $form = $this->createForm(CenterType::class, $center);
@@ -109,38 +127,26 @@ class CenterService extends AbstractService
             return $this->redirectToRoute('center_index');
         }
 
+        $areas = $this->areaRepository->findAreas($this->filterService, true);
+
         return $this->render('center/new.html.twig', [
             'center' => $center,
             'form' => $form->createView(),
+            'areas' => $areas['areas']
         ]);
 
     }
+    // ----------------------------------------------------------------
 
-    //Función para ELIMINAR Centros
-
-    public function delete(string $center): Response
-    {
-        $center = $this->getEntity($center);
-        $this->centerRepository->remove($center,true);
-
-        return $this->redirectToRoute('center_index');
-    }
-
-
-    //Función para MOSTRAR Centro
-
-    public function show(string $centerId): Response
-    {
-        $center = $this->centerRepository->find($centerId);
-
-        return $this->render('center/show.html.twig', [
-            'center' => $center
-        ]);
-    }
-
-
-
-//Función para EDITAR Centros
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO EDIT A CENTER'S DATA
+     * ES: SERVICIO PARA EDITAR LOS DATOS DE UN CENTRO
+     *
+     * @param string $center
+     * @return Response
+     */
+    // ----------------------------------------------------------------
     public function edit(string $center): Response
     {
         $center = $this->getEntity($center);
@@ -161,14 +167,32 @@ class CenterService extends AbstractService
             }
             return $this->redirectToRoute('center_index');
         }
+
+        $areas = $this->areaRepository->findAreas($this->filterService, true);
+
         return $this->render('center/edit.html.twig', [
             'center' => $center,
             'form' => $form->createView(),
+            'areas' => $areas['areas']
         ]);
     }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO DELETE A CENTER
+     * ES: SERVICIO PARA BORRAR UN CENTRO
+     *
+     * @param string $center
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function delete(string $center): Response
+    {
+        $center = $this->getEntity($center);
+        $this->centerRepository->remove($center,true);
 
-
-
-
+        return $this->redirectToRoute('center_index');
+    }
+    // ----------------------------------------------------------------
 }

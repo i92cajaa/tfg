@@ -2,10 +2,13 @@
 
 namespace App\Service\AreaService;
 
+use App\Entity\Area\Area;
+use App\Form\AreaType;
 use App\Repository\AreaRepository;
 use App\Shared\Classes\AbstractService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,9 +60,7 @@ class AreaService extends AbstractService
     {
         $areas = $this->areaRepository->findAreas($this->filterService, true);
 
-        dd($areas);
-
-        return $this->render('areas/index.html.twig', [
+        return $this->render('area/index.html.twig', [
             'area' => $areas,  // Asegúrate de que esta variable esté definida
             'totalResults' => $areas['totalRegisters'],
             'lastPage' => $areas['lastPage'],
@@ -67,6 +68,101 @@ class AreaService extends AbstractService
             'areas' => $areas['areas'],
             'filterService' => $this->filterService,
         ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO SHOW AN AREA'S DATA
+     * ES: SERVICIO PARA MOSTRAR LOS DATOS DE UN ÁREA
+     *
+     * @param string $areaId
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function show(string $areaId): Response
+    {
+        $area = $this->areaRepository->findById($areaId, false);
+
+        return $this->render('area/show.html.twig', [
+            'area' => $area
+        ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO CREATE A NEW AREA
+     * ES: SERVICIO PARA CREAR UN ÁREA NUEVA
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function new(): Response
+    {
+        $area = new Area();
+        $form = $this->createForm(AreaType::class, $area);
+        $form->handleRequest($this->getCurrentRequest());
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->areaRepository->save($area, true);
+
+            return $this->redirectToRoute('area_index');
+        }
+
+        return $this->render('area/new.html.twig', [
+            'area' => $area,
+            'form' => $form->createView(),
+        ]);
+
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO EDIT AN AREA'S DATA
+     * ES: SERVICIO PARA EDITAR LOS DATOS DE UN ÁREA
+     *
+     * @param string $area
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function edit(string $area): Response
+    {
+        $area = $this->getEntity($area);
+
+        $form = $this->createForm(AreaType::class, $area);
+        $form->handleRequest($this->getCurrentRequest());
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->areaRepository->save($area,true);
+
+            return $this->redirectToRoute('area_index');
+        }
+
+        return $this->render('area/edit.html.twig', [
+            'area' => $area,
+            'form' => $form->createView()
+        ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO DELETE AN AREA
+     * ES: SERVICIO PARA BORRAR UN ÁREA
+     *
+     * @param string $area
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function delete(string $area): Response
+    {
+        $area = $this->getEntity($area);
+        $this->areaRepository->remove($area,true);
+
+        return $this->redirectToRoute('area_index');
     }
     // ----------------------------------------------------------------
 }

@@ -3,20 +3,13 @@
 namespace App\Controller\UserController;
 
 use App\Annotation\Permission;
-use App\Entity\User\User;
-use App\Repository\UserRepository;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use App\Service\UserService\UserService;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Console\Event\ConsoleEvent;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\Constraints\Length;
 
 #[Route(path: '/user')]
 class UserController extends AbstractController

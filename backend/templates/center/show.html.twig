@@ -26,7 +26,7 @@
                                                       title=''
                                                       src="{% if center.logo != null %}{{ documentImage.DocumentImage(center.logo) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" style="width: 90px !important;"  alt="">
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-10">
                                                 <span class="card-text user-info-title font-weight-bold mb-0">Nombre: <strong>{{ center.name }}</strong></span>
                                             </div>
 
@@ -39,7 +39,7 @@
                                                 <span class="card-text user-info-title font-weight-bold mb-0">Dirección: <strong>{{ center.address }}</strong></span>
                                             </div>
                                             <div class="col-md-2">
-                                                <span class="card-text user-info-title font-weight-bold mb-0">Ciudad: <strong>{{ center.city }}</strong></span>
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Área: <strong>{{ center.area.name }}</strong></span>
                                             </div>
                                         </div>
 

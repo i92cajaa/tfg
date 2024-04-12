@@ -74,12 +74,12 @@ class SecurityService extends AbstractService
     {
         if ($isClient and $this->getUser()) {
             //$this->getSession()->set('permissions',$this->getUser()->getPermissionsArray());
-            return $this->redirectToRoute('appointment_index');
+            return $this->redirectToRoute('area_index');
         }
 
         if ($this->getUser()) {
             $this->getSession()->set('permissions',$this->getUser()->getPermissionsArray());
-            return $this->redirectToRoute('appointment_index');
+            return $this->redirectToRoute('area_index');
         }
 
         // get the login error if there is one
