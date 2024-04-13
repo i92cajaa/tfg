@@ -1,0 +1,128 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}
+{#    {{ ('List ' ~ configuration.user_nomenclature ~ 's')|trans }}#}
+    Lista de Habitaciones
+{% endblock %}
+
+{% block body %}
+
+    <!-- users list start -->
+    <div class="container-fluid">
+        <!-- list section start -->
+        <div class="card">
+            <div class="card-datatable overflow-inherit table-responsive card-body">
+                <div class="overflow-auto">
+                    <table class="user-list-table table table-list mb-3">
+                        <thead class="thead-light">
+                            <tr>
+                                {% if app.user.isSuperAdmin %}
+                                    <th>
+                                        <a href="{{ filterService.orderBy("center", filterService.getInversedOrder("center")) }}">
+                                            Centro {% if filterService.isOrdered("center") %}<i data-feather="{{ filterService.getOrder("center").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                        </a>
+                                    </th>
+                                {% endif %}
+                                <th>
+                                    <a href="{{ filterService.orderBy("floor", filterService.getInversedOrder("floor")) }}">
+                                        Planta {% if filterService.isOrdered("floor") %}<i data-feather="{{ filterService.getOrder("floor").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("room", filterService.getInversedOrder("room")) }}">
+                                        Número {% if filterService.isOrdered("room") %}<i data-feather="{{ filterService.getOrder("room").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("capacity", filterService.getInversedOrder("capacity")) }}">
+                                        Capacidad {% if filterService.isOrdered("capacity") %}<i data-feather="{{ filterService.getOrder("capacity").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a>
+                                        {{ 'Actions'|trans }}
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for room in rooms %}
+                            <tr>
+                                <td>{{ room.center.name }}</td>
+                                <td>{{ room.floor }}</td>
+                                <td class="align-items-center"><i data-feather="hash" class="mr-3"></i> {{ room.number }}</td>
+                                <td class="align-items-center"><i data-feather="user-plus" class="mr-3"></i> {{ room.capacity }}</td>
+                                <td class="text-nowrap">
+                                    <div class="d-inline-flex gap-1">
+                                        {% if userPermission.can('show', 'rooms') %}
+                                            <a href="{{ path('room_show', {'room': room.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
+                                        {% endif %}
+                                        {% if userPermission.can('edit', 'lessons') %}
+                                            <a href="{{ path('lesson_edit', {'lesson': room.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
+                                        {% endif %}
+                                        {% if userPermission.can('delete', 'lessons') %}
+                                            <div class="dropdown-divider"></div>
+                                            <a href="#" onclick="$('#deleteForm_room_{{ room.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar"><i class="align-middle" data-feather='trash-2'></i><span class="align-middle"></span></a>
+                                            <form method="post" id="deleteForm_room_{{ room.id }}" class="deleteForm d-none" action="{{ path('lesson_delete', {'lesson': room.id}) }}" >
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ room.id) }}">
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6">{{ 'No results found'|trans }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'extra/filter_limit.html.twig' %}
+                <div class="d-flex justify-content-end mr-4 mt-2">
+                    {% include 'extra/pagination.html.twig' with {
+                        filterService: filterService,
+                        currentPage: filterService.page,
+                        paginationPath: 'room_index',
+                        lastPage: lastPage,
+                        showAlwaysFirstAndLast: true
+                    } only %}
+                </div>
+
+            </div>
+
+        </div>
+        <!-- list section end -->
+    </div>
+
+{% endblock %}
+
+{% block action_buttons %}
+
+    <li class="level-menu outside d-flex align-items-center">
+        {% if userPermission.can('create', 'rooms') %}
+            <a class="nav-link" href="{{ path('lesson_create') }}" style="background-color: #003A4A">
+                <i data-feather="plus-circle"></i>
+            </a>
+        {% endif %}
+
+        <a class="nav-link cursor-pointer mr-1" href="#" onclick="toggleFilter()"  style="background-color: #003A4A">
+            <i data-feather="filter"></i>
+        </a>
+        <div class="d-none d-md-block"><h3 class="mb-0 ms-3">Lista de Habitaciones</h3></div>
+        <div class="d-block d-md-none"><h5 class="mb-0 ms-3">Habitaciones</h5></div>
+    </li>
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+{% endblock %}
+
+
+
+{% block sidebar %}
+    {% include 'extra/filters/service_filter.html.twig' %}
+{% endblock %}

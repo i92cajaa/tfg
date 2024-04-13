@@ -182,6 +182,14 @@
                                 </li>
                             {% endif %}
 
+                            {% if userPermission.can('list', 'rooms') %}
+                                <li class="sidebar-list">
+                                    <a href="{{ path('room_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'room_' %}nav-active{% endif %}" data-original-title="" title="Habitaciones">
+                                        <i data-feather="home"></i>
+                                        <span>Habitaciones</span>
+                                    </a>
+                                </li>
+                            {% endif %}
 
                             {% if app.user.isAdmin %}
                                 <li class="sidebar-main-title">

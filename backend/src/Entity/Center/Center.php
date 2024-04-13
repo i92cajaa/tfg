@@ -5,6 +5,7 @@ namespace App\Entity\Center;
 use App\Entity\Area\Area;
 use App\Entity\Lesson\Lesson;
 use App\Entity\Document\Document;
+use App\Entity\Room\Room;
 use App\Entity\User\User;
 use App\Repository\CenterRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -42,6 +43,9 @@ class Center
     #[ORM\OneToMany(mappedBy:"center", targetEntity: Lesson::class, cascade:["persist", "remove"])]
     private array|Collection $lessons;
 
+    #[ORM\OneToMany(mappedBy:"rooms", targetEntity: Room::class, cascade:["persist", "remove"])]
+    private array|Collection $rooms;
+
     // ----------------------------------------------------------------
     // Fields
     // ----------------------------------------------------------------
@@ -66,6 +70,7 @@ class Center
     {
         $this->users = new ArrayCollection();
         $this->lessons = new ArrayCollection();
+        $this->rooms = new ArrayCollection();
     }
 
     // ----------------------------------------------------------------
@@ -110,6 +115,14 @@ class Center
     public function getLessons(): array|Collection
     {
         return $this->lessons;
+    }
+
+    /**
+     * @return array|Collection
+     */
+    public function getRooms(): array|Collection
+    {
+        return $this->rooms;
     }
 
     /**
@@ -195,6 +208,16 @@ class Center
     public function setLessons(array|Collection $lessons): Center
     {
         $this->lessons = $lessons;
+        return $this;
+    }
+
+    /**
+     * @param array|Collection $rooms
+     * @return $this
+     */
+    public function setRooms(array|Collection $rooms): Center
+    {
+        $this->rooms = $rooms;
         return $this;
     }
 
@@ -312,6 +335,44 @@ class Center
     {
         if ($this->lessons->contains($lesson)) {
             $this->lessons->removeElement($lesson);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO ADD A ROOM TO THIS CENTER
+     * ES: FUNCIÓN PARA AÑADIR UNA HABITACIÓN AL CENTRO
+     *
+     * @param Room $room
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function addRoom(Room $room): Center
+    {
+        if (!$this->rooms->contains($room)) {
+            $this->rooms->add($room);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO REMOVE A ROOM FROM THIS CENTER
+     * ES: FUNCIÓN PARA BORRAR UNA HABITACIÓN DEL CENTRO
+     *
+     * @param Room $room
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function removeRoom(Room $room): Center
+    {
+        if ($this->rooms->contains($room)) {
+            $this->rooms->removeElement($room);
         }
 
         return $this;

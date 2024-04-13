@@ -64,7 +64,7 @@
 
                         {% else %}
                             <tr>
-                                <td colspan="8">{{ 'No results found'|trans }}</td>
+                                <td colspan="4">{{ 'No results found'|trans }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -75,7 +75,7 @@
                     {% include 'extra/pagination.html.twig' with {
                         filterService: filterService,
                         currentPage: filterService.page,
-                        paginationPath: 'user_index',
+                        paginationPath: 'area_index',
                         lastPage: lastPage,
                         showAlwaysFirstAndLast: true
                     } only %}
