@@ -1,0 +1,138 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}
+{#    {{ ('List ' ~ configuration.user_nomenclature ~ 's')|trans }}#}
+    Lista de Clases
+{% endblock %}
+
+{% block body %}
+
+    <!-- users list start -->
+    <div class="container-fluid">
+        <!-- list section start -->
+        <div class="card">
+            <div class="card-datatable overflow-inherit table-responsive card-body">
+                <div class="overflow-auto">
+                    <table class="user-list-table table table-list mb-3">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>
+                                    <span style="letter-spacing: 1px; color: var(--theme-deafult)">
+                                        Imágen
+                                    </span>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("name", filterService.getInversedOrder("name")) }}">
+                                        Nombre {% if filterService.isOrdered("name") %}<i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("center", filterService.getInversedOrder("center")) }}">
+                                        Centro {% if filterService.isOrdered("center") %}<i data-feather="{{ filterService.getOrder("center").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a>
+                                        {{ 'Description'|trans }}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("status", filterService.getInversedOrder("status")) }}">
+                                        {{ 'Status'|trans }} {% if filterService.isOrdered("status") %}<i data-feather="{{ filterService.getOrder("status").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a>
+                                        {{ 'Actions'|trans }}
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for lesson in lessons %}
+                            <tr>
+                                <td><img data-bs-toggle="tooltip" data-html="true" data-placement="bottom" title='' src="{% if lesson.image != null %}{{ documentImage.DocumentImage(lesson.image) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" class="" style="width: 90px !important;"  alt=""></td>
+                                <td>{{ lesson.name }}</td>
+                                <td>{{ lesson.center.name }}</td>
+                                <td style="width: 40%">{{ lesson.description }}</td>
+                                <td>
+                                    {% if lesson.status %}
+                                        <span class="badge text-capitalize badge-light-success badge-pill"> Activo </span>
+                                    {% else %}
+                                        <span  class="badge text-capitalize badge-light-secondary badge-pill"> Inactivo </span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-nowrap">
+                                    <div class="d-inline-flex gap-1">
+                                        {% if userPermission.can('show', 'lessons') %}
+                                            <a href="{{ path('lesson_show', {'lesson': lesson.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
+                                        {% endif %}
+{#                                        {% if userPermission.can('edit', 'center') %}#}
+                                            <a href="{{ path('center_edit', {'center': lesson.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
+{#                                        {% endif %}#}
+                                        {% if userPermission.can('delete', 'lessons') %}
+                                            <div class="dropdown-divider"></div>
+                                            <a href="#" onclick="$('#deleteForm_center_{{ lesson.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar"><i class="align-middle" data-feather='trash-2'></i><span class="align-middle"></span></a>
+                                            <form method="post" id="deleteForm_center_{{ lesson.id }}" class="deleteForm d-none" action="{{ path('center_delete', {'center': lesson.id}) }}" >
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ lesson.id) }}">
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6">{{ 'No results found'|trans }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'extra/filter_limit.html.twig' %}
+                <div class="d-flex justify-content-end mr-4 mt-2">
+                    {% include 'extra/pagination.html.twig' with {
+                        filterService: filterService,
+                        currentPage: filterService.page,
+                        paginationPath: 'lesson_index',
+                        lastPage: lastPage,
+                        showAlwaysFirstAndLast: true
+                    } only %}
+                </div>
+
+            </div>
+
+        </div>
+        <!-- list section end -->
+    </div>
+
+{% endblock %}
+
+{% block action_buttons %}
+
+    <li class="level-menu outside d-flex align-items-center">
+{#        {% if userPermission.can('create', 'center') %}#}
+            <a class="nav-link" href="{{ path('lesson_create') }}" style="background-color: #003A4A">
+                <i data-feather="plus-circle"></i>
+            </a>
+{#        {% endif %}#}
+
+        <a class="nav-link cursor-pointer mr-1" href="#" onclick="toggleFilter()"  style="background-color: #003A4A">
+            <i data-feather="filter"></i>
+        </a>
+        <div class="d-none d-md-block"><h3 class="mb-0 ms-3">Lista de Clases</h3></div>
+        <div class="d-block d-md-none"><h5 class="mb-0 ms-3">Clases</h5></div>
+    </li>
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+{% endblock %}
+
+
+
+{% block sidebar %}
+    {% include 'extra/filters/service_filter.html.twig' %}
+{% endblock %}

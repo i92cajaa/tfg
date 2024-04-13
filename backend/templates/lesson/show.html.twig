@@ -1,0 +1,103 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Clase - {{ lesson.name }}{% endblock %}
+
+{% block page_title %}
+    Clase
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <!-- User Card & Plan Starts -->
+        <div class="row">
+            <!-- User Card starts-->
+            <div class="col-xl-12 col-lg-12 col-md-12">
+                <div class="card user-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 mt-2 mt-xl-0">
+                                <div class="user-info-wrapper row mr-2 ml-2">
+                                    <div class="d-flex flex-wrap col-md-12 row gap-3">
+                                        <div class="mb-5 d-flex">
+                                            <div class="col-md-2">
+                                                <img  class="rounded-pill" data-bs-toggle="tooltip"
+                                                      data-html="true"
+                                                      data-placement="bottom"
+                                                      title=''
+                                                      src="{% if lesson.image != null %}{{ documentImage.DocumentImage(lesson.image) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" style="width: 90px !important;"  alt="">
+                                            </div>
+                                            <div class="col-md-10">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Nombre: <strong>{{ lesson.name }}</strong></span>
+                                            </div>
+
+                                        </div>
+                                        <div class="mb-3 d-flex">
+                                            <div class="col-md-10">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Descripción: <strong>{{ lesson.description }}</strong></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">
+                                                    Estado:
+                                                    {% if lesson.status %}
+                                                        <span class="badge text-capitalize badge-light-success badge-pill"> Activo </span>
+                                                    {% else %}
+                                                        <span  class="badge text-capitalize badge-light-secondary badge-pill"> Inactivo </span>
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <span class="card-text user-info-title font-weight-bold mb-0"><strong>Profesores</strong></span>
+                                        </div>
+                                        {% for user in lesson.users %}
+                                            <div class="mb-1 d-flex align-items-center">
+                                                <div class="media col-md-1">
+                                                    <div class="align-self-center mr-1">
+                                                        <img data-bs-toggle="tooltip" data-html="true" data-placement="bottom" title='{{ user.user.name }}' class="avatar-img imgProfile" alt="{{ user.user.name }}" style="object-fit: contain;"
+                                                             src="{% if user.user.imgProfile != null %}{{ documentImage.DocumentImage(user.user.imgProfile) }}
+                                                            {% else %}{{ asset('assets/images/no-image.png') }}{% endif %}" >
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <span class="card-text user-info-title font-weight-bold mb-0">Nombre: <strong>{{ user.user.name }} {{ user.user.surnames }}</strong></span>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="d-flex align-items-center"><i data-feather="mail" class="me-2" style="width: 15px"></i>{{ user.user.email }}</div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="d-flex align-items-center"><i data-feather="phone" class="me-2" style="width: 15px"></i>{{ user.user.phone }}</div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="col-md-12">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">No tiene profesores</span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(function() {
+            $('.select2').select2();
+        });
+    </script>
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside d-flex align-items-center gap-3">
+
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'lessons') ? path('lesson_index') : '#' }}"  >
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+        <h3 class="mb-0">Clase de {{ lesson.name }}</h3>
+    </li>
+{% endblock %}

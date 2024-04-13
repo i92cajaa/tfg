@@ -79,8 +79,14 @@ class CenterRepository extends ServiceEntityRepository
     public function findById(string $id, bool $array): array|Center|null
     {
         return $this->createQueryBuilder('c')
+            ->leftJoin('c.logo', 'logo')
+            ->leftJoin('c.users', 'users')
             ->leftJoin('c.area', 'area')
+            ->leftJoin('c.lessons', 'lessons')
+            ->addSelect('logo')
+            ->addSelect('users')
             ->addSelect('area')
+            ->addSelect('lessons')
             ->andWhere('c.id = :id')
             ->setParameter('id', $id)
             ->getQuery()

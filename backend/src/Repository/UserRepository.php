@@ -126,7 +126,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         if (count($filterService->getFilters()) > 0) {
 
-
             if($filterService->getFilterValue('info') != ""){
                 $query->andWhere("CONCAT(u.name, ' ', COALESCE(u.surnames, ''), ' ', COALESCE(u.email, '')) LIKE :info")
                     ->setParameter('info', "%" . $filterService->getFilterValue('info') . "%");
@@ -218,7 +217,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return [
             'totalRegisters' => $totalRegisters,
-            'data'           => $result,
+            'users'          => $result,
             'lastPage'       => $lastPage
         ];
     }

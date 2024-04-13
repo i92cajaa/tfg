@@ -3,7 +3,7 @@
 namespace App\Entity\Center;
 
 use App\Entity\Area\Area;
-use App\Entity\Class\Lesson;
+use App\Entity\Lesson\Lesson;
 use App\Entity\Document\Document;
 use App\Entity\User\User;
 use App\Repository\CenterRepository;

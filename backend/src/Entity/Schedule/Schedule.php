@@ -2,7 +2,7 @@
 
 namespace App\Entity\Schedule;
 
-use App\Entity\Class\Lesson;
+use App\Entity\Lesson\Lesson;
 use App\Entity\Client\Booking;
 use App\Entity\Room\Room;
 use App\Entity\Status\Status;

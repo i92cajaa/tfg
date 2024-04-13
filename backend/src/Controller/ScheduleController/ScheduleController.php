@@ -23,8 +23,8 @@ class ScheduleController extends AbstractController
      * @return Response
      */
     // ----------------------------------------------------------------
-    #[Route(path: '/', name: 'lesson_index', methods: ["GET"])]
-    #[Permission(group: 'lessons', action: 'list')]
+    #[Route(path: '/', name: 'schedule_index', methods: ["GET"])]
+    #[Permission(group: 'schedules', action: 'list')]
     public function list(): Response
     {
         return $this->scheduleService->index();

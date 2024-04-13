@@ -2,7 +2,7 @@
 
 namespace App\Entity\User;
 
-use App\Entity\Class\Lesson;
+use App\Entity\Lesson\Lesson;
 use App\Repository\UserHasLessonRepository;
 use Doctrine\ORM\Mapping as ORM;
 

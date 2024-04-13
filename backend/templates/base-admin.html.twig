@@ -107,10 +107,6 @@
                                 </div>
                             </div>
                         </a>
-{#                        <ul class="profile-dropdown onhover-show-div" style="width: 120%;">#}
-{#                            <!--<li><a href="#"><i data-feather="user"></i><span>{{ 'My profile'|trans }}</span></a></li>-->#}
-{#                            <li><a href="{{ path('app_logout') }}"><i data-feather="log-in"> </i><span>{{ 'Logout'|trans }}</span></a></li>#}
-{#                        </ul>#}
                     </li>
                 </ul>
             </div>
@@ -152,13 +148,6 @@
                                 </li>
                             {% endif %}
 
-{#                            <li class="sidebar-list">#}
-{#                                <a href="{{ path('task_list') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'task_' and app.request.attributes.get( '_route' ) != 'task_index'  %}nav-active{% endif %}" data-original-title="" title="">#}
-{#                                    <i data-feather="check-circle"></i>#}
-{#                                    <span>Tareas</span>#}
-{#                                </a>#}
-{#                            </li>#}
-
                             <li class="sidebar-list">
                                 <a href="#" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) == 'appointment_index' %}nav-active{% endif %}" data-original-title="" title="">
                                     <i data-feather="calendar"></i>
@@ -184,23 +173,11 @@
                                 </li>
                             {% endif %}
 
-                            {% if userPermission.can('list', 'clients') %}
+                            {% if userPermission.can('list', 'lessons') %}
                                 <li class="sidebar-list">
-                                    <a href="{{ path('client_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'client_' and 'request_' not in app.request.attributes.get( '_route' ) %}nav-active{% endif %}" data-original-title="" title="Proyectos">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                            <g id="feRocket0" fill="none" fill-rule="evenodd" stroke="none" stroke-width="1">
-                                                <g id="feRocket1" fill="currentColor">
-                                                    <path id="feRocket2" d="M14 22h-4c-.8 0-1.602-1.123-2.274-2.726L5 22l-1-1v-4l2.383-2.383C6.14 13.325 6 12.057 6 11c0-4 3-9 6-9s6 5 6 9c0 1.058-.14 2.325-.383 3.617L20 17v4l-1 1l-2.726-2.726C15.602 20.877 14.801 22 14 22Zm-2-2h-1.615a3.136 3.136 0 0 1-.179-.249c-.347-.532-.72-1.365-1.059-2.383C8.455 15.29 8 12.755 8 11c0-3.198 2.444-7 4-7s4 3.802 4 7c0 1.755-.455 4.291-1.147 6.368c-.34 1.018-.712 1.85-1.06 2.383a3.136 3.136 0 0 1-.178.249H12Zm0-8a2 2 0 1 0 0-4a2 2 0 0 0 0 4Z"/></g></g></svg>
-                                        <span>Proyectos</span>
-                                    </a>
-                                </li>
-                            {% endif %}
-
-                            {% if userPermission.can('list', 'services') %}
-                                <li class="sidebar-list">
-                                    <a href="{{ path('user_mentores_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'user_mentores_'  %}nav-active{% endif %}" data-original-title="" title="">
-                                        <i data-feather="users"></i>
-                                        <span>Mentores</span>
+                                    <a href="{{ path('lesson_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'lesson_' %}nav-active{% endif %}" data-original-title="" title="Clases">
+                                        <i data-feather="book-open"></i>
+                                        <span>Clases</span>
                                     </a>
                                 </li>
                             {% endif %}
@@ -214,24 +191,6 @@
                                     </div>
                                 </li>
 
-                                {% if userPermission.can('list', 'services') %}
-                                    <li class="sidebar-list">
-                                        <a href="#" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'service_' %}nav-active{% endif %}" data-original-title="" title="">
-                                            <i data-feather="server"></i>
-                                            <span>Tipos de Mentorías</span>
-                                        </a>
-                                    </li>
-                                {% endif %}
-
-                                {% if userPermission.can('list', 'services') %}
-                                    <li class="sidebar-list">
-                                        <a href="#" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'survey_range_' %}nav-active{% endif %}" data-original-title="" title="">
-                                            <i data-feather="calendar"></i>
-                                            <span>Rangos de Cuestionarios</span>
-                                        </a>
-                                    </li>
-                                {% endif %}
-
                                 {% if userPermission.can('list', 'users') %}
                                     <li class="sidebar-list">
                                         <a href="{{ path('user_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'user_index' %}nav-active{% endif %}" data-original-title="" title="">
@@ -240,15 +199,6 @@
                                         </a>
                                     </li>
                                 {% endif %}
-
-{#                                {% if userPermission.can('list', 'template_types') %}#}
-{#                                    <li class="sidebar-list">#}
-{#                                        <a href="{{ path('template_type_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'template_type_' %}nav-active{% endif %}" data-original-title="" title="">#}
-{#                                            <i data-feather="file-text"></i>#}
-{#                                            <span>Cuestionarios</span>#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                {% endif %}#}
 
                                 {% if userPermission.can('edit', 'configs') %}
                                     <li class="sidebar-list">
@@ -276,12 +226,11 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12 footer-copyright text-center">
-                        <p class="mb-0">Desarrollado por <a href="https://www.studio128k.com">Studio128k</a> | Copyrigth {{ 'now'|date('Y') }} © {{ configuration.app_name }}  </p>
+                        <p class="mb-0"> {{ configuration.app_name }}  </p>
                         <div class="mt-3 d-flex justify-content-center d-none d-md-block"><img src="{{ asset('assets/images/footer_AOF.png') }}" alt=""></div>
                         <div class="mt-3 d-flex justify-content-center d-block d-md-none"><img src="{{ asset('assets/images/footer_AOF-1.png') }}" alt=""></div>
                         <div class="mt-3 d-flex justify-content-center d-block d-md-none"><img src="{{ asset('assets/images/footer_AOF-2.png') }}" alt=""></div>
                     </div>
-
                 </div>
             </div>
         </footer>
