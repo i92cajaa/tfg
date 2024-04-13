@@ -65,9 +65,9 @@
                                         {% if userPermission.can('show', 'centers') %}
                                             <a href="{{ path('center_show', {'center': center.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
                                         {% endif %}
-{#                                        {% if userPermission.can('edit', 'center') %}#}
+                                        {% if userPermission.can('edit', 'centers') %}
                                             <a href="{{ path('center_edit', {'center': center.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
-{#                                        {% endif %}#}
+                                        {% endif %}
                                         {% if userPermission.can('delete', 'centers') %}
                                             <div class="dropdown-divider"></div>
                                             <a href="#" onclick="$('#deleteForm_center_{{ center.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar"><i class="align-middle" data-feather='trash-2'></i><span class="align-middle"></span></a>

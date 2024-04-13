@@ -3,12 +3,15 @@
 namespace App\Service\LessonService;
 
 use App\Entity\Lesson\Lesson;
+use App\Entity\User\UserHasLesson;
 use App\Form\LessonType;
 use App\Repository\CenterRepository;
 use App\Repository\LessonRepository;
+use App\Repository\UserHasLessonRepository;
 use App\Repository\UserRepository;
 use App\Service\DocumentService\DocumentService;
 use App\Shared\Classes\AbstractService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -28,6 +31,7 @@ class LessonService extends AbstractService
         private readonly LessonRepository $lessonRepository,
         private readonly UserRepository $userRepository,
         private readonly CenterRepository $centerRepository,
+        private readonly UserHasLessonRepository $userHasLessonRepository,
         private readonly DocumentService $documentService,
         EntityManagerInterface $em,
         RouterInterface $router,
@@ -117,6 +121,11 @@ class LessonService extends AbstractService
                 $lesson->setImage($img);
             }
 
+            $users = $form->get('users')->getData();
+            foreach ($users as $user) {
+                $lesson->addUser((new UserHasLesson())->setUser($user)->setLesson($lesson));
+            }
+
             $this->lessonRepository->save($lesson,true);
 
             return $this->redirectToRoute('lesson_index');
@@ -134,6 +143,80 @@ class LessonService extends AbstractService
             'centers' => $centers['centers']
         ]);
 
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO EDIT A LESSON
+     * ES: SERVICIO PARA EDITAR UNA CLASE
+     *
+     * @param string $lessonId
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function edit(string $lessonId):Response{
+        $lesson = $this->lessonRepository->findById($lessonId, false);
+        $form = $this->createForm(LessonType::class, $lesson);
+        $form->handleRequest($this->getCurrentRequest());
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $file = $form->get('image')->getData();
+            if($file != null){
+                $img = $this->documentService->uploadDocument($file, 'lesson');
+                $lesson->setImage($img);
+            }
+
+            $users = $form->get('users')->getData();
+            if ($users != null) {
+                foreach ($lesson->getUsers() as $userHasLesson) {
+                    $this->userHasLessonRepository->remove($userHasLesson, true);
+                }
+
+                $lesson->setUsers(new ArrayCollection());
+
+                foreach ($users as $user) {
+                    $lesson->addUser((new UserHasLesson())->setUser($user)->setLesson($lesson));
+                }
+            }
+
+            $this->lessonRepository->save($lesson,true);
+
+            return $this->redirectToRoute('lesson_index');
+        }
+
+        $centers = $this->centerRepository->findCenters($this->filterService, true);
+
+        $this->filterService->addFilter('roles', 3);
+        $users = $this->userRepository->findUsers($this->filterService, true);
+
+        return $this->render('lesson/edit.html.twig', [
+            'lesson' => $lesson,
+            'form' => $form->createView(),
+            'users' => $users['users'],
+            'centers' => $centers['centers']
+        ]);
+
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO DELETE A LESSON
+     * ES: SERVICIO PARA BORRAR UNA CLASE
+     *
+     * @param string $lessonId
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function delete(string $lessonId): Response
+    {
+        $lesson = $this->getEntity($lessonId);
+        $this->lessonRepository->remove($lesson,true);
+
+        return $this->redirectToRoute('lesson_index');
     }
     // ----------------------------------------------------------------
 }

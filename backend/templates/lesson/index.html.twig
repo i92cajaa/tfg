@@ -67,13 +67,13 @@
                                         {% if userPermission.can('show', 'lessons') %}
                                             <a href="{{ path('lesson_show', {'lesson': lesson.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
                                         {% endif %}
-{#                                        {% if userPermission.can('edit', 'center') %}#}
-                                            <a href="{{ path('center_edit', {'center': lesson.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
-{#                                        {% endif %}#}
+                                        {% if userPermission.can('edit', 'lessons') %}
+                                            <a href="{{ path('lesson_edit', {'lesson': lesson.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
+                                        {% endif %}
                                         {% if userPermission.can('delete', 'lessons') %}
                                             <div class="dropdown-divider"></div>
-                                            <a href="#" onclick="$('#deleteForm_center_{{ lesson.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar"><i class="align-middle" data-feather='trash-2'></i><span class="align-middle"></span></a>
-                                            <form method="post" id="deleteForm_center_{{ lesson.id }}" class="deleteForm d-none" action="{{ path('center_delete', {'center': lesson.id}) }}" >
+                                            <a href="#" onclick="$('#deleteForm_lesson_{{ lesson.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar"><i class="align-middle" data-feather='trash-2'></i><span class="align-middle"></span></a>
+                                            <form method="post" id="deleteForm_lesson_{{ lesson.id }}" class="deleteForm d-none" action="{{ path('lesson_delete', {'lesson': lesson.id}) }}" >
                                                 <input type="hidden" name="_method" value="DELETE">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ lesson.id) }}">
                                             </form>

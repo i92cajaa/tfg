@@ -46,7 +46,7 @@ Editar Centro{% endblock %}
 
 {% block action_buttons %}
     <li class="level-menu outside">
-        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'users') ? path('center_index') : '#' }}"  >
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'centers') ? path('center_index') : '#' }}"  >
             <i class="ficon" data-feather="chevron-left"></i>
         </a>
     </li>

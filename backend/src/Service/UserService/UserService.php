@@ -159,7 +159,7 @@ class UserService extends AbstractService
             'totalResults' => $users['totalRegisters'],
             'lastPage' => $users['lastPage'],
             'currentPage' => $this->filterService->page,
-            'users' => $users['data'],
+            'users' => $users['users'],
             'centers' => $this->centerRepository->findAll(),
             'filterService' => $this->filterService,
             'roles' => $roles
@@ -180,7 +180,7 @@ class UserService extends AbstractService
             'totalResults' => $users['totalRegisters'],
             'lastPage' => $users['lastPage'],
             'currentPage' => $this->filterService->page,
-            'users' => $users['data'],
+            'users' => $users['users'],
             'centers' => $this->centerRepository->findAll(),
             'filterService' => $this->filterService,
             'roles' => $roles,
@@ -224,7 +224,7 @@ class UserService extends AbstractService
             'totalResultsMentor' => $users['totalRegisters'],
             'lastPageMentor' => $users['lastPage'],
             'currentPage' => $this->filterService->page,
-            'users' => $users['data'],
+            'users' => $users['users'],
             'roles' => $roles,
         ]);
     }

@@ -66,4 +66,39 @@ class LessonController extends AbstractController
         return $this->lessonService->new();
     }
     // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO EDIT A LESSON
+     * ES: ENDPOINT PARA EDITAR UNA CLASE
+     *
+     * @param string $lesson
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/edit/{lesson}', name: 'lesson_edit', methods: ["GET", "POST"])]
+    #[Permission(group: 'lessons', action: 'edit')]
+    public function edit(string $lesson): Response
+    {
+        return $this->lessonService->edit($lesson);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO DELETE A LESSON
+     * ES: ENDPOINT PARA BORRAR UNA CLASE
+     *
+     * @param string $lesson
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/delete/{lesson}', name: 'lesson_delete', methods: ["GET", "POST"])]
+    #[Permission(group: 'lessons', action: 'delete')]
+    public function delete(string $lesson): Response
+    {
+        return $this->lessonService->delete($lesson);
+    }
+    // ----------------------------------------------------------------
 }

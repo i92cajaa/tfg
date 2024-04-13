@@ -52,7 +52,7 @@ class LessonType extends AbstractType
                 'label' => 'Centro',
                 'attr' => ['class' => 'form-check mb-2 select2', 'autocomplete' => 'off'],
             ])
-            ->add('user', EntityType::class, [
+            ->add('users', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => function (User $user) {
                     return $user->getName().' '.$user->getSurnames();
