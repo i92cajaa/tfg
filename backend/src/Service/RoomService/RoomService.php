@@ -2,6 +2,9 @@
 
 namespace App\Service\RoomService;
 
+use App\Entity\Room\Room;
+use App\Form\RoomType;
+use App\Repository\CenterRepository;
 use App\Repository\RoomRepository;
 use App\Shared\Classes\AbstractService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,6 +24,7 @@ class RoomService extends AbstractService
 
     public function __construct(
         private readonly RoomRepository $roomRepository,
+        private readonly CenterRepository $centerRepository,
         EntityManagerInterface $em,
         RouterInterface $router,
         Environment $twig,
@@ -85,6 +89,88 @@ class RoomService extends AbstractService
         return $this->render('room/show.html.twig', [
             'room' => $room
         ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO CREATE A NEW ROOM
+     * ES: SERVICIO PARA CREAR UNA HABITACIÓN NUEVA
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function new():Response{
+        $room = new Room();
+        $form = $this->createForm(RoomType::class, $room);
+        $form->handleRequest($this->getCurrentRequest());
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $this->roomRepository->save($room,true);
+
+            return $this->redirectToRoute('room_index');
+        }
+
+        $centers = $this->centerRepository->findCenters($this->filterService, true);
+
+        return $this->render('room/new.html.twig', [
+            'room' => $room,
+            'form' => $form->createView(),
+            'centers' => $centers['centers']
+        ]);
+
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO EDIT A ROOM'S DATA
+     * ES: SERVICIO PARA EDITAR LOS DATOS DE UN CENTRO
+     *
+     * @param string $roomId
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function edit(string $roomId): Response
+    {
+        $room = $this->getEntity($roomId);
+
+        $form = $this->createForm(RoomType::class, $room);
+        $form->handleRequest($this->getCurrentRequest());
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $this->roomRepository->save($room,true);
+
+            return $this->redirectToRoute('room_index');
+        }
+
+        $centers = $this->centerRepository->findCenters($this->filterService, true);
+
+        return $this->render('room/edit.html.twig', [
+            'room' => $room,
+            'form' => $form->createView(),
+            'centers' => $centers['centers']
+        ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO DELETE A ROOM
+     * ES: SERVICIO PARA BORRAR UNA HABITACIÓN
+     *
+     * @param string $roomId
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function delete(string $roomId): Response
+    {
+        $room = $this->getEntity($roomId);
+        $this->roomRepository->remove($room,true);
+
+        return $this->redirectToRoute('room_index');
     }
     // ----------------------------------------------------------------
 }

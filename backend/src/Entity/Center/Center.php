@@ -43,7 +43,7 @@ class Center
     #[ORM\OneToMany(mappedBy:"center", targetEntity: Lesson::class, cascade:["persist", "remove"])]
     private array|Collection $lessons;
 
-    #[ORM\OneToMany(mappedBy:"rooms", targetEntity: Room::class, cascade:["persist", "remove"])]
+    #[ORM\OneToMany(mappedBy:"center", targetEntity: Room::class, cascade:["persist", "remove"])]
     private array|Collection $rooms;
 
     // ----------------------------------------------------------------

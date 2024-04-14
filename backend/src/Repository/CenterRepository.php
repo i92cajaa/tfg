@@ -7,6 +7,7 @@ use App\Service\FilterService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -83,10 +84,12 @@ class CenterRepository extends ServiceEntityRepository
             ->leftJoin('c.users', 'users')
             ->leftJoin('c.area', 'area')
             ->leftJoin('c.lessons', 'lessons')
+            ->leftJoin('c.rooms', 'rooms')
             ->addSelect('logo')
             ->addSelect('users')
             ->addSelect('area')
             ->addSelect('lessons')
+            ->addSelect('rooms')
             ->andWhere('c.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
@@ -96,80 +99,148 @@ class CenterRepository extends ServiceEntityRepository
 
     // ----------------------------------------------------------------
     /**
-     * EN: FUNCTION TO LIST ALL CENTERS
-     * ES: FUNCIÓN PARA LISTAR TODOS LOS CENTROS
+     * EN: FUNCTION TO LIST ALL ROOMS
+     * ES: FUNCIÓN PARA LISTAR TODAS LAS HABITACIONES
      *
      * @param FilterService $filterService
      * @param bool $showAll
      * @return array|null
      */
     // ----------------------------------------------------------------
-    public function findCenters(FilterService $filterService, $showAll = false): ?array
+    public function findCenters(FilterService $filterService, bool $showAll): ?array
     {
-
-        $query = $this->createQueryBuilder('i')
+        $query = $this->createQueryBuilder('c')
+            ->leftJoin('c.logo', 'logo')
+            ->leftJoin('c.users', 'users')
+            ->leftJoin('c.area', 'area')
+            ->leftJoin('c.lessons', 'lessons')
+            ->leftJoin('c.rooms', 'rooms')
+            ->addSelect('logo')
+            ->addSelect('users')
+            ->addSelect('area')
+            ->addSelect('lessons')
+            ->addSelect('rooms')
         ;
 
+        $this->setFilters($query, $filterService);
+        $this->setOrders($query, $filterService);
+
         $query->setFirstResult($filterService->page > 1 ? (($filterService->page - 1)*$filterService->limit) : $filterService->page - 1);
+
         if(!$showAll){
             $query->setMaxResults($filterService->limit);
         }
 
-
-        if (count($filterService->getFilters()) > 0) {
-
-            if($filterService->getFilterValue('info') != null){
-                $query->andWhere('CONCAT(i.name, i.address, i.city, i.phone) LIKE :info')
-                    ->setParameter('info', "%".$filterService->getFilterValue('info')."%");
-            }
-
-        }
-
-        if (count($filterService->getOrders()) > 0) {
-            foreach ($filterService->getOrders() as $order) {
-                switch ($order['field']) {
-                    case "name":
-                        $query->orderBy('i.name', $order['order']);
-                        break;
-                    case "phone":
-                        $query->orderBy('i.phone', $order['order']);
-                        break;
-                    case "city":
-                        $query->orderBy('i.city', $order['order']);
-                        break;
-                    case "address":
-                        $query->orderBy('i.address', $order['order']);
-                        break;
-                    case "director":
-                        $query->orderBy('i.director', $order['order']);
-                        break;
-                }
-            }
-        } else {
-            $query->orderBy('i.id', 'DESC');
-        }
-
         // Pagination process
-        $paginator = new Paginator($query, $fetchJoinCollection = true);
-
+        $paginator = new Paginator($query);
+        $paginator->getQuery()->setHydrationMode(AbstractQuery::HYDRATE_OBJECT);
         $totalRegisters = $paginator->count();
-        $result         = [];
+
+        $result = [];
+
         foreach ($paginator as $verification) {
             $result[] = $verification;
         }
 
-        if($filterService->limit){
-            $lastPage = (integer)ceil($totalRegisters / $filterService->limit);
-        }else{
-            $lastPage = 1;
-        }
-
+        $lastPage = (integer)ceil($totalRegisters / $filterService->limit);
 
         return [
-            'totalRegisters' => $totalRegisters,
-            'centers'        => $result,
-            'lastPage'       => $lastPage
+            'totalRegisters'    => $totalRegisters,
+            'centers'           => $result,
+            'lastPage'          => $lastPage,
+            'filters'           => $filterService->getAll()
         ];
     }
     // ----------------------------------------------------------------
+
+    // --------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO SET FILTERS
+     * ES: FUNCIÓN PARA ESTABLECER FILTROS
+     *
+     * @param QueryBuilder $query
+     * @param FilterService $filterService
+     * @return void
+     */
+    // --------------------------------------------------------------
+    public function setFilters(QueryBuilder $query, FilterService $filterService): void
+    {
+        if (count($filterService->getFilters()) > 0)
+        {
+            $area = $filterService->getFilterValue('area');
+            if ($area !== null) {
+                $query->andWhere('c.area = :area')
+                    ->setParameter('area', $area);
+            }
+
+            $search_array = $filterService->getFilterValue('search_array');
+            if ($search_array != null)
+            {
+                $array_values = explode(' ', $search_array);
+
+                $conditions = [];
+                $parameters = [];
+
+                foreach ($array_values as $index => $value)
+                {
+                    $param = 'search' . $index;
+                    $conditions[] = 'c.name LIKE :' . $param . 'OR c.address LIKE :' . $param . 'OR c.phone LIKE :' . $param;
+                    $parameters[$param] = '%' . $value . '%';
+                }
+
+                if (!empty($conditions))
+                {
+                    $query->andWhere(implode(' AND ', $conditions));
+
+                    foreach($parameters as $key => $value)
+                    {
+                        $query->setParameter($key, $value);
+                    }
+                }
+            }
+        }
+    }
+    // --------------------------------------------------------------
+
+    // --------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO SET ORDER
+     * ES: FUNCIÓN PARA ESTABLECER ORDEN
+     *
+     * @param QueryBuilder $query
+     * @param FilterService $filterService
+     * @return void
+     */
+    // --------------------------------------------------------------
+    public function setOrders(QueryBuilder $query, FilterService $filterService): void
+    {
+        if (count($filterService->getOrders()) > 0) {
+            foreach ($filterService->getOrders() as $order)
+            {
+                switch ($order['field'])
+                {
+                    case "id":
+                        $query->orderBy('c.id', $order['order']);
+                        break;
+                    case "name":
+                        $query->orderBy('c.name', $order['order']);
+                        break;
+                    case "address":
+                        $query->orderBy('c.address', $order['order']);
+                        break;
+                    case "phone":
+                        $query->orderBy('c.phone', $order['order']);
+                        break;
+                    case "area":
+                        $query->orderBy('area.name', $order['order']);
+                        break;
+                }
+            }
+        }
+        else
+        {
+            $query->orderBy('c.name', 'DESC');
+        }
+    }
+    // --------------------------------------------------------------
 }

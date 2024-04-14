@@ -143,13 +143,13 @@ class CenterService extends AbstractService
      * EN: SERVICE TO EDIT A CENTER'S DATA
      * ES: SERVICIO PARA EDITAR LOS DATOS DE UN CENTRO
      *
-     * @param string $center
+     * @param string $centerId
      * @return Response
      */
     // ----------------------------------------------------------------
-    public function edit(string $center): Response
+    public function edit(string $centerId): Response
     {
-        $center = $this->getEntity($center);
+        $center = $this->getEntity($centerId);
 
         $form = $this->createForm(CenterType::class, $center);
         $form->handleRequest($this->getCurrentRequest());
@@ -183,13 +183,13 @@ class CenterService extends AbstractService
      * EN: SERVICE TO DELETE A CENTER
      * ES: SERVICIO PARA BORRAR UN CENTRO
      *
-     * @param string $center
+     * @param string $centerId
      * @return Response
      */
     // ----------------------------------------------------------------
-    public function delete(string $center): Response
+    public function delete(string $centerId): Response
     {
-        $center = $this->getEntity($center);
+        $center = $this->getEntity($centerId);
         $this->centerRepository->remove($center,true);
 
         return $this->redirectToRoute('center_index');

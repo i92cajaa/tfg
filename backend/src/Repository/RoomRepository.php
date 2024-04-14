@@ -180,7 +180,7 @@ class RoomRepository extends ServiceEntityRepository
         {
             $center = $filterService->getFilterValue('center');
             if ($center !== null) {
-                $query->andWhere('l.center = :center')
+                $query->andWhere('r.center = :center')
                     ->setParameter('center', $center);
             }
 
@@ -239,8 +239,8 @@ class RoomRepository extends ServiceEntityRepository
                     case "floor":
                         $query->orderBy('r.floor', $order['order']);
                         break;
-                    case "room":
-                        $query->orderBy('r.room', $order['order']);
+                    case "number":
+                        $query->orderBy('r.number', $order['order']);
                         break;
                     case "capacity":
                         $query->orderBy('r.capacity', $order['order']);

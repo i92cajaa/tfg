@@ -66,4 +66,36 @@ class RoomController extends AbstractController
         return $this->roomService->new();
     }
     // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO EDIT A ROOM'S DATA
+     * ES: ENDPOINT PARA EDITAR LOS DATOS DE UNA HABITACIÓN
+     *
+     * @param string $room
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/edit/{room}', name: 'room_edit', methods: ["GET",'POST'])]
+    public function edit(string $room): Response
+    {
+        return $this->roomService->edit($room);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO DELETE A ROOM
+     * ES: ENDPOINT PARA BORRAR UNA HABITACIÓN
+     *
+     * @param string $room
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/delete/{room}', name: 'room_delete', methods: ["GET",'POST'])]
+    public function delete(string $room): Response
+    {
+        return $this->roomService->delete($room);
+    }
+    // ----------------------------------------------------------------
 }

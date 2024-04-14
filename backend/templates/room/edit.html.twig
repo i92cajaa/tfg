@@ -3,7 +3,7 @@
 {% block title %}{{ 'Edit'|trans }}{% endblock %}
 
 {% block page_title %}
-Editar Clase{% endblock %}
+Editar Habitación{% endblock %}
 
 {% block body %}
 <div class="container-fluid">
@@ -15,12 +15,12 @@ Editar Clase{% endblock %}
                     <!-- users edit media object start -->
                     <!-- users edit media object ends -->
                     <!-- users edit account form start -->
-                    {{ include('lesson/_form.html.twig', {'button_label': 'Update'|trans}) }}
+                    {{ include('room/_form.html.twig', {'button_label': 'Update'|trans}) }}
                     <!-- users edit account form ends -->
                     <br>
                     <div class="row d-flex justify-content-end">
                         <div class="mr-2 text-end">
-                            {{ include('lesson/_delete_form.html.twig') }}
+                            {{ include('room/_delete_form.html.twig') }}
                         </div>
                     </div>
                 </div>
@@ -43,7 +43,7 @@ Editar Clase{% endblock %}
 
 {% block action_buttons %}
     <li class="level-menu outside">
-        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'lessons') ? path('lesson_index') : '#' }}"  >
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'rooms') ? path('room_index') : '#' }}"  >
             <i class="ficon" data-feather="chevron-left"></i>
         </a>
     </li>

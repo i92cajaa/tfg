@@ -3,7 +3,7 @@
 {% block title %}{{ 'Create'|trans }}{% endblock %}
 
 {% block page_title %}
-    Crear Clase{% endblock %}
+    Crear Habitación{% endblock %}
 
 {% block body %}
 <div class="container-fluid">
@@ -13,7 +13,7 @@
             <div class="tab-content">
                 <!-- Account Tab starts -->
                 <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
-                    {{ include('lesson/_form.html.twig', {'button_label': 'Create'|trans}) }}
+                    {{ include('room/_form.html.twig', {'button_label': 'Create'|trans}) }}
                 </div>
                 <!-- Account Tab ends -->
             </div>
@@ -35,7 +35,7 @@
 {% block action_buttons %}
     <li class="level-menu outside">
 
-        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'lessons') ? path('lesson_index') : '#' }}"  >
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'rooms') ? path('room_index') : '#' }}"  >
             <i class="ficon" data-feather="chevron-left"></i>
         </a>
     </li>
