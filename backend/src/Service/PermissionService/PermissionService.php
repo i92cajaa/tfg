@@ -138,21 +138,10 @@ class PermissionService extends AbstractService
      */
     public function getAvailablePermissions()
     {
-
-        $configs = $this->configService->findAllModules(true);
-        $modules = [];
-
-        /** @var Config $config */
-        foreach ($configs as $config){
-            if($config->getValue()){
-                $modules[] = $config->getTag();
-            }
-        }
-
         if(in_array(Role::ROLE_SUPERADMIN, $this->getUser()->getRoleIds())){
-            $permissions = $this->permissionGroupRepository->getAvailablePermission(true, $modules);
+            $permissions = $this->permissionGroupRepository->getAvailablePermission();
         }else{
-            $permissions = $this->permissionGroupRepository->getAvailablePermission(false, $modules);
+            $permissions = $this->permissionGroupRepository->getAvailablePermission();
         }
         return $permissions;
     }

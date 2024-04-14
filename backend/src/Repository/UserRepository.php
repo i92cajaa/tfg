@@ -10,6 +10,7 @@ use App\Shared\Classes\UTCDateTime;
 use App\Shared\Traits\DoctrineStorableObject;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -42,6 +43,50 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->entityManager = $entityManager;
         parent::__construct($registry, User::class,PasswordResetToken::class);
     }
+
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO GET A USER'S DATA
+     * ES: FUNCIÓN PARA OBTENER LOS DATOS DE UN USUARIO
+     *
+     * @param string $id
+     * @param bool $array
+     * @return array|User|null
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function findById(string $id, bool $array): array|User|null
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.imgProfile', 'imgProfile')
+            ->leftJoin('u.center', 'center')
+            ->leftJoin('u.roles', 'userHasRoles')
+            ->leftJoin('userHasRoles.role', 'role')
+            ->leftJoin('u.permissions', 'userHasPermissions')
+            ->leftJoin('userHasPermissions.permission', 'permission')
+            ->leftJoin('u.notifications', 'notifications')
+            ->leftJoin('u.documents', 'userHasDocuments')
+            ->leftJoin('userHasDocuments.document', 'document')
+            ->leftJoin('u.lessons', 'userHasLessons')
+            ->leftJoin('userHasLessons.lesson', 'lesson')
+            ->addSelect('imgProfile')
+            ->addSelect('center')
+            ->addSelect('userHasRoles')
+            ->addSelect('role')
+            ->addSelect('userHasPermissions')
+            ->addSelect('permission')
+            ->addSelect('notifications')
+            ->addSelect('userHasDocuments')
+            ->addSelect('document')
+            ->addSelect('userHasLessons')
+            ->addSelect('lesson')
+            ->andWhere('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
+    }
+    // ----------------------------------------------------------------
 
     public function getUserById(string $userId, ?bool $array = false)
     {

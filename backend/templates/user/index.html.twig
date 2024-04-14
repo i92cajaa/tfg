@@ -47,11 +47,6 @@
                                         Estado {% if filterService.isOrdered("status") %}<i data-feather="{{ filterService.getOrder("status").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
                                     </a>
                                 </th>
-    {#                            <th>#}
-    {#                                <a href="{{ filterService.orderBy("roles", filterService.getInversedOrder("roles")) }}">#}
-    {#                                    Centro {% if filterService.isOrdered("roles") %}<i data-feather="{{ filterService.getOrder("roles").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}#}
-    {#                                </a>#}
-    {#                            </th>#}
                                 <th>
                                     <a>
                                      {{ 'Actions'|trans }}
@@ -84,12 +79,6 @@
                                 <td>
                                     {% if user.status %}<span class="badge text-capitalize badge-light-success badge-pill"> Activo </span>{% else %}<span  class="badge text-capitalize badge-light-secondary badge-pill"> Inactivo </span>{% endif %}
                                 </td>
-                                {#                            <td>#}
-    {#                                {% for center in user.center %}#}
-    {#                                    {{ center.name }}#}
-    {#                                {% endfor %}#}
-    {#                            </td>#}
-
                                 <td class="text-nowrap">
                                     <div class="d-inline-flex gap-1">
                                         {% if userPermission.can('show', 'users') %}
@@ -109,36 +98,6 @@
                                         {% endif %}
                                     </div>
                                 </td>
-                                <td class="d-none">
-                                    <div class="dropdown-basic">
-                                        <div class="dropdown">
-                                            <button class="dropbtn bg-transparent text-dark p-0 m-0"
-                                                    type="button"
-                                                    data-bs-original-title="" title="">
-                                                <i data-feather='align-justify'></i>
-                                            </button>
-                                            <div class="dropdown-content " style="top: 20px">
-                                                {% if userPermission.can('show', 'users') %}
-                                                    <a href="{{ path('user_show', {'user': user.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
-                                                {% endif %}
-                                                {% if userPermission.can('edit', 'users') %}
-                                                    <a href="{{ path('user_edit', {'user': user.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
-                                                    <a href="{{ path('user_change_status', {'user': user.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cambiar estado">sdfg<i class="align-middle" data-feather='eye'></i><span class="align-middle"></span></a>
-                                                {% endif %}
-                                                {% if userPermission.can('delete', 'users') %}
-                                                    <div class="dropdown-divider"></div>
-                                                    <a href="#" onclick="$('#deleteForm_user_{{ user.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar"><i class="align-middle" data-feather='trash-2'></i><span class="align-middle"></span></a>
-                                                    <form method="post" id="deleteForm_user_{{ user.id }}" class="deleteForm d-none" action="{{ path('user_delete', {'user': user.id}) }}" >
-                                                        <input type="hidden" name="_method" value="DELETE">
-                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                                    </form>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-
-
                             </tr>
                         {% else %}
                             <tr>

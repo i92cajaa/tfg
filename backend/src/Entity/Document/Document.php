@@ -2,11 +2,12 @@
 
 namespace App\Entity\Document;
 
-use App\Entity\Client\Client;
 use App\Entity\Client\ClientHasDocument;
+use App\Entity\User\UserHasDocument;
 use App\Repository\DocumentRepository;
 use App\Shared\Classes\UTCDateTime;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -37,6 +38,9 @@ class Document
 
     #[ORM\OneToMany(mappedBy: "document", targetEntity: ClientHasDocument::class, cascade: ["persist", "remove"])]
     private array|Collection $clients;
+
+    #[ORM\OneToMany(mappedBy: "document", targetEntity: UserHasDocument::class, cascade: ["persist", "remove"])]
+    private array|Collection $users;
 
     // ----------------------------------------------------------------
     // Fields
@@ -71,6 +75,9 @@ class Document
     {
         $this->createdAt = UTCDateTime::setUTC(UTCDateTime::create());
         $this->status    = true;
+
+        $this->clients = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     // ----------------------------------------------------------------
@@ -147,6 +154,12 @@ class Document
     public function getClients(): array|Collection
     {
         return $this->clients;
+    }
+
+
+    public function getUsers(): array|Collection
+    {
+        return $this->users;
     }
 
     // ----------------------------------------------------------------
@@ -243,6 +256,16 @@ class Document
         return $this;
     }
 
+    /**
+     * @param array|Collection $users
+     * @return $this
+     */
+    public function setUsers(array|Collection $users): Document
+    {
+        $this->users = $users;
+        return $this;
+    }
+
     // ----------------------------------------------------------------
     // Other Methods
     // ----------------------------------------------------------------
@@ -252,14 +275,14 @@ class Document
      * EN: FUNCTION TO ADD CLIENT TO DOCUMENT
      * ES: FUNCIÓN PARA AÑADIR CLIENTE AL DOCUMENTO
      *
-     * @param Client $client
+     * @param ClientHasDocument $clientHasDocument
      * @return $this
      */
     // ----------------------------------------------------------------
-    public function addClient(Client $client): Document
+    public function addClient(ClientHasDocument $clientHasDocument): Document
     {
-        if (!$this->clients->contains($client)) {
-            $this->clients->add($client);
+        if (!$this->clients->contains($clientHasDocument)) {
+            $this->clients->add($clientHasDocument);
         }
 
         return $this;
@@ -271,14 +294,52 @@ class Document
      * EN: FUNCTION TO REMOVE CLIENT FROM DOCUMENT
      * ES: FUNCIÓN PARA BORRAR CLIENTE DEL DOCUMENTO
      *
-     * @param Client $client
+     * @param ClientHasDocument $clientHasDocument
      * @return $this
      */
     // ----------------------------------------------------------------
-    public function removeClient(Client $client): Document
+    public function removeClient(ClientHasDocument $clientHasDocument): Document
     {
-        if ($this->clients->contains($client)) {
-            $this->clients->removeElement($client);
+        if ($this->clients->contains($clientHasDocument)) {
+            $this->clients->removeElement($clientHasDocument);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO ADD USER TO DOCUMENT
+     * ES: FUNCIÓN PARA AÑADIR USUARIO AL DOCUMENTO
+     *
+     * @param UserHasDocument $userHasDocument
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function addUser(UserHasDocument $userHasDocument): Document
+    {
+        if (!$this->users->contains($userHasDocument)) {
+            $this->users->add($userHasDocument);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO REMOVE USER FROM DOCUMENT
+     * ES: FUNCIÓN PARA BORRAR USUARIO DEL DOCUMENTO
+     *
+     * @param UserHasDocument $userHasDocument
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function removeUser(UserHasDocument $userHasDocument): Document
+    {
+        if ($this->users->contains($userHasDocument)) {
+            $this->users->removeElement($userHasDocument);
         }
 
         return $this;

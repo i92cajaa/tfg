@@ -130,14 +130,6 @@
                             <li class="back-btn"><a><img class="img-fluid" width="40" src="{{ configuration.logo_small ? path('document_render', {'document':  configuration.logo_small}) : asset('assets/images/logo/logo-icon.png') }}" alt=""></a>
                                 <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
                             </li>
-                            {% if app.user.isSuperadmin %}
-                            <li class="sidebar-list">
-                                    <a href="{{ path('user_dashboard') }}" class="sidebar-link sidebar-title link-nav nav-active{}" data-button-id="dashboard">
-                                        <i data-feather="pie-chart"></i>
-                                        <span>Dashboard</span>
-                                    </a>
-                                </li>
-                            {% endif %}
 
                             {% if userPermission.can('list', 'user') %}
                                 <li class="sidebar-list">

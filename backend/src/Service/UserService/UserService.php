@@ -35,6 +35,8 @@ use App\Shared\Classes\UTCDateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Exception;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -61,48 +63,17 @@ class UserService extends AbstractService
 
     const UPLOAD_FILES_PATH = 'images/users';
 
-    /**
-     * @var UserRepository
-     */
-    private UserRepository $userRepository;
-
-    /**
-     * @var RoleRepository
-     */
-    private RoleRepository $roleRepository;
-
-    /**
-     * @var AreaRepository
-     */
-    private AreaRepository $areaRepository;
-    /**
-     * @var CenterRepository
-     */
-    private CenterRepository $centerRepository;
-
-    /**
-     * @var ClientRepository
-     */
-    private ClientRepository $clientRepository;
-
-    /**
-     * @var StatusRepository
-     */
-    private StatusRepository $statusRepository;
-
-    /**
-     * @var EntityRepository|DocumentRepository
-     */
-    private DocumentRepository|EntityRepository $documentRepository;
-
-    /**
-     * @var ClientHasDocumentRepository|EntityRepository
-     */
-    private ClientHasDocumentRepository|EntityRepository $clientHasDocumentRepository;
-
     public function __construct(
         private readonly DocumentService $documentService,
         private readonly PermissionService $permissionService,
+        private readonly UserRepository $userRepository,
+        private readonly RoleRepository $roleRepository,
+        private readonly AreaRepository $areaRepository,
+        private readonly CenterRepository $centerRepository,
+        private readonly ClientRepository $clientRepository,
+        private readonly StatusRepository $statusRepository,
+        private readonly DocumentRepository $documentRepository,
+        private readonly ClientHasDocumentRepository $clientHasDocumentRepository,
 
         EntityManagerInterface $em,
 
@@ -115,15 +86,8 @@ class UserService extends AbstractService
         SerializerInterface            $serializer,
         TranslatorInterface $translator,
         protected KernelInterface $kernel
-    ) {
-        $this->userRepository = $em->getRepository(User::class);
-        $this->roleRepository = $em->getRepository(Role::class);
-        $this->areaRepository = $em->getRepository(Area::class);
-        $this->centerRepository = $em->getRepository(Center::class);
-        $this->clientRepository = $em->getRepository(Client::class);
-        $this->statusRepository = $em->getRepository(Status::class);
-        $this->documentRepository = $em->getRepository(Document::class);
-        $this->clientHasDocumentRepository = $em->getRepository(ClientHasDocument::class);
+    )
+    {
 
         parent::__construct(
             $requestStack,
@@ -138,22 +102,18 @@ class UserService extends AbstractService
         );
     }
 
-    public function getAll(): array
-    {
-        return $this->userRepository->findAll();
-    }
-
-    public function findUsersByServiceIds(array $services): array
-    {
-        return $this->userRepository->findUsersByServices($services);
-    }
-
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO LIST ALL USERS
+     * ES: SERVICIO PARA LISTAR TODOS LOS USUARIOS
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
     public function index(): Response
     {
         $users = $this->userRepository->findUsers($this->filterService);
         $roles = $this->roleRepository->findAll();
-
-        //dd($users);
 
         return $this->render('user/index.html.twig', [
             'totalResults' => $users['totalRegisters'],
@@ -165,71 +125,103 @@ class UserService extends AbstractService
             'roles' => $roles
         ]);
     }
+    // ----------------------------------------------------------------
 
-    public function mentoresIndex(): Response
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO SHOW AN USER'S DATA
+     * ES: SERVICIO PARA MOSTRAR LOS DATOS DE UN USUARIO
+     *
+     * @param string $userId
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function show(string $userId): Response
     {
-        $this->filterService->addFilter('roles', [0 => 3]);
-        $this->filterService->addFilter('status', 1);
-        $users = $this->userRepository->findUsers($this->filterService);
-        $roles = $this->roleRepository->findAll();
+        $user = $this->userRepository->findById($userId, false);
 
-        $allMentors = $this->userRepository->findUsers($this->filterService, true);
-
-        $selectedSurveyRange = $this->surveyRangeRepository->findOneBy(['status' => true]);
-        return $this->render('user/index_mentor.html.twig', [
-            'totalResults' => $users['totalRegisters'],
-            'lastPage' => $users['lastPage'],
+        return $this->render('user/show.html.twig', [
             'currentPage' => $this->filterService->page,
-            'users' => $users['users'],
-            'centers' => $this->centerRepository->findAll(),
+            'user' => $user,
+            'clients' => $this->clientRepository->findAll(),
             'filterService' => $this->filterService,
-            'roles' => $roles,
-            'surveyRanges' => $this->surveyRangeRepository->findAll(),
-            'selectedSurveyRange' => $selectedSurveyRange,
-            'mentors' => $allMentors['data']
+            'status' => $this->statusRepository->findAll(),
+            'permissions' => $this->permissionService->getAvailablePermissions(),
+            'areas' => $this->areaRepository->findAreas($this->filterService, true),
+            'centers' => $this->centerRepository->findCenters($this->filterService, true)
         ]);
     }
+    // ----------------------------------------------------------------
 
-    public function dashboard(?string $nameSearch, ?string $center, ?DateTime $startDate, ?DateTime $endDate,?DateTime $startDateYear): Response
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO SHOW AN USER'S PROFILE
+     * ES: SERVICIO PARA MOSTRAR EL PERFIL DE UN USUARIO
+     *
+     * @param string $userId
+     * @param Request $request
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function user_view_profile(string $userId, Request $request): Response
     {
-        $this->filterService->addFilter('roles', [0 => 3]);
-        $this->filterService->addFilter('status', 1);
+        $user = $this->getEntity($userId);
+        $form = $this->createForm(UserPasswordUpdateType::class, null);
+        $form->handleRequest($this->getCurrentRequest());
+        $formView = $form->createView();
 
-        if ($nameSearch !== null) {
-            $this->filterService->addFilter('info', $nameSearch);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($form->get('password')->getData() != null && $form->get('password')->getData() != "") {
+                $this->userRepository->upgradePassword($user, $form->get('password')->getData());
+                $this->getSession()->getFlashBag()->add('success', 'Contraseña actualizada.');
+                return $this->redirect($request->getUri());
+            }
         }
 
-        $users = $this->userRepository->findUsers($this->filterService, false);
-        $roles = $this->roleRepository->findAll();
-        $clients = [];
+        $services = $this->serviceRepository->findAll();
+        $this->filterService->addFilter('user', $user->getId());
+        $this->filterService->addFilter('services', $this->serviceRepository->findBy(['forAdmin' => false]));
+        $appointments = $this->appointmentRepository->findAppointments($this->filterService);
+        $schedules = $this->schedulesRepository->findBy(['user' => $user, 'status' => 1], ['timeFrom' => 'ASC']);
+//        if($this->getUser()->isProject()){
+//            $surveys = $this->templateTypeService->findBy(['entity' => Client::ENTITY, 'active' => true]);
+//        }else{
+//            $surveys = $this->templateTypeService->findBy(['entity' => User::ENTITY, 'active' => true]);
+//        }
 
-        $this->filterService->addFilter('info', '');
+        $surveys = $this->clientHasDocumentRepository->findBy(['client' => $user->getClient()]);
 
-        if ($center !== null) {
-            $this->filterService->addFilter('center', $center);
-        }
-
-        $clients = $this->clientRepository->findClients($this->filterService, $this->getUser()->getId(), $this->getUser()->isAdmin());
-
-        $appointments = $this->serviceRepository->getServiceAppointmentsCount($startDate, $endDate);
-        $appointmentsYear =$this->serviceRepository->getMentorshipCountByMonth($startDateYear);
-    
-
-        return $this->render('dashboard/dashboard.html.twig', [
+        return $this->render('user/show_profile.html.twig', [
+            'totalResults' => $appointments['totalRegisters'],
+            'lastPage' => $appointments['lastPage'],
+            'totalAmount' => $appointments['totalAmount'],
+            'currentPage' => $this->filterService->page,
+            'surveys' => $surveys,
+            'user' => $user,
             'appointments' => $appointments,
-            'appointmentsYear' => $appointmentsYear,
-            'clients' => $clients['data'],
-            'centers' => $this->centerRepository->findAll(),
+            'schedules' => $schedules,
+            'services' => $services,
+            'form' => $formView,
+            'divisions' => $this->divisionRepository->findAll(),
+            'allServices' => $this->serviceRepository->findAll(),
+            'clients' => $this->clientRepository->findAll(),
             'filterService' => $this->filterService,
-            'totalResultsMentor' => $users['totalRegisters'],
-            'lastPageMentor' => $users['lastPage'],
-            'currentPage' => $this->filterService->page,
-            'users' => $users['users'],
-            'roles' => $roles,
+            'status' => $this->statusRepository->findAll(),
+            'permissions' => $this->permissionService->getAvailablePermissions()
         ]);
     }
+    // ----------------------------------------------------------------
 
-
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO CREATE A NEW USER
+     * ES: SERVICIO PARA CREAR UN USUARIO NUEVO
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
     public function new()
     {
         $user = new User();
@@ -298,229 +290,18 @@ class UserService extends AbstractService
             'edit' => false
         ]);
     }
+    // ----------------------------------------------------------------
 
-    public function mentoresByArea(): JsonResponse
-    {
-        $mentores = [];
-        if (@$this->getRequestParam('area')) {
-            $mentores = $this->userRepository->findMentorUsersByArea(@$this->getRequestParam('area'));
-        }
-        $mentores = $this->uniqueMentor($mentores);
-        $response = new JsonResponse(['mentores' => $mentores]);
-
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
-    }
-
-    public function allmentores(): JsonResponse
-    {
-        $mentores = $this->userRepository->findMentorUsers();
-        $mentores = $this->uniqueMentor($mentores);
-
-        $response = new JsonResponse(['mentores' => $mentores]);
-
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
-    }
-
-    public function uniqueMentor(array $array): array
-    {
-        $finalArray = [];
-        foreach ($array as $area) {
-
-            $areaArray = [
-                'id' => $area->getId(),
-                'name' => $area->getFullNameMentor()
-            ];
-
-            $finalArray[] = $areaArray;
-        }
-        return $finalArray;
-    }
-
-
-    public function newProject(Client $client, ?array $documents = null, ?UploadedFile $documentConfidencial = null, ?UploadedFile $documentAdhesion = null)
-    {
-        try {
-            $user = new User();
-            $user->setEmail($client->getEmail());
-            $parts = explode(" ", $client->getRepresentative());
-            $name = $parts[0];
-            $surnames = implode(" ", array_slice($parts, 1));
-            $user->setName($name);
-            $user->setSurnames($surnames);
-            $user->setPhone($client->getPhone());
-            $user->setCenter($client->getCenter());
-            $user->setPassword($client->getPassword());
-            $user->setImgProfile($client->getLogo());
-            if ($documents != null) {
-                foreach ($documents as $document) {
-                    if ($document != null) {
-                        $document = $this->documentService->uploadDocument($document, 'clients');
-                        $user->addDocument($document);
-                    }
-                }
-            }
-            if ($documentConfidencial != null) {
-                $document = $this->documentService->uploadDocument($documentConfidencial, 'clients');
-                $user->setDocumentConfidencial($document);
-            }
-            if ($documentAdhesion != null) {
-                $document = $this->documentService->uploadDocument($documentAdhesion, 'clients');
-                $user->setDocumentAdhesion($document);
-            }
-
-            // check if user exists
-            $userExists = $this->userRepository->findOneBy(['email' => $user->getEmail()]);
-            if ($userExists) {
-                $this->addFlash("error", $this->translate('User with this email already exists'));
-                return false;
-            }
-
-            $projectRole = $this->roleRepository->find(4);
-            $user->addRole($projectRole);
-            /** @var RoleHasPermission $roleHasPermission */
-            foreach ($projectRole->getPermissions() as $roleHasPermission) {
-                $userHasPermission = (new UserHasPermission())->setUser($user)->setPermission($roleHasPermission->getPermission());
-                $user->addPermission($userHasPermission);
-            }
-            $user->addClient($client);
-
-            $this->userRepository->persist($user);
-            $this->schedulesRepository->createAllWeekSchedules($user);
-            $this->getSession()->getFlashBag()->add('success', 'Usuario creado correctamente.');
-            return true;
-        } catch (\Exception $error) {
-            $this->getSession()->getFlashBag()->add('danger', 'Error al crear usuario.');
-        }
-    }
-
-
-    public function show(string $userId): Response
-    {
-        $user = $this->getEntity($userId);
-        $services = $this->serviceRepository->findAll();
-        $this->filterService->addFilter('user', $user->getId());
-//        if($user->isProject()){
-//            $this->filterService->addFilter('client', $user->getClient());
-//        }
-        $this->filterService->addFilter('services', $this->serviceRepository->findBy(['forAdmin' => false]));
-        $appointments = $this->appointmentRepository->findAppointments($this->filterService);
-        $schedules = $this->schedulesRepository->findBy(['user' => $user, 'status' => 1], ['timeFrom' => 'ASC']);
-
-        $selectedSurveyRange = $this->surveyRangeRepository->findOneBy(['status' => true]);
-        return $this->render('user/show.html.twig', [
-            'totalResults' => $appointments['totalRegisters'],
-            'lastPage' => $appointments['lastPage'],
-            'totalAmount' => $appointments['totalAmount'],
-            'currentPage' => $this->filterService->page,
-            'user' => $user,
-            'appointments' => $appointments,
-            'schedules' => $schedules,
-            'services' => $services,
-            'divisions' => $this->divisionRepository->findAll(),
-            'allServices' => $this->serviceRepository->findAll(),
-            'clients' => $this->clientRepository->findAll(),
-            'filterService' => $this->filterService,
-            'status' => $this->statusRepository->findAll(),
-            'permissions' => $this->permissionService->getAvailablePermissions(),
-            'surveyRanges' => $this->surveyRangeRepository->findAll(),
-            'selectedSurveyRange' => $selectedSurveyRange
-        ]);
-    }
-
-
-    public function changePassword(string $token, Request $request): Response
-    {
-        $isPasswordValid = true;
-        $isRepeatPasswordValid = true;
-        $form = $this->createForm(UserPasswordUpdateType::class, null);
-        $form->handleRequest($this->getCurrentRequest());
-        $formView = $form->createView();
-        $user = $this->userRepository->findUserByToken($token);
-        if (!$user) {
-
-            return $this->render('user/changePasswordScreen.html.twig', [
-                'token' => $token,
-                'isPasswordValid' => $isPasswordValid,
-                'isRepeatPasswordValid' => $isRepeatPasswordValid,
-                'form' => $formView,
-                'user' => $user
-            ]);
-        }
-        $idUser = $user->getId();
-
-
-
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            if ($form->get('password')->getData() != null && $form->get('password')->getData() != "") {
-                $this->userRepository->upgradePassword($user, $form->get('password')->getData());
-                $this->userRepository->updateUserTokenByIdNull($idUser);
-                $this->addFlash('success', $this->translate('Contraseña cambiada con éxito'));
-                return $this->redirectToRoute('app_login');
-            }
-        }
-
-        return $this->render('user/changePasswordScreen.html.twig', [
-            'token' => $token,
-            'isPasswordValid' => $isPasswordValid,
-            'isRepeatPasswordValid' => $isRepeatPasswordValid,
-            'form' => $formView,
-            'user' => $user
-        ]);
-    }
-
-    public function user_view_profile(string $userId, Request $request): Response
-    {
-        $user = $this->getEntity($userId);
-        $form = $this->createForm(UserPasswordUpdateType::class, null);
-        $form->handleRequest($this->getCurrentRequest());
-        $formView = $form->createView();
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            if ($form->get('password')->getData() != null && $form->get('password')->getData() != "") {
-                $this->userRepository->upgradePassword($user, $form->get('password')->getData());
-                $this->getSession()->getFlashBag()->add('success', 'Contraseña actualizada.');
-                return $this->redirect($request->getUri());
-            }
-        }
-
-        $services = $this->serviceRepository->findAll();
-        $this->filterService->addFilter('user', $user->getId());
-        $this->filterService->addFilter('services', $this->serviceRepository->findBy(['forAdmin' => false]));
-        $appointments = $this->appointmentRepository->findAppointments($this->filterService);
-        $schedules = $this->schedulesRepository->findBy(['user' => $user, 'status' => 1], ['timeFrom' => 'ASC']);
-//        if($this->getUser()->isProject()){
-//            $surveys = $this->templateTypeService->findBy(['entity' => Client::ENTITY, 'active' => true]);
-//        }else{
-//            $surveys = $this->templateTypeService->findBy(['entity' => User::ENTITY, 'active' => true]);
-//        }
-
-        $surveys = $this->clientHasDocumentRepository->findBy(['client' => $user->getClient()]);
-
-        return $this->render('user/show_profile.html.twig', [
-            'totalResults' => $appointments['totalRegisters'],
-            'lastPage' => $appointments['lastPage'],
-            'totalAmount' => $appointments['totalAmount'],
-            'currentPage' => $this->filterService->page,
-            'surveys' => $surveys,
-            'user' => $user,
-            'appointments' => $appointments,
-            'schedules' => $schedules,
-            'services' => $services,
-            'form' => $formView,
-            'divisions' => $this->divisionRepository->findAll(),
-            'allServices' => $this->serviceRepository->findAll(),
-            'clients' => $this->clientRepository->findAll(),
-            'filterService' => $this->filterService,
-            'status' => $this->statusRepository->findAll(),
-            'permissions' => $this->permissionService->getAvailablePermissions()
-        ]);
-    }
-
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO EDIT AN USER'S DATA
+     * ES: SERVICIO PARA EDITAR LOS DATOS DE UN USUARIO
+     *
+     * @param string $userId
+     * @return RedirectResponse|Response
+     * @throws Exception
+     */
+    // ----------------------------------------------------------------
     public function edit(string $userId): RedirectResponse|Response
     {
         /** @var User $user */
@@ -616,7 +397,70 @@ class UserService extends AbstractService
             'edit' => true
         ]);
     }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO CHANGE AN USER'S PASSWORD
+     * ES: SERVICIO PARA CAMBIAR LA CONTRASEÑA DE UN USUARIO
+     *
+     * @param string $token
+     * @param Request $request
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function changePassword(string $token, Request $request): Response
+    {
+        $isPasswordValid = true;
+        $isRepeatPasswordValid = true;
+        $form = $this->createForm(UserPasswordUpdateType::class, null);
+        $form->handleRequest($this->getCurrentRequest());
+        $formView = $form->createView();
+        $user = $this->userRepository->findUserByToken($token);
+        if (!$user) {
+
+            return $this->render('user/changePasswordScreen.html.twig', [
+                'token' => $token,
+                'isPasswordValid' => $isPasswordValid,
+                'isRepeatPasswordValid' => $isRepeatPasswordValid,
+                'form' => $formView,
+                'user' => $user
+            ]);
+        }
+        $idUser = $user->getId();
+
+
+
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($form->get('password')->getData() != null && $form->get('password')->getData() != "") {
+                $this->userRepository->upgradePassword($user, $form->get('password')->getData());
+                $this->userRepository->updateUserTokenByIdNull($idUser);
+                $this->addFlash('success', $this->translate('Contraseña cambiada con éxito'));
+                return $this->redirectToRoute('app_login');
+            }
+        }
+
+        return $this->render('user/changePasswordScreen.html.twig', [
+            'token' => $token,
+            'isPasswordValid' => $isPasswordValid,
+            'isRepeatPasswordValid' => $isRepeatPasswordValid,
+            'form' => $formView,
+            'user' => $user
+        ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO CHANGE AN USER'S STATUS
+     * ES: SERVICIO PARA CAMBIAR EL ESTADO DE UN USUARIO
+     *
+     * @param string $user
+     * @return Response
+     */
+    // ----------------------------------------------------------------
     public function change_status(string $user): Response
     {
         $user = $this->getEntity($user);
@@ -650,7 +494,17 @@ class UserService extends AbstractService
 
         return $this->redirectToRoute('user_index');
     }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO UPLOAD A DOCUMENT TO AN USER
+     * ES: SERVICIO PARA SUBIR UN DOCUMENTO A UN USUARIO
+     *
+     * @param string $user
+     * @return Response
+     */
+    // ----------------------------------------------------------------
     public function delete(string $user): Response
     {
         $user = $this->getEntity($user);
@@ -669,338 +523,5 @@ class UserService extends AbstractService
 
         return $this->redirectToRoute('user_index');
     }
-
-    public function getUsersByServiceAndDate(): Response
-    {
-
-        $users = $this->userRepository->findProfessionalByServicesAndDate($this->getRequestPostParam('services'), $this->getRequestPostParam('date'));
-
-        $response = new JsonResponse(['users' => $users]);
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
-    }
-
-    public function getUsersByService()
-    {
-        $users = $this->userRepository->findProfessionalByServices($this->getRequestPostParam('services'));
-
-        $response = new JsonResponse(['users' => $users]);
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
-    }
-
-
-    public function removeService(): Response
-    {
-        $user = $this->userRepository->find($this->getRequestPostParam('user_id'));
-
-        if ($this->isCsrfTokenValid('edit', $this->getRequestPostParam('_token'))) {
-            $service = $this->serviceRepository->find($this->getRequestPostParam('service_id'));
-            $this->serviceRepository->remove($service);
-        }
-
-        return $this->redirectToRoute('user_show', ['user' => $user->getId()]);
-    }
-
-    public function addService()
-    {
-        if ($this->isCsrfTokenValid('edit', $this->getRequestPostParam('_token'))) {
-            $user = $this->userRepository->find($this->getRequestPostParam('user_id'));
-            if (is_array($this->getRequestPostParam('service_id')) && sizeof($this->getRequestPostParam('service_id')) > 0) {
-                foreach ($this->getRequestPostParam('service_id') as $serviceId) {
-                    $service = $this->serviceRepository->find($serviceId);
-
-                    $user->addService($service);
-                }
-            } elseif (!is_array($this->getRequestPostParam('service_id')) && $this->getRequestPostParam('service_id') != null) {
-                $service = $this->serviceRepository->find($this->getRequestPostParam('service_id'));
-
-                $user->addService($service);
-            };
-
-            $this->userRepository->persist($user);
-
-            return $this->redirectToRoute('user_show', ['user' => $user->getId()]);
-        }
-    }
-
-    public function checkExist($fileName): bool
-    {
-        $users = $this->userRepository->findBy(['img_profile' => $fileName]);
-
-        if (sizeof($users) > 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function uploadUserDocument($userId, Request $request): RedirectResponse
-    {
-        $user = $this->userRepository->find($userId);
-
-        $document = $this->documentService->uploadRequest($request->files->get('document')->getClientOriginalName());
-
-        $documentType = $request->request->get('uploadDocument');
-
-        if ($documentType != "" || $documentType != null) {
-            switch ($documentType) {
-                case 'setDocumentAdhesion':
-                    $this->setDocumentAdhesion($user, $document);
-                    break;
-                case 'setDocumentConfidencial':
-                    $this->setDocumentConfidencial($user, $document);
-                    break;
-                case 'setDocumentImage':
-                    $this->setDocumentImage($user, $document);
-                    break;
-                case 'setDocumentDeontological':
-                    $this->setDocumentDeontological($user, $document);
-                    break;
-                case 'setDocumentAnexo':
-                    $this->setDocumentAnexo($user, $document);
-                    break;
-                case 'addDocument':
-                    $user->addDocument($document);
-                    break;
-            }
-            $this->userRepository->persist($user);
-        }
-
-        return $this->redirectBack();
-    }
-
-    public function setDocumentAdhesion(User $user, ?Document $document_adhesion)
-    {
-        $old_document = $user->getDocumentAdhesion();
-        $user->setDocumentAdhesion($document_adhesion);
-        if ($old_document) $this->documentRepository->deleteDocument($old_document);
-    }
-    public function setDocumentConfidencial(User $user, ?Document $document_adhesion)
-    {
-        $old_document = $user->getDocumentConfidencial();
-        $user->setDocumentConfidencial($document_adhesion);
-        if ($old_document) $this->documentRepository->deleteDocument($old_document);
-    }
-
-    public function setDocumentImage(User $user, ?Document $document_image)
-    {
-        $old_document = $user->getDocumentImage();
-        $user->setDocumentImage($document_image);
-        if ($old_document) $this->documentRepository->deleteDocument($old_document);
-    }
-
-    public function setDocumentDeontological(User $user, ?Document $document_deontological)
-    {
-        $old_document = $user->getDocumentDeontological();
-        $user->setDocumentDeontological($document_deontological);
-        if ($old_document) $this->documentRepository->deleteDocument($old_document);
-    }
-
-    public function setDocumentAnexo(User $user, ?Document $document_anexo)
-    {
-        $old_document = $user->getDocumentAnexo();
-        $user->setDocumentAnexo($document_anexo);
-        if ($old_document) $this->documentRepository->deleteDocument($old_document);
-    }
-
-
-    public function downloadMentorAssets(): Response
-    {
-        $mentorAssetsDirectory = $this->kernel->getProjectDir() . '/public/assets/mentors';
-        $mentorAssetFilenames = [
-            'AcuerdoConfidencialidad_V01.pdf',
-            'AnexoIObligacionesTecnicas_V01.pdf',
-            'CodigoDeontologico_V01.pdf',
-            'DerechosImagen_V01.pdf',
-        ];
-        $zipFilename = 'modelosMentores.zip';
-        $zip = new ZipArchive();
-        $zip->open($zipFilename, ZipArchive::CREATE);
-        foreach ($mentorAssetFilenames as $filename) {
-            $filePath = $mentorAssetsDirectory . '/' . $filename;
-            if (file_exists($filePath)) {
-                $zip->addFile($filePath, $filename);
-            }
-        }
-
-        $zip->close();
-        $response = new BinaryFileResponse($zipFilename);
-        $response->setContentDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $zipFilename
-        );
-
-        $response->headers->set('Content-Type', 'application/zip');
-
-        register_shutdown_function(function () use ($zipFilename) {
-            if (file_exists($zipFilename)) {
-                unlink($zipFilename);
-            }
-        });
-
-        return $response;
-    }
-
-    public function getUserById(string $id, ?bool $array = false)
-    {
-        return $this->userRepository->getUserById($id, $array);
-    }
-
-    public function allSurveys()
-    {
-        $clientId = $this->getRequestParam('client');
-
-        if ($clientId == null) {
-            $clientId = $this->getUser()->getClient()->getId();
-        }
-
-        $userHasClient = $this->userHasClientRepository->findBy(['client' => $clientId]);
-
-        $mentors = [];
-        foreach ($userHasClient as $mentor) {
-            if (!$mentor->getUser()->isProject()) {
-                $mentors[] = $mentor->getUser();
-            }
-        }
-
-        $surveyRangeId = $this->getRequestPostParam('surveyRange');
-
-        if ($surveyRangeId == null) {
-            $surveyRange = $this->surveyRangeRepository->findOneBy(['status' => true]);
-        } else {
-            $surveyRange = $this->surveyRangeRepository->find($surveyRangeId);
-        }
-
-        if ($surveyRange != null) {
-            if ($surveyRange->getStartDate() != null) $this->filterService->addFilter('date_from', $surveyRange->getStartDate()->format('d-m-Y'));
-            if ($surveyRange->getEndDate() != null) $this->filterService->addFilter('date_to', $surveyRange->getEndDate()->format('d-m-Y'));
-        }
-
-        $this->filterService->addFilter('client', [$clientId]);
-        $this->filterService->addFilter('services', $this->serviceRepository->findBy(['forAdmin'=>false, 'forClient' => false]));
-
-        $this->filterService->addFilter('statusType', 9);
-
-        $appointments = $this->appointmentRepository->findAppointments($this->filterService);
-
-        $allSurveyRanges = $this->surveyRangeRepository->findAll();
-
-        $mentorsFinished = [];
-        foreach ($mentors as $mentor) {
-            foreach ($appointments['data'] as $appointment) {
-                if ($appointment->getUser()->getId() == $mentor->getId()) {
-                    $mentorsFinished[] = $mentor;
-                    break;
-                }
-            }
-        }
-
-        $mentorsAdminFinished = [];
-        foreach ($mentorsFinished as $mentor) {
-            // Verificar si los appointments del mentor están dentro del rango de fechas de cada surveyRange
-            foreach ($allSurveyRanges as $surveyRangeCheck) {
-                $mentorAppointments = []; // Almacenar los appointments del mentor actual
-                foreach ($appointments['data'] as $appointment) {
-                    if ($appointment->getUser()->getId() == $mentor->getId() &&
-                        $appointment->getTimeTo() >= $surveyRangeCheck->getStartDate() &&
-                        $appointment->getTimeTo() <= $surveyRangeCheck->getEndDate()) {
-                        $mentorAppointments[] = $appointment;
-                    }
-                }
-
-                // Si hay appointments de este mentor en este rango de tiempo se guarda tanto el mentor como el rango
-                if (!empty($mentorAppointments)) {
-                    $mentorsAdminFinished[] = [
-                        'mentor' => $mentor,
-                        'surveyRange' => $surveyRangeCheck
-                    ];
-                }
-            }
-        }
-
-        $timeDif = [];
-        $areas = [];
-        foreach ($appointments['data'] as $appointment) {
-            if ($appointment->getTimeFrom() != null and $appointment->getTimeTo() != null) {
-                $dif = $appointment->getTimeFrom()->diff($appointment->getTimeTo());
-                $timeDif[] = ['id' => $appointment->getId(), 'mentor' => $appointment->getUser()->getId(), 'hours' => $dif->h, 'minutes' => $dif->i];
-            }
-
-            $areas[] = ['id' => $appointment->getUser()->getId(), 'name' => $appointment->getArea()->getName()];
-        }
-
-        $timeDifMentor = [];
-        foreach ($timeDif as $element) {
-            $mentor = $element['mentor'];
-            $hours = $element['hours'];
-            $minutes = $element['minutes'];
-
-            if (!isset($timeDifMentor[$mentor])) {
-                $timeDifMentor[$mentor] = ['id' => $mentor, 'hours' => 0, 'minutes' => 0];
-            }
-
-            $timeDifMentor[$mentor]['hours'] += $hours;
-            $timeDifMentor[$mentor]['minutes'] += $minutes;
-
-            $timeDifMentor[$mentor]['hours'] += intval($timeDifMentor[$mentor]['minutes'] / 60);
-            $timeDifMentor[$mentor]['minutes'] = $timeDifMentor[$mentor]['minutes'] % 60;
-        }
-
-        $areasMentor = [];
-        foreach ($areas as $area) {
-            $mentor = $area['id'];
-            $areaName = $area['name'];
-
-            if (!isset($areasMentor[$mentor])) {
-                $areasMentor[$mentor] = ['id' => $mentor, 'name' => ''];
-            }
-
-            if ($areasMentor[$mentor]['name'] == '') {
-                $areasMentor[$mentor]['name'] = $areaName;
-            } else {
-                $isAreaAlreadyIn = false;
-                foreach (explode(' - ', $areasMentor[$mentor]['name']) as $allMentorAreaName) {
-                    if ($areaName == $allMentorAreaName) {
-                        $isAreaAlreadyIn = true;
-                    }
-                }
-                if (!$isAreaAlreadyIn) $areasMentor[$mentor]['name'] .= ' - ' . $areaName;
-            }
-        }
-
-        $documents = [];
-        foreach ($this->clientHasDocumentRepository->findBy(['client' => $clientId]) as $clientHasDocument) {
-            $documents[] = $clientHasDocument->getDocument();
-        }
-
-        $surveys = $this->clientHasDocumentRepository->findBy(['client' => $clientId]);
-        $startupSurveys = [];
-        foreach ($surveys as $survey) {
-            if ($survey->getDocument()->isStartUpSurvey()) {
-                $startupSurveys[] = $survey;
-            }
-        }
-
-        $surveyRangeFilterService = new FilterService($this->getCurrentRequest());
-        $surveyRangeFilterService->addOrderValue('endDate', 'ASC');
-        $orderedAllSurveyRanges = $this->surveyRangeRepository->findSurveyRanges($surveyRangeFilterService);
-
-        return $this->render('document/index.html.twig', [
-            'totalResults' => count($mentorsFinished),
-            'lastPage' => $appointments['lastPage'],
-            'totalAmount' => count($mentors),
-            'currentPage' => $this->filterService->page,
-            'filterService' => $this->filterService,
-            'appointments' => $appointments,
-            'mentors' => $mentorsAdminFinished,
-            'totalTime' => $timeDifMentor,
-            'areas' => $areasMentor,
-            'documents' => $documents,
-            'surveys' => $startupSurveys,
-            'client' => $this->clientRepository->find($clientId),
-            'surveyRanges' => $orderedAllSurveyRanges['data'],
-            'selectedSurveyRange' => $surveyRange
-        ]);
-    }
+    // ----------------------------------------------------------------
 }
