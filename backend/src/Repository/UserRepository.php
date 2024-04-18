@@ -140,7 +140,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->entityManager->flush();
     }
 
-    public function updateUserTokenByIdNull(string $id)
+    public function updateUserTokenByIdNull(string $id): void
     {
         $user = $this->entityManager->getRepository(User::class)->find($id);
 
@@ -419,7 +419,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function removeAllRoles(User $user)
     {
-        foreach ($user->getRoles(false) as $role) {
+        foreach ($user->getRolesCollection() as $role) {
             $this->delete($this->_em, $role);
         }
     }
@@ -458,10 +458,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->save($this->_em, $user);
     }
 
-    public function remove(User $user)
+    public function remove(User $user): void
     {
-        $user->removeAllFestives();
-        $user->removeAllServices();
         $user->removeAllRoles();
         $this->delete($this->_em, $user);
     }

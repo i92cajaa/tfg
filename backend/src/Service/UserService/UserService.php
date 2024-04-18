@@ -3,7 +3,9 @@
 namespace App\Service\UserService;
 
 use App\Entity\Client\ClientHasDocument;
+use App\Entity\User\UserHasRole;
 use App\Repository\ClientHasDocumentRepository;
+use App\Repository\LessonRepository;
 use App\Repository\SurveyRangeRepository;
 use App\Service\FilterService;
 use DateTime;
@@ -72,7 +74,7 @@ class UserService extends AbstractService
         private readonly CenterRepository $centerRepository,
         private readonly ClientRepository $clientRepository,
         private readonly StatusRepository $statusRepository,
-        private readonly DocumentRepository $documentRepository,
+        private readonly LessonRepository $lessonRepository,
         private readonly ClientHasDocumentRepository $clientHasDocumentRepository,
 
         EntityManagerInterface $em,
@@ -141,6 +143,8 @@ class UserService extends AbstractService
     {
         $user = $this->userRepository->findById($userId, false);
 
+        $this->filterService->addFilter('teacher', $user->getId());
+
         return $this->render('user/show.html.twig', [
             'currentPage' => $this->filterService->page,
             'user' => $user,
@@ -149,7 +153,8 @@ class UserService extends AbstractService
             'status' => $this->statusRepository->findAll(),
             'permissions' => $this->permissionService->getAvailablePermissions(),
             'areas' => $this->areaRepository->findAreas($this->filterService, true),
-            'centers' => $this->centerRepository->findCenters($this->filterService, true)
+            'centers' => $this->centerRepository->findCenters($this->filterService, true),
+            'lessons' => $this->lessonRepository->findLessons($this->filterService, true)
         ]);
     }
     // ----------------------------------------------------------------
@@ -162,11 +167,12 @@ class UserService extends AbstractService
      * @param string $userId
      * @param Request $request
      * @return Response
+     * @throws NonUniqueResultException
      */
     // ----------------------------------------------------------------
     public function user_view_profile(string $userId, Request $request): Response
     {
-        $user = $this->getEntity($userId);
+        $user = $this->userRepository->findById($userId, false);
         $form = $this->createForm(UserPasswordUpdateType::class, null);
         $form->handleRequest($this->getCurrentRequest());
         $formView = $form->createView();
@@ -180,32 +186,10 @@ class UserService extends AbstractService
             }
         }
 
-        $services = $this->serviceRepository->findAll();
-        $this->filterService->addFilter('user', $user->getId());
-        $this->filterService->addFilter('services', $this->serviceRepository->findBy(['forAdmin' => false]));
-        $appointments = $this->appointmentRepository->findAppointments($this->filterService);
-        $schedules = $this->schedulesRepository->findBy(['user' => $user, 'status' => 1], ['timeFrom' => 'ASC']);
-//        if($this->getUser()->isProject()){
-//            $surveys = $this->templateTypeService->findBy(['entity' => Client::ENTITY, 'active' => true]);
-//        }else{
-//            $surveys = $this->templateTypeService->findBy(['entity' => User::ENTITY, 'active' => true]);
-//        }
-
-        $surveys = $this->clientHasDocumentRepository->findBy(['client' => $user->getClient()]);
-
         return $this->render('user/show_profile.html.twig', [
-            'totalResults' => $appointments['totalRegisters'],
-            'lastPage' => $appointments['lastPage'],
-            'totalAmount' => $appointments['totalAmount'],
             'currentPage' => $this->filterService->page,
-            'surveys' => $surveys,
             'user' => $user,
-            'appointments' => $appointments,
-            'schedules' => $schedules,
-            'services' => $services,
             'form' => $formView,
-            'divisions' => $this->divisionRepository->findAll(),
-            'allServices' => $this->serviceRepository->findAll(),
             'clients' => $this->clientRepository->findAll(),
             'filterService' => $this->filterService,
             'status' => $this->statusRepository->findAll(),
@@ -222,12 +206,13 @@ class UserService extends AbstractService
      * @return Response
      */
     // ----------------------------------------------------------------
-    public function new()
+    public function new(): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($this->getCurrentRequest());
         $permissions = $this->permissionService->getAvailablePermissions();
+
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 // check if user exists
@@ -242,27 +227,25 @@ class UserService extends AbstractService
                         'edit' => false
                     ]);
                 }
-                if ($form->get('roles')->getData() != null) {
-                    $rol = $form->get('roles')->getData();
-                    $user->addRole($form->get('roles')->getData());
-                    foreach ($rol->getPermissions() as $roleHasPermission) {
+
+                $role = $form->get('role')->getData();
+                if ($role != null) {
+                    $user->addRole((new UserHasRole())->setUser($user)->setRole($role));
+                    foreach ($role->getPermissions() as $roleHasPermission) {
                         $userHasPermission = (new UserHasPermission())->setUser($user)->setPermission($roleHasPermission->getPermission());
                         $user->addPermission($userHasPermission);
                     }
-                };
+                }
+
                 $center = $form->get('center')->getData();
                 if ($center != null) {
                     $user->setCenter($center);
                 }
-                $areas = $form->get('areas')->getData();
-                if ($areas != null) {
-                    foreach ($form->get('areas')->getData() as $area) {
-                        $user->addArea($area);
-                    }
-                }
-                if ($form->get('password')->getData() != $user->getPassword() && $form->get('password')->getData() != null && $form->get('password')->getData() != "") {
+
+                if ($form->get('password')->getData() != null) {
                     $this->userRepository->upgradePassword($user, $form->get('password')->getData());
                 }
+
                 $file = $form->get('img_profile')->getData();
                 $this->userRepository->persist($user);
                 if ($file != null) {
@@ -270,8 +253,6 @@ class UserService extends AbstractService
                     $user->setImgProfile($imgProfile);
                     $this->userRepository->persist($user);
                 }
-                $this->schedulesRepository->createAllWeekSchedules($user);
-
 
                 $this->getSession()->getFlashBag()->add('success', 'Usuario creado correctamente.');
                 return $this->redirectToRoute('user_index');
@@ -283,7 +264,6 @@ class UserService extends AbstractService
         return $this->render('user/new.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
-            'areas' => $this->areaRepository->findAll(),
             'centers' => $this->centerRepository->findAll(),
             'roles' => $this->roleRepository->findAll(),
             'permissions' => $permissions,
@@ -305,7 +285,7 @@ class UserService extends AbstractService
     public function edit(string $userId): RedirectResponse|Response
     {
         /** @var User $user */
-        $user = $this->getEntity($userId);
+        $user = $this->userRepository->findById($userId, false);
 
         if (!$user) {
             throw new \Exception("User not found");
@@ -318,11 +298,12 @@ class UserService extends AbstractService
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setUpdatedAt(UTCDateTime::create('NOW'));
 
-            // check if user exists
-            $userExists = $this->userRepository->findOneBy(['email' => $user->getEmail()]);
+            $userExists = $this->userRepository->findOneBy(['email' => $form->get('email')->getData()]);
             if ($userExists and $userExists->getId() != $user->getId()) {
                 $this->addFlash("error", $this->translate('User with this email already exists') . " " . $userExists->getEmail());
                 return $this->redirectToRoute('user_edit', ['user' => $userId]);
+            } elseif (!$userExists) {
+                $user->setEmail($form->get('email')->getData());
             }
 
             if ($form->get('password')->getData() != $user->getPassword() && $form->get('password')->getData() != null && $form->get('password')->getData() != "") {
@@ -334,22 +315,13 @@ class UserService extends AbstractService
                 $user->setCenter($center);
             }
 
-            $areas = $form->get('areas')->getData();
-
-            if ($areas != null) {
-                //borrar todas las areas para q puedas asignar la misma
-                $this->userRepository->removeAllAreas($user);
-                foreach ($areas as $area) {
-                    $user->addArea($area);
-                }
-            }
-
-            if ($form->get('roles')->getData() != null) {
-                if ($form->get('roles')->getData()->getName() != $user->getRoles()[0]) {
+            $role = $form->get('role')->getData();
+            if ($role != null) {
+                if ($role->getName() != $user->getRoles()[0]) {
                     $this->userRepository->removeAllRoles($user);
-                    $user->addRole($form->get('roles')->getData());
+                    $user->addRole((new UserHasRole())->setRole($role)->setUser($user));
                     $this->userRepository->removeAllPermissions($user);
-                    foreach ($form->get('roles')->getData()->getPermissions() as $roleHasPermission) {
+                    foreach ($role->getPermissions() as $roleHasPermission) {
                         $user->addPermission((new UserHasPermission())->setUser($user)->setPermission($roleHasPermission->getPermission()));
                     }
                 } else {
@@ -390,7 +362,6 @@ class UserService extends AbstractService
         return $this->render('user/edit.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
-            'areas' => $this->areaRepository->findAll(),
             'centers' => $this->centerRepository->findAll(),
             'roles' => $this->roleRepository->findAll(),
             'permissions' => $permissions,
@@ -411,26 +382,22 @@ class UserService extends AbstractService
     // ----------------------------------------------------------------
     public function changePassword(string $token, Request $request): Response
     {
-        $isPasswordValid = true;
-        $isRepeatPasswordValid = true;
         $form = $this->createForm(UserPasswordUpdateType::class, null);
         $form->handleRequest($this->getCurrentRequest());
         $formView = $form->createView();
+
         $user = $this->userRepository->findUserByToken($token);
         if (!$user) {
 
             return $this->render('user/changePasswordScreen.html.twig', [
                 'token' => $token,
-                'isPasswordValid' => $isPasswordValid,
-                'isRepeatPasswordValid' => $isRepeatPasswordValid,
+                'isPasswordValid' => true,
+                'isRepeatPasswordValid' => true,
                 'form' => $formView,
                 'user' => $user
             ]);
         }
         $idUser = $user->getId();
-
-
-
 
         if ($form->isSubmitted() && $form->isValid()) {
 
@@ -444,8 +411,8 @@ class UserService extends AbstractService
 
         return $this->render('user/changePasswordScreen.html.twig', [
             'token' => $token,
-            'isPasswordValid' => $isPasswordValid,
-            'isRepeatPasswordValid' => $isRepeatPasswordValid,
+            'isPasswordValid' => true,
+            'isRepeatPasswordValid' => true,
             'form' => $formView,
             'user' => $user
         ]);
@@ -459,34 +426,35 @@ class UserService extends AbstractService
      *
      * @param string $user
      * @return Response
+     * @throws NonUniqueResultException
      */
     // ----------------------------------------------------------------
     public function change_status(string $user): Response
     {
-        $user = $this->getEntity($user);
+        $user = $this->userRepository->findById($user, false);
 
         try {
             if ($user->getStatus()) {
                 $this->userRepository->changeStatus($user, false);
-                if ($user->isProject()){
-                    $projects = $this->userHasClientRepository->findBy(['user'=>$user]);
-                    foreach($projects as $project){
-                        $project = $project->getClient();
+                if ($user->isTeacher()){
+                    foreach ($user->getLessons() as $userHasLesson) {
+                        $lesson = $userHasLesson->getLesson();
+                        $lesson->setStatus(false);
+
+                        foreach ($lesson->getSchedules() as $schedule) {
+                            if ($schedule->getDateFrom() > UTCDateTime::create('NOW')) {
+                                //Do the change of schedule to canceled in the schedule service (email sent)
+                            }
+                        }
+                        //save lesson status
                     }
-                    $this->clientRepository->changeStatus($project, false);
                 }
                 $this->getSession()->getFlashBag()->add('success', 'Usuario desactivado correctamente.');
             } else {
                 $this->userRepository->changeStatus($user, true);
-                if ($user->isProject()){
-                    $projects = $this->userHasClientRepository->findBy(['user'=>$user]);
-                    foreach($projects as $project){
-                        $project = $project->getClient();
-                    }
-                    $this->clientRepository->changeStatus($project, true);
-                }
                 $this->getSession()->getFlashBag()->add('success', 'Usuario activado correctamente.');
             }
+
             $this->userRepository->persist($user);
         } catch (\Exception $error) {
             $this->getSession()->getFlashBag()->add('danger', 'Error al cambiar el estado del usuario');
@@ -498,8 +466,8 @@ class UserService extends AbstractService
 
     // ----------------------------------------------------------------
     /**
-     * EN: SERVICE TO UPLOAD A DOCUMENT TO AN USER
-     * ES: SERVICIO PARA SUBIR UN DOCUMENTO A UN USUARIO
+     * EN: SERVICE TO DELETE AN USER
+     * ES: SERVICIO PARA BORRAR UN USUARIO
      *
      * @param string $user
      * @return Response
@@ -510,11 +478,11 @@ class UserService extends AbstractService
         $user = $this->getEntity($user);
 
         try {
-            if (sizeof($user->getAppointments()->toArray()) == 0) {
+            if (count($user->getLessons()) == 0) {
                 $this->userRepository->remove($user);
                 $this->getSession()->getFlashBag()->add('success', 'Usuario borrado correctamente.');
             } else {
-                $this->getSession()->getFlashBag()->add('success', 'Se ha desactivado el usuario, ya que tiene mentorias asignadas');
+                $this->getSession()->getFlashBag()->add('success', 'Se ha desactivado el usuario, ya que tiene clases asignadas');
                 $this->userRepository->changeStatus($user, false);
             }
         } catch (\Exception $error) {

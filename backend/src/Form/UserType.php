@@ -4,21 +4,16 @@ namespace App\Form;
 
 use App\Entity\Center\Center;
 use App\Entity\Role\Role;
-use App\Entity\Area\Area;
 use App\Entity\User\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ColorType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\TimeType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Length;
 
 class UserType extends AbstractType
@@ -27,44 +22,55 @@ class UserType extends AbstractType
     {
         $builder
 
-            ->add('name',null,[
+            ->add('name',TextType::class,[
+                'label' => 'Nombre',
+                'required' => true
             ])
-            ->add('surnames',null,[
+            ->add('surnames',TextType::class,[
+                'label' => 'Apellidos',
+                'required' => true
             ])
-            ->add('email',null,[
+            ->add('email',TextType::class,[
+                'label' => 'Correo Electrónico',
                 'required' => true
             ])
             ->add('phone',null,[
+                'label' => 'Teléfono',
                 'required' => false
             ])
-            ->add('modality',null,[
-                'required' => false
-            ])
-            ->add('roles', EntityType::class, [
+            ->add('role', EntityType::class, [
                 'class' => Role::class,
                 'choice_label' => function (Role $role) {
                     return $role->getName();
                 },
-                'mapped' => false
+                'mapped' => false,
+                'multiple' => false,
+                'label' => 'Rol',
+                'attr' => ['class' => 'form-check mb-2 select2', 'autocomplete' => 'off'],
             ])
             ->add('center', EntityType::class, [
                 'class' => Center::class,
                 'choice_label' => function (Center $center) {
                     return $center->getName();
                 },
-            ])
-            ->add('areas', EntityType::class, [
-                'class' => Area::class,
-                'choice_label' => function (Area $area) {
-                    return $area->getName();
-                },
-                'mapped' => false,
-                'multiple' => true
+                'multiple' => false,
+                'label' => 'Centro',
+                'attr' => ['class' => 'form-check mb-2 select2', 'autocomplete' => 'off'],
             ])
             ->add('img_profile', FileType::class,[
                 'mapped' => false,
-                'data_class' => null,
-                'required' => false
+                'multiple' => false,
+                'required' => true,
+                'label' => 'Imagen de Perfil',
+                'constraints' => [
+                    new File([
+                        'maxSize' => '9M',
+                        'mimeTypes' => [
+                            'image/*',
+                        ],
+                        'mimeTypesMessage' => 'Por favor, carga una imagen válida.',
+                    ]),
+                ],
             ])
             ->add('calendar_interval', null,[
                 "required" => true

@@ -228,6 +228,12 @@ class LessonRepository extends ServiceEntityRepository
             } elseif ($status !== null) {
                 $query->andWhere('l.status = 0');
             }
+
+            $teacher = $filterService->getFilterValue('teacher');
+            if ($teacher !== null) {
+                $query->andWhere('user.id = :teacher')
+                    ->setParameter('teacher', $teacher);
+            }
         }
     }
     // --------------------------------------------------------------

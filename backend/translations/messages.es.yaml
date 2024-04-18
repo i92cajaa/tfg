@@ -171,7 +171,7 @@ Inactive: Inactivo/a
 Type: Tipo
 Options: Opciones
 Lines: Líneas
-Clients: Proyectos
+Clients: Clientes
 Patients: Pacientes
 patients: Pacientes
 patient: Paciente
@@ -543,3 +543,7 @@ Best regards. The Fluxua team: Un saludo. El equipo de Fluxua
 The consultation fee will be deducted at the first appointment.: Se le descontara el importe de la consulta en la primera cita.
 Print invoice: Imprimir factura
 Mentoring: Mentorías
+Lessons: Clases
+Bookings: Reservas
+Centers: Centros
+Rooms: Habitaciones

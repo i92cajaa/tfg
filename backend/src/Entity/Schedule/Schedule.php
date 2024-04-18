@@ -9,6 +9,7 @@ use App\Entity\Status\Status;
 use App\Repository\ScheduleRepository;
 use App\Shared\Classes\UTCDateTime;
 use DateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -116,15 +117,17 @@ class Schedule
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getDateFrom(): \DateTimeInterface
+    public function getDateFrom(): DateTimeInterface
     {
         return UTCDateTime::format($this->dateFrom);
     }
 
-
-    public function getDateTo(): \DateTimeInterface
+    /**
+     * @return DateTimeInterface
+     */
+    public function getDateTo(): DateTimeInterface
     {
         return UTCDateTime::format($this->dateTo);
     }
@@ -174,20 +177,20 @@ class Schedule
     }
 
     /**
-     * @param \DateTimeInterface|null $dateFrom
+     * @param DateTimeInterface|null $dateFrom
      * @return $this
      */
-    public function setDateFrom(?\DateTimeInterface $dateFrom): Schedule
+    public function setDateFrom(?DateTimeInterface $dateFrom): Schedule
     {
         $this->dateFrom = UTCDateTime::setUTC($dateFrom);
         return $this;
     }
 
     /**
-     * @param \DateTimeInterface|null $dateTo
+     * @param DateTimeInterface|null $dateTo
      * @return $this
      */
-    public function setDateTo(?\DateTimeInterface $dateTo): Schedule
+    public function setDateTo(?DateTimeInterface $dateTo): Schedule
     {
         $this->dateTo = UTCDateTime::setUTC($dateTo);
         return $this;
