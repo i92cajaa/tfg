@@ -6,6 +6,7 @@ use App\Entity\Lesson\Lesson;
 use App\Entity\Client\Booking;
 use App\Entity\Room\Room;
 use App\Entity\Status\Status;
+use App\Entity\User\User;
 use App\Repository\ScheduleRepository;
 use App\Shared\Classes\UTCDateTime;
 use DateTime;
@@ -52,6 +53,10 @@ class Schedule
 
     #[ORM\OneToMany(mappedBy:"schedule", targetEntity: Booking::class, cascade:["persist", "remove"])]
     private array|Collection $bookings;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'schedules')]
+    #[ORM\JoinColumn(name: "teacher_id", referencedColumnName:"id", nullable:false, onDelete: 'CASCADE')]
+    private User $teacher;
 
     // ----------------------------------------------------------------
     // Fields
@@ -117,6 +122,14 @@ class Schedule
     }
 
     /**
+     * @return User
+     */
+    public function getTeacher(): User
+    {
+        return $this->teacher;
+    }
+
+    /**
      * @return DateTimeInterface
      */
     public function getDateFrom(): DateTimeInterface
@@ -173,6 +186,16 @@ class Schedule
     public function setBookings(array|Collection $bookings): Schedule
     {
         $this->bookings = $bookings;
+        return $this;
+    }
+
+    /**
+     * @param User $teacher
+     * @return $this
+     */
+    public function setTeacher(User $teacher): Schedule
+    {
+        $this->teacher = $teacher;
         return $this;
     }
 
@@ -253,6 +276,49 @@ class Schedule
         }
 
         return false;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO GET THE SCHEDULE IN EVENT FORM
+     * ES: FUNCIÓN PARA OBTENER EL HORARIO EN FORMA DE EVENTO
+     *
+     * @param bool|null $isSuperAdmin
+     * @return array
+     */
+    // ----------------------------------------------------------------
+    public function toEvent(?bool $isSuperAdmin = false): array
+    {
+        $userIds = [];
+        foreach ($this->getLesson()->getUsers() as $userHasLessons) {
+            $userIds[] = $userHasLessons->getUser()->getId();
+        }
+
+        $borderColor =  $this->getRoom()->getCenter()->getColor();
+
+        $title = $isSuperAdmin ? $this->getLesson()->getName() . ' - ' . $this->getRoom()->getCenter()->getName() : $this->getLesson()->getName();
+
+        return [
+            'id'              => $this->getId(),
+            'title'           => $title,
+            'start'           => $this->getDateFrom()->format('Y-m-d H:i:s'),
+            'end'             => $this->getDateTo()->format('Y-m-d H:i:s'),
+            'allDay'          => false,
+            'display'         => 'block',
+            'extendedProps'   => [
+                'id'                => $this->getId(),
+                'users'             => $userIds,
+                'status'            => $this->getStatus() ? 1 : 0,
+                'date'              => $this->getDateFrom()->format('Y-m-d'),
+                'timeFrom'          => $this->getDateFrom()->format('H:i'),
+                'timeTo'            => $this->getDateTo()->format('H:i'),
+                'calendar'          => $this->getStatus() ? 'Activa' : 'Liberada',
+                'borderColor'       => $borderColor,
+                'backgroundColor'   => $borderColor
+            ],
+            'backgroundColor' => '022C38',
+        ];
     }
     // ----------------------------------------------------------------
 }

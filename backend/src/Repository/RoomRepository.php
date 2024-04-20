@@ -121,10 +121,11 @@ class RoomRepository extends ServiceEntityRepository
      *
      * @param FilterService $filterService
      * @param bool $showAll
+     * @param bool $array
      * @return array|null
      */
     // ----------------------------------------------------------------
-    public function findRooms(FilterService $filterService, bool $showAll): ?array
+    public function findRooms(FilterService $filterService, bool $showAll, bool $array = false): ?array
     {
         $query = $this->createQueryBuilder('r')
             ->leftJoin('r.center', 'center')
@@ -144,7 +145,7 @@ class RoomRepository extends ServiceEntityRepository
 
         // Pagination process
         $paginator = new Paginator($query);
-        $paginator->getQuery()->setHydrationMode(AbstractQuery::HYDRATE_OBJECT);
+        $paginator->getQuery()->setHydrationMode($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
         $totalRegisters = $paginator->count();
 
         $result = [];

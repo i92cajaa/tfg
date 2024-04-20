@@ -10,6 +10,7 @@ use App\Shared\Classes\AbstractService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
@@ -69,6 +70,32 @@ class RoomService extends AbstractService
             'rooms' => $rooms['rooms'],
             'filterService' => $this->filterService,
         ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO GET ALL ROOMS BY USER ID
+     * ES: SERVICIO PARA OBTENER TODAS LAS HABITACIONES POR ID DE USUARIO
+     *
+     * @return JsonResponse
+     */
+    // ----------------------------------------------------------------
+    public function getByUserId(): JsonResponse
+    {
+        $rooms = [];
+        $status = false;
+        if ($this->isCsrfTokenValid('get-rooms-by-user', $this->getRequestPostParam('_token'))) {
+            $this->filterService->addFilter('user', $this->getRequestPostParam('user'));
+            $center = $this->centerRepository->findCenters($this->filterService, true)['centers'][0];
+
+            $this->filterService->addFilter('center', $center->getId());
+
+            $rooms = $this->roomRepository->findRooms($this->filterService, true, true)['rooms'];
+            $status = true;
+        }
+
+        return new JsonResponse(['rooms' => $rooms, 'status' => $status]);
     }
     // ----------------------------------------------------------------
 

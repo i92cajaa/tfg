@@ -6,6 +6,7 @@ use App\Entity\Center\Center;
 use App\Entity\Document\Document;
 use App\Entity\Notification\Notification;
 use App\Entity\Role\Role;
+use App\Entity\Schedule\Schedule;
 use App\Repository\UserRepository;
 use App\Shared\Classes\UTCDateTime;
 use DateTime;
@@ -60,6 +61,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: "user", targetEntity: UserHasLesson::class, cascade:["persist", "remove"])]
     private array|Collection $lessons;
+
+    #[ORM\OneToMany(mappedBy: "teacher", targetEntity: Schedule::class, cascade:["persist", "remove"])]
+    private array|Collection $schedules;
 
     // ----------------------------------------------------------------
     // Fields
@@ -120,6 +124,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->notifications = new ArrayCollection();
         $this->documents = new ArrayCollection();
         $this->lessons = new ArrayCollection();
+        $this->schedules = new ArrayCollection();
     }
 
     // ----------------------------------------------------------------
@@ -188,6 +193,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getLessons(): array|Collection
     {
         return $this->lessons;
+    }
+
+    /**
+     * @return array|Collection
+     */
+    public function getSchedules(): array|Collection
+    {
+        return $this->schedules;
     }
 
     /**
@@ -373,6 +386,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLessons(array|Collection $lessons): User
     {
         $this->lessons = $lessons;
+        return $this;
+    }
+
+    /**
+     * @param array|Collection $schedules
+     * @return $this
+     */
+    public function setSchedules(array|Collection $schedules): User
+    {
+        $this->schedules = $schedules;
         return $this;
     }
 
@@ -747,6 +770,44 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         foreach ($this->lessons as $lesson) {
             $this->lessons->removeElement($lesson);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO ADD SCHEDULE TO USER
+     * ES: FUNCIÓN PARA AÑADIR HORARIO A USUARIO
+     *
+     * @param Schedule $schedule
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function addSchedule(Schedule $schedule): User
+    {
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules->add($schedule);
+        }
+
+        return $this;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO REMOVE SCHEDULE FROM USER
+     * ES: FUNCIÓN PARA BORRAR HORARIO DE USUARIO
+     *
+     * @param Schedule $schedule
+     * @return $this
+     */
+    // ----------------------------------------------------------------
+    public function removeSchedule(Schedule $schedule): User
+    {
+        if ($this->schedules->contains($schedule)) {
+            $this->schedules->removeElement($schedule);
         }
 
         return $this;

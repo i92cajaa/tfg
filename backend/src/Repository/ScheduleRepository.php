@@ -8,9 +8,11 @@ use App\Shared\Classes\UTCDateTime;
 use App\Shared\Traits\DoctrineStorableObject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Validator\Constraints\Collection;
 
 /**
  * @method Schedule|null find($id, $lockMode = null, $lockVersion = null)
@@ -30,15 +32,110 @@ class ScheduleRepository extends ServiceEntityRepository
 
     // ----------------------------------------------------------------
     /**
+     * EN: FUNCTION TO CREATE A NEW SCHEDULE
+     * ES: FUNCIÓN PARA CREAR UN HORARIO NUEVA
+     *
+     * @param Schedule $entity
+     * @param bool $flush
+     * @return void
+     */
+    // ----------------------------------------------------------------
+    public function save(Schedule $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO DELETE A SCHEDULE
+     * ES: FUNCIÓN PARA BORRAR UN HORARIO
+     *
+     * @param Schedule $entity
+     * @param bool $flush
+     * @return void
+     */
+    // ----------------------------------------------------------------
+    public function remove(Schedule $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO GET A SCHEDULE'S DATA
+     * ES: FUNCIÓN PARA OBTENER LOS DATOS DE UN HORARIO
+     *
+     * @param string $id
+     * @param bool $array
+     * @return array|Schedule|null
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function findById(string $id, bool $array): array|Schedule|null
+    {
+        return $this->createQueryBuilder('sc')
+            ->leftJoin('sc.lesson', 'lesson')
+            ->leftJoin('sc.status', 'status')
+            ->leftJoin('sc.room', 'room')
+            ->leftJoin('sc.bookings', 'bookings')
+            ->leftJoin('bookings.client', 'client')
+            ->leftJoin('sc.teacher', 'teacher')
+            ->addSelect('lesson')
+            ->addSelect('status')
+            ->addSelect('room')
+            ->addSelect('bookings')
+            ->addSelect('client')
+            ->addSelect('teacher')
+            ->andWhere('sc.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO GET A SCHEDULE'S DATA (SIMPLE METHOD)
+     * ES: FUNCIÓN PARA OBTENER LOS DATOS DE UN HORARIO (MÉTODO SIMPLE)
+     *
+     * @param string $id
+     * @param bool $array
+     * @return array|Schedule
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function findByIdSimple(string $id, bool $array): array|Schedule
+    {
+        return $this->createQueryBuilder('sc')
+            ->andWhere('sc.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
      * EN: FUNCTION TO LIST ALL AREAS
      * ES: FUNCIÓN PARA LISTAR TODAS LAS ÁREAS
      *
      * @param FilterService $filterService
      * @param bool $showAll
-     * @return array|null
+     * @param bool $array
+     * @return array|Collection|null
      */
     // ----------------------------------------------------------------
-    public function findSchedules(FilterService $filterService, bool $showAll): ?array
+    public function findSchedules(FilterService $filterService, bool $showAll, bool $array = false): array|Collection|null
     {
         $query = $this->createQueryBuilder('sc')
             ->leftJoin('sc.lesson', 'lesson')
@@ -46,11 +143,13 @@ class ScheduleRepository extends ServiceEntityRepository
             ->leftJoin('sc.room', 'room')
             ->leftJoin('sc.bookings', 'bookings')
             ->leftJoin('bookings.client', 'client')
+            ->leftJoin('sc.teacher', 'teacher')
             ->addSelect('lesson')
             ->addSelect('status')
             ->addSelect('room')
             ->addSelect('bookings')
             ->addSelect('client')
+            ->addSelect('teacher')
         ;
 
         $this->setFilters($query, $filterService);
@@ -64,7 +163,7 @@ class ScheduleRepository extends ServiceEntityRepository
 
         // Pagination process
         $paginator = new Paginator($query);
-        $paginator->getQuery()->setHydrationMode(AbstractQuery::HYDRATE_ARRAY);
+        $paginator->getQuery()->setHydrationMode($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
         $totalRegisters = $paginator->count();
 
         $result = [];

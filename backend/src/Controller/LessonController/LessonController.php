@@ -35,6 +35,22 @@ class LessonController extends AbstractController
 
     // ----------------------------------------------------------------
     /**
+     * EN: ENDPOINT TO GET ALL LESSONS BY USER ID
+     * ES: ENDPOINT PARA OBTENER TODAS LAS CLASES POR ID DE USUARIO
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/get-by-user', name: 'lesson_get_by_user', methods: ["POST"])]
+    #[Permission(group: 'lessons', action: 'list')]
+    public function getByUserId(): Response
+    {
+        return $this->lessonService->getByUserId();
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
      * EN: ENDPOINT TO SHOW A LESSON'S DATA
      * ES: ENDPOINT PARA MOSTRAR LA INFORMACIÓN DE UNA CLASE
      *

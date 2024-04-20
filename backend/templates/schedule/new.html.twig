@@ -1,0 +1,634 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Crear Mentoría{% endblock %}
+
+{% block page_title %}Crear Mentoría{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- Account Tab starts -->
+                <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
+
+                    <form class="event-form needs-validation w-100 row p-1" id="appointmentForm" data-ajax="false" method="POST">
+                        <input type="hidden" id="_method" name="_method" value="POST">
+                        <input type="hidden" id="token" name="_token" value="{{ csrf_token('new') }}">
+                        <input type="hidden" name="route" value="{{ path('appointment_list') }}">
+
+                        <div class="form-group m-b-15 position-relative col-md-4">
+                            <label for="roles">{{ 'Tipo de Mentoría'|trans }}</label>
+                            <select class="select2 form-select select-guests" id="services" name="appointment[services][]" required="required">
+                                <option disabled selected>{{ 'Select an option'|trans }}</option>
+                                {% for service in services %}
+                                    {% if service.forAdmin and app.user.isAdmin %}
+                                        <option id="service{{ service.id }}" value="{{ service.id }}" data-foradmin="{{ service.forAdmin }}" data-forclient="{{ service.forClient }}" data-price="{{ service.price }}" data-time="{{ service.neededTime|default(0) }}" data-division="{{ service.division ? service.division.id : '' }}"
+                                        >{{ service.name }}</option>
+                                    {%elseif service.forClient and app.user.isAdmin %}
+                                        <option id="service{{ service.id }}" value="{{ service.id }}" data-foradmin="{{ service.forAdmin }}" data-forclient="{{ service.forClient }}" data-price="{{ service.price }}" data-time="{{ service.neededTime|default(0) }}" data-division="{{ service.division ? service.division.id : '' }}"
+                                        >{{ service.name }}</option>
+                                    {% else %}
+                                        <option id="service{{ service.id }}" value="{{ service.id }}" data-foradmin="{{ service.forAdmin }}" data-forclient="{{ service.forClient }}" data-price="{{ service.price }}" data-time="{{ service.neededTime|default(0) }}" data-division="{{ service.division ? service.division.id : '' }}">
+                                            {{ service.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div id="field" class="form-group m-b-15 position-relative col-md-4">
+                            <label for="roles">{{ 'Centro'|trans }}</label>
+                            <select class="form-select select-guests" id="centers" name="appointment[center]">
+                                <option disabled selected>{{ 'Select an option'|trans }}</option>
+                                {% for center in centers %}
+                                    <option id="{{ center.id }}" value="{{ center.id }}">{{ center.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div id="field1" class="col-md-4 col-sm-12 form-group m-b-15 {% if app.user.isProject %} d-none {% endif %}">
+                            <label for="roles">Proyectos</label>
+                            <select class=" select2 select-guests form-select custom-validate" id="client" onchange="updateServices()" name="appointment[client]" {% if not app.user.isProject %} required="required" {% endif %}>
+                                <option value="" selected disabled>{{'Select an option'|trans}}</option>
+                                {% for client in clients %}
+                                    <option value="{{ client.id }}" data-user="{{ client.name }}" >{{ client.name }}</option>{# {{ client.getUser() ? client.getUser().fullName() : ('No ' ~ configuration.user_nomenclature ~ ' assigned')|trans }} #}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div id="field1_2" class="d-none col-md-8 col-sm-12 form-group m-b-15">
+                            <label for="roles">Proyectos</label>
+                            <select class=" select2 select-guests form-select custom-validate" id="clients" onchange="updateServices()" name="appointment[clients][]" multiple>
+                                {% for client in clients %}
+                                    <option value="{{ client.id }}" data-user="{{ client.name }}" >{{ client.name }}</option>{# {{ client.getUser() ? client.getUser().fullName() : ('No ' ~ configuration.user_nomenclature ~ ' assigned')|trans }} #}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if app.user.isProject %}
+                            {% for client in clients %}
+                                <input id="field5" type="hidden" name="appointment[client]" id="client" value="{{ client.id }}">
+                            {% endfor %}
+                        {% endif %}
+
+                        <div id="field2" class="form-group m-b-15 position-relative col-md-4">
+                            <label for="roles">{{ 'Área de Mentorización'|trans }}</label>
+                            <select class="form-select select-guests" id="areas" name="appointment[area]" required="required" onchange="updateMentores()">
+                                <option disabled selected>{{ 'Select an option'|trans }}</option>
+                                {% for area in areas %}
+                                    <option id="area{{ area.id }}" value="{{ area.id }}">{{ area.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div id="field3" class="col-md-4 col-sm-12 form-group m-b-15">
+                            <label for="roles">Mentor</label>
+                            <select class="select2 select-guests form-select custom-validate" id="user" name="appointment[user]">
+                                <option value="" selected disabled>{{'Select an option'|trans}}</option>
+                            </select>
+                        </div>
+                        <div id="field3_2" class="d-none col-md-8 col-sm-12 form-group m-b-15">
+                            <label for="roles">Mentor</label>
+                            <select class="select2 select-guests form-select custom-validate" id="users" name="appointment[users][]"  multiple>
+                                <option value="" selected disabled>{{'Select an option'|trans}}</option>
+                            </select>
+                        </div>
+
+                        <div id="field4" class="col-md-4 col-sm-12 form-group m-b-15">
+                            <label for="roles">Modalidad</label>
+                            <select class="select-guests form-select custom-validate" id="modality" name="appointment[modality]">
+                                <option value="presencial">Presencial</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <hr>
+                        </div>
+
+                        {% set eafCounter = 0 %}
+                        {% if extra_appointment_field_types[constant('App\\Entity\\ExtraAppointmentField\\ExtraAppointmentFieldType::POSITION_HEADER')]|length > 0 %}
+
+                            {% for extra_appointment_field_type in extra_appointment_field_types[constant('App\\Entity\\ExtraAppointmentField\\ExtraAppointmentFieldType::POSITION_HEADER')] %}
+
+                                <div class="form-group m-b-15 col-md-4 col-sm-6 {% if extra_appointment_field_type.division %}division-extra-field d-none{% endif %}" {% if extra_appointment_field_type.division %}data-division="{{ extra_appointment_field_type.division.id }}"{% endif %}>
+                                    <label class="form-control-label" for="{{ eafCounter }}">{{extra_appointment_field_type.name}}</label>
+                                    <input type="hidden" name="extra_appointment_fields[{{ eafCounter }}][title]" value="{{ extra_appointment_field_type.name}}">
+                                    <input type="hidden" name="extra_appointment_fields[{{ eafCounter }}][type]" value="{{ extra_appointment_field_type.type}}">
+                                    {% include 'extra_appointment_field/render_extra_appointment_field_form_field.html.twig' with {'entity': extra_appointment_field_type, 'formName': 'extra_appointment_fields[' ~ eafCounter ~ '][value]', 'id': eafCounter} %}
+                                </div>
+
+                                {% set eafCounter = eafCounter + 1 %}
+                            {% endfor %}
+                            <div class=" col-12"></div>
+                        {% endif %}
+
+                        <div class="form-group m-b-15 position-relative col-md-3">
+                            <label for="appointmentDate" class="form-label">{{ 'Date'|trans }}</label>
+                            <input  type="date" class="form-control" name="appointment[appointmentDate]" id="appointmentDate" placeholder="{{ 'Date'|trans }}" >
+                        </div>
+
+                        <div class="col-md-3 form-group m-b-15">
+                            <label for="schedule">{{ 'Schedule'|trans }}</label>
+                            <select class="select-guests form-select selectSchedules select2 select2-hidden-accessible"
+                                    id="schedule"
+                                    tabindex="-1"
+                                    aria-hidden="false">
+                            </select>
+                            <input type="hidden" class="custom-validate" name="appointment[schedules]" id="schedule-input">
+                            <input type="hidden" class="custom-validate" name="appointment[time_from]" id="timeFrom">
+                            <input type="hidden" class="custom-validate" name="appointment[time_to]" id="timeTo">
+                        </div>
+                        <div class="form-group m-b-15 position-relative col-md-2">
+                            {# <label for="roles">{{ 'Services Selected'|trans }}</label> #}
+                            <p class="text-left text-primary">
+                                <b>{{ 'Estimated Time'|trans }}:</b><br> <span id="totalServicesTime"></span>
+                                <br>
+                            </p>
+                        </div>
+
+                        <div class="form-group m-b-15 periodic d-none col-md-3 col-sm-6">
+                            <label for="periodicInterval" class="form-label">{{ 'Interval of weeks'|trans }}</label>
+                            <input type="number" step="1" min="0" class="form-control col-12" name="periodicInterval" id="periodicInterval" value="1">
+                        </div>
+
+                        <div class="form-group m-b-15 periodic d-none col-md-3 col-sm-6">
+                            <label for="periodicEnd" class="form-label">{{ 'End'|trans }}</label>
+                            <input type="text" class="form-control col-12" name="periodicEnd" id="periodicEnd">
+                        </div>
+
+                        {% if extra_appointment_field_types[constant('App\\Entity\\ExtraAppointmentField\\ExtraAppointmentFieldType::POSITION_FOOTER')]|length > 0 %}
+                            <div class="divider col-12"> <hr></div>
+                            {% for extra_appointment_field_type in extra_appointment_field_types[constant('App\\Entity\\ExtraAppointmentField\\ExtraAppointmentFieldType::POSITION_FOOTER')] %}
+
+                                <div class="form-group m-b-15 col-md-4 col-sm-6 {% if extra_appointment_field_type.division %}division-extra-field d-none{% endif %}" {% if extra_appointment_field_type.division %}data-division="{{ extra_appointment_field_type.division.id }}"{% endif %}>
+                                    <label class="form-control-label" for="{{ eafCounter }}">{{extra_appointment_field_type.name}}</label>
+                                    <input type="hidden" name="extra_appointment_fields[{{ eafCounter }}][title]" value="{{ extra_appointment_field_type.name}}">
+                                    <input type="hidden" name="extra_appointment_fields[{{ eafCounter }}][type]" value="{{ extra_appointment_field_type.type}}">
+                                    {% include 'extra_appointment_field/render_extra_appointment_field_form_field.html.twig' with {'entity': extra_appointment_field_type, 'formName': 'extra_appointment_fields[' ~ eafCounter ~ '][value]', 'id': eafCounter} %}
+                                </div>
+
+                                {% set eafCounter = eafCounter + 1 %}
+                            {% endfor %}
+                        {% endif %}
+
+                        <div class=" col-12 form-group m-b-15 d-flex justify-content-end p-1">
+
+                            <button type="submit" class="btn btn-primary add-event-btn mr-1">
+                                {{ 'Create'|trans }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script src="{{ asset('assets/js/calendar/fullcalendar2.min.js') }}"></script>
+    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
+    <script>
+
+        let calendarDate = null;
+        let availableDates = [];
+
+        function updateServices(){
+            let client = $('#client').val();
+
+            $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('service_get_by_client') }}",
+                data: {
+                    client: client
+                },
+                success: function(data){
+                    $('#service option').remove();
+                    $('#service').val(null).trigger('change').trigger('change.select2');
+                    data.forEach(service => {
+
+                        $('#schedule').append('<option value="'+service["id"]+'">'+service["name"]+'</option>').trigger('change').trigger('change.select2');
+
+                    });
+                }
+            });
+
+            $('#usersNames').val($('#client option:selected').attr('data-user'));
+
+        }
+
+
+        {% if selectedServices %}
+        $(document).ready(async function() {
+
+
+            await $('#client').val('{{ clientSelected }}').trigger('change.select2');
+            await $('#clients').val('{{ clientSelected }}').trigger('change.select2');
+
+            await $('#services').val({{ selectedServices|json_encode()|raw }}).trigger('change.select2');
+
+            updateTotalTime();
+            updateTotalPrice();
+            updateDivisionsDisplay();
+
+            await reinstanceCalendar();
+
+            let selectedDate = new Date('{{ selectedDate }}');
+            calendarDate.selectedDates[0] = selectedDate;
+            calendarDate.latestSelectedDateObj = selectedDate;
+            calendarDate.input.value = '{{ selectedDate }}';
+
+            updateSchedules();
+
+        });
+        {% endif %}
+
+        flatpickr('#periodicEnd', {
+            locale: locale,
+            dateFormat: "d-m-Y",
+            allowInput: true,
+            "disable": [
+                function(date) {
+                    if(date < new Date()){
+                        return true;
+                    }
+                }
+            ],
+        });
+        $('#periodicCheck').on('click', function () {
+
+            if($('#periodicCheck')[0].checked){
+                $('.periodic').removeClass('d-none');
+            }else{
+                $('.periodic').addClass('d-none');
+            }
+
+        })
+
+        $('#services').on('change', async function() {
+            updateTotalTime();
+            updateTotalPrice();
+            updateDivisionsDisplay();
+            checkServiceType();
+            //updateSchedules();
+        })
+
+        $('#user').on('change', async function(){
+            $('#users').empty();
+            await reinstanceCalendar();
+            updateServices();
+        })
+
+        $('#users').on('change', async function(){
+            $('#user').empty();
+            await reinstanceCalendar();
+            updateServices();
+        })
+
+
+
+
+        function updateTotalPrice()
+        {
+            let servicesSelected = $('#services option:selected');
+            let totalAmount = 0;
+            for (let i = 0; servicesSelected.length > i; i++){
+                totalAmount += parseFloat(servicesSelected[i].getAttribute('data-price'));
+            }
+            $('#totalServicesPrice').text(totalAmount.toFixed(2)+'€');
+
+        }
+
+        function updateDivisionsDisplay()
+        {
+            let servicesSelected = $('#services option:selected');
+            let divisions = [];
+            for (let i = 0; servicesSelected.length > i; i++){
+                divisions.push(parseInt(servicesSelected[i].getAttribute('data-division')));
+            }
+
+            divisions = divisions.filter((v, i, a) => a.indexOf(v) === i);
+
+            $('.division-extra-field').addClass('d-none').prop( "disabled", true );
+            for (let i = 0; i < divisions.length; i++) {
+                $('.division-extra-field[data-division="' + divisions[i] + '"]').prop( "disabled", false ).removeClass('d-none')
+            }
+
+        }
+
+        function updateTotalTime()
+        {
+            let servicesSelected = $('#services option:selected');
+            let totalTime = 0;
+
+            for (let i = 0; servicesSelected.length > i; i++){
+                totalTime += parseInt(servicesSelected[i].getAttribute('data-time'));
+            }
+
+            $('#totalServicesTime').text(totalTime + ' Minutos');
+        }
+
+        function checkServiceType()
+        {
+            let servicesSelected = $('#services option:selected');
+            let forAdmin = false;
+            let forClient = false;
+            for (let i = 0; servicesSelected.length > i; i++){
+                forAdmin = servicesSelected[i].getAttribute('data-foradmin');
+                forClient = servicesSelected[i].getAttribute('data-forclient');
+            }
+            if (!forAdmin){
+                document.getElementById('field3_2').classList.add('d-none')
+            }else{
+                document.getElementById('field3_2').classList.remove('d-none')
+            }
+
+            if (!forClient){
+                document.getElementById('field1_2').classList.add('d-none')
+            }else{
+                document.getElementById('field1_2').classList.remove('d-none')
+            }
+
+            for (let i = 0; 10>i; i++){
+                var element = document.getElementById('field'+i);
+                if (forAdmin && element!= null){
+                    document.getElementById('client').removeAttribute('required')
+
+                    if (element.id === "field1" && servicesSelected.text() ==="Diagnóstico"){
+                        element.style.display = 'inline';
+                    }else{
+                        element.style.display = 'none';
+                    }
+                    $.ajax({
+                        type: 'post',
+                        cache: "true",
+                        dataType: 'json',
+                        url: "{{ path('get_all_mentores') }}",
+                        data: {},
+                        success: function(data){
+                            var selectUser = $('#users');
+                            selectUser.empty(); // Limpia las opciones existentes
+
+                            // Agrega la opción predeterminada
+                            //selectUser.append('<option disabled selected>{{ 'Select an option'|trans }}</option>');
+                            data['mentores'].forEach(item => {
+                                // Agrega una nueva opción para cada elemento en el JSON
+                                selectUser.append('<option value="' + item.id + '">' + item.name + '</option>');
+                            });
+
+                        }
+                    })
+                    $("#users").select2({
+                        placeholder: "Selecciona Mentor"
+                    });
+                }else if (forClient && element!= null){
+                    document.getElementById('client').removeAttribute('required')
+                    if (element.id === "field2" || element.id === "field3"){
+                        element.style.display = 'inline';
+                    }else{
+                        element.style.display = 'none';
+                    }
+                    $("#clients").select2({
+                        placeholder: "Selecciona Proyecto"
+                    });
+                }else if (element!= null){
+                    updateMentores();
+                    document.getElementById('client').setAttribute('required', 'required')
+                    element.style.display = 'block';
+                }
+            }
+
+
+        }
+
+
+        function checkValues(){
+            // console.log('hola');
+            let schedulesInput = $('#schedulesDiv').find('.custom-validate');
+            console.log(schedulesInput);
+
+            if(schedulesInput.length > 0){
+                for (let i = 0; i < schedulesInput.length; i++) {
+
+                    if(!schedulesInput[i].value ){
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+        function updateMentores(){
+            var selectArea = document.getElementById('areas');
+            var areaId = selectArea.value;
+
+            $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('get_mentores_by_area') }}",
+                data: {
+                    area: areaId
+                },
+                success: function(data){
+                    var selectUser = $('#user');
+                    selectUser.empty();
+
+                    selectUser.append('<option disabled selected>{{ 'Select an option'|trans }}</option>');
+
+                    data['mentores'].forEach(item => {
+                        selectUser.append('<option value="' + item.id + '">' + item.name + '</option>');
+                    });
+
+                }
+            })
+        }
+
+        function updateSchedules(){
+            $('#schedule option').remove();
+            $('#schedule').removeAttr('disabled');
+
+            let day = calendarDate.latestSelectedDateObj;
+            let currDateLoop = day.getFullYear()+'-'+month_number(day)+'-'+day_of_the_month(day);
+
+            let serviceIds = $('#services').val();
+            let client = $('#client').val();
+
+            var userValue = $('#user').val();
+            var usersValue = $('#users').val();
+            let user = userValue
+
+            if (userValue === null || userValue === '') {
+                user = '{{ app.user.id }}'
+            } else if (Array.isArray(usersValue) && usersValue.length === 0) {
+                user = userValue
+            }
+
+            $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('schedules_get_availables') }}",
+                data: {
+                    user: user,
+                    selected_date: currDateLoop,
+                    selected_services: serviceIds,
+                    client: client
+                },
+                success: function(data){
+                    $('#schedule').append('<option disabled selected>{{ 'Select an option'|trans }}</option>');
+                    data['schedules'].forEach(schedule => {
+
+                        let timeMin = schedule['timeFrom']['date'].split(' ')[1].split(':')[0] + ':' + schedule['timeFrom']['date'].split(' ')[1].split(':')[1];
+                        let timeMax = schedule['timeTo']['date'].split(' ')[1].split(':')[0] + ':' + schedule['timeTo']['date'].split(' ')[1].split(':')[1];
+                        let user = schedule['user'];
+
+                        let exist = false;
+
+                        if(!exist){
+
+                            // $('#schedule').append('<option data-time-from="'+timeMin+'" data-time-to="'+timeMax+'" value="'+schedule['id']+'">'+timeMin+' - '+timeMax+' (' + user + ')</option>').trigger('change');
+                            $('#schedule').append('<option data-time-from="'+timeMin+'" data-time-to="'+timeMax+'" value="'+schedule['id']+'">'+timeMin+' - '+timeMax+'</option>').trigger('change');
+                            $('#schedule').on('change', function() {
+                                $('#schedule-input').val($('#schedule').val());
+                                $('#timeFrom').val($('#schedule option:selected').data('time-from'));
+                                $('#timeTo').val($('#schedule option:selected').data('time-to'));
+                            })
+                        }
+
+                    });
+                }
+            });
+
+        }
+
+
+
+        async function reinstanceCalendar()
+        {
+
+            let today = new Date()
+            let currentMonth = month_number(today);
+            let currentYear = today.getFullYear();
+            await getAvailableDates(currentMonth, currentYear);
+
+            calendarDate = await flatpickr('#appointmentDate',{
+                locale: locale,
+                firstDayOfWeek : 1,// start week on Monday,
+                disable: [
+                    function(date) {
+
+                        let dateFormatted = date.getFullYear() + '-' + month_number(date) + '-' + day_of_the_month(date);
+                        {% if not user.isSuperAdmin %}
+                        today.setHours(0, 0, 0, 0);
+                        if(!availableDates.includes(dateFormatted) || date < today){
+                            return true;
+                        }
+                        {% endif %}
+
+                    }
+                ],
+                onMonthChange: async function(){
+                    let month = ((calendarDate.currentMonth + 1) < 10 ? '0' : '') + (calendarDate.currentMonth + 1);
+                    let year = calendarDate.currentYear;
+
+                    await getAvailableDates(month, year);
+                    calendarDate.redraw()
+                },
+                onYearChange: async function(){
+                    let month = ((calendarDate.currentMonth) < 10 ? '0' : '') + (calendarDate.currentMonth);
+                    let year = calendarDate.currentYear;
+
+                    await getAvailableDates(month, year);
+                    calendarDate.redraw()
+                },
+                onChange: function (selectedDates, dateStr, instance) {
+
+                    updateSchedules()
+                }
+            });
+
+        }
+
+        async function getAvailableDates(month, year){
+            let serviceIds = $('#services').val();
+            let clientValue = $('#client').val();
+            let clientsValue = $('#clients').val();
+            var userValue = $('#user').val();
+            var usersValue = $('#users').val();
+            let user = userValue
+            let client = clientValue
+
+            if (userValue === null || userValue === '') {
+                user = '{{ app.user.id }}'
+            } else if (Array.isArray(usersValue) && usersValue.length === 0) {
+                user = userValue
+            }
+
+            if (Array.isArray(clientsValue) && clientsValue.length === 0) {
+                client = clientValue
+            }
+
+
+            availableDates = await $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('schedules_get_available_dates') }}",
+                data: {
+                    client: client,
+                    user: user,
+                    month: month,
+                    year: year
+                },
+                success: function (data) {
+
+                    return data;
+                }
+            });
+        }
+
+        function day_of_the_month(d)
+        {
+            return (d.getDate() < 10 ? '0' : '') + d.getDate();
+        }
+
+        function month_number(d)
+        {
+            let month = d.getMonth();
+            return ((month + 1) < 10 ? '0' : '') + (month+1);
+
+        }
+
+        function submitForm(){
+
+            if(checkValues()){
+                $('#appointmentForm').submit();
+            }else{
+                swal.fire({
+                    icon: 'error',
+                    title: '{{ 'Error'|trans }}',
+                    text: '{{ 'Not all fields have been filled in. Please double check the data you have entered'|trans }}.',
+                    timer: 3000,
+                    confirmButton: false
+                })
+            }
+        }
+
+
+    </script>
+{% endblock %}
+
+
+{% block action_buttons %}
+    <li class="level-menu outside">
+
+        <a class="nav-link cursor-pointer bg-primary-color" href="{{ userPermission.can('list', 'appointments') ? path('appointment_list') : '#' }}"  >
+            <i class="ficon" data-feather="chevron-left" style="stroke: white"></i>
+        </a>
+    </li>
+
+{% endblock %}
+

@@ -198,6 +198,12 @@ class CenterRepository extends ServiceEntityRepository
                     }
                 }
             }
+
+            $user = $filterService->getFilterValue('user');
+            if ($user !== null) {
+                $query->andWhere('users.id = :user')
+                    ->setParameter('user', $user);
+            }
         }
     }
     // --------------------------------------------------------------

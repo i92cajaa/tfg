@@ -155,7 +155,7 @@ An error occurred while retrieving appointments: An error occurred while retriev
 Copy Appointments: Copy Appointments
 A server error has occurred: A server error has occurred
 Tasks More: Tasks More
-Appointments More: Appointments More
+Schedules More: Schedules More
 Listing: Listing
 More: More
 Nothing: Nothing,
@@ -319,7 +319,7 @@ Date Range: Date Range
 Reset Filters: Reset Filters
 Order: Order
 Go: Go
-Fill in the data to load the appointment creation page: Fill in the data to load the appointment creation page
+Fill in the data to load the schedule creation page: Fill in the data to load the schedule creation page
 Enter the date on which you want to copy the appointments: Enter the date on which you want to copy the appointments
 The appointment will be deleted, this cannot be undone: The appointment will be deleted, this cannot be undone
 Change history: Change history

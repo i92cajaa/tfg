@@ -70,6 +70,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->leftJoin('userHasDocuments.document', 'document')
             ->leftJoin('u.lessons', 'userHasLessons')
             ->leftJoin('userHasLessons.lesson', 'lesson')
+            ->leftJoin('u.schedules', 'schedules')
             ->addSelect('imgProfile')
             ->addSelect('center')
             ->addSelect('userHasRoles')
@@ -81,44 +82,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->addSelect('document')
             ->addSelect('userHasLessons')
             ->addSelect('lesson')
+            ->addSelect('schedules')
             ->andWhere('u.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
     }
     // ----------------------------------------------------------------
-
-    public function getUserById(string $userId, ?bool $array = false)
-    {
-        try {
-            return $this->createQueryBuilder('u')
-                ->leftJoin('u.roles', 'role')
-                ->addSelect('role')
-                ->leftJoin('u.services', 'service')
-                ->addSelect('service')
-                ->leftJoin('u.schedules', 'schedules')
-                ->addSelect('schedules')
-                ->leftJoin('u.imgProfile', 'imgProfile')
-                ->addSelect('imgProfile')
-                ->where('u.id LIKE :id')
-                ->setParameter('id', $userId)
-                ->getQuery()->getOneOrNullResult($array ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
-        } catch (NonUniqueResultException $e) {
-            return $this->createQueryBuilder('u')
-                ->leftJoin('u.roles', 'role')
-                ->addSelect('role')
-                ->leftJoin('u.services', 'service')
-                ->addSelect('service')
-                ->leftJoin('u.schedules', 'schedules')
-                ->addSelect('schedules')
-                ->leftJoin('u.imgProfile', 'imgProfile')
-                ->addSelect('imgProfile')
-                ->where('u.id LIKE :id')
-                ->setParameter('id', $userId)
-                ->getQuery()->getResult($array ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT)[0];
-        }
-    }
-
 
     public function findUserByEmail(string $email)
     {
@@ -159,13 +129,34 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
    
-    public function findUsers(FilterService $filterService, $showAll = false)
+    public function findUsers(FilterService $filterService, $showAll = false): array
     {
 
         $query = $this->createQueryBuilder('u')
+            ->leftJoin('u.imgProfile', 'imgProfile')
             ->leftJoin('u.center', 'center')
-            ->leftJoin('u.roles', 'userHasRole')
-            ->leftJoin('userHasRole.role', 'role');
+            ->leftJoin('u.roles', 'userHasRoles')
+            ->leftJoin('userHasRoles.role', 'role')
+            ->leftJoin('u.permissions', 'userHasPermissions')
+            ->leftJoin('userHasPermissions.permission', 'permission')
+            ->leftJoin('u.notifications', 'notifications')
+            ->leftJoin('u.documents', 'userHasDocuments')
+            ->leftJoin('userHasDocuments.document', 'document')
+            ->leftJoin('u.lessons', 'userHasLessons')
+            ->leftJoin('userHasLessons.lesson', 'lesson')
+            ->leftJoin('u.schedules', 'schedules')
+            ->addSelect('imgProfile')
+            ->addSelect('center')
+            ->addSelect('userHasRoles')
+            ->addSelect('role')
+            ->addSelect('userHasPermissions')
+            ->addSelect('permission')
+            ->addSelect('notifications')
+            ->addSelect('userHasDocuments')
+            ->addSelect('document')
+            ->addSelect('userHasLessons')
+            ->addSelect('lesson')
+            ->addSelect('schedules');
 
 
 
@@ -176,29 +167,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                     ->setParameter('info', "%" . $filterService->getFilterValue('info') . "%");
             }
             if($filterService->getFilterValue('roles') != null){
-                $query->andWhere('userHasRole.role IN (:roles)')
+                $query->andWhere('userHasRoles.role IN (:roles)')
                     ->setParameter('roles', $filterService->getFilterValue('roles'));
             }
             if($filterService->getFilterValue('center') != null){
                 $query->andWhere('center.id LIKE :center')
                     ->setParameter('center',"%" . $filterService->getFilterValue('center') . "%");
-            }
-
-            if ($filterService->getFilterValue('service') != null) {
-                $where = 'service.id LIKE ';
-                $services = [];
-                foreach ($filterService->getFilterValue('service') as $index => $service) {
-                    if ($index == 0) {
-                        $where = $where . ':service' . $index;
-                    } else {
-                        $where = $where . ' OR service.id LIKE :service' . $index;
-                    }
-                    array_push($services, $service);
-                }
-                $query->orWhere($where);
-                foreach ($services as $index => $service) {
-                    $query->setParameter('service' . $index, "%" . $service . "%");
-                }
             }
 
             if ($filterService->getFilterValue('status') != null) {
@@ -227,9 +201,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                         break;
                     case "center":
                         $query->orderBy('center.name', $order['order']);
-                        break;
-                    case "appointmentColor":
-                        $query->orderBy('u.appointmentColor', $order['order']);
                         break;
                     case "roles":
                         $query->orderBy('role.name', $order['order']);
@@ -267,100 +238,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ];
     }
 
-    /**
-     * @param array $serviceIds
-     * @return User[] Returns an array of User objects
-     */
-    public function findUsersByServices(array $serviceIds): array
-    {
-        $query =  $this->createQueryBuilder('u')
-            ->join('u.services', 'userHasService')
-            ->join('userHasService.service', 'service')
-            ->join('u.schedules', 'schedule')
-            ->leftJoin('u.festives', 'festive')
-            ->join('u.roles', 'userHasRole')
-            ->join('userHasRole.role', 'role')
-            ->addSelect('userHasService')
-            ->addSelect('service')
-            ->addSelect('schedule')
-            ->addSelect('festive')
-            ->where("service.id IN(:serviceIds)")
-            ->andWhere("(
-                    SELECT COUNT(s1.id) 
-                    FROM App\Entity\Service\Service as s1 
-                    LEFT JOIN s1.professionals as uhs1
-                    LEFT JOIN uhs1.user as p1
-                    WHERE s1.id IN(:serviceIds) AND p1.id LIKE u.id
-                ) >= :servicesLength
-            ")
-            ->andWhere('role.id != :superadmin')
-            ->andWhere('u.status = 1')
-            ->setParameter('superadmin', Role::ROLE_SUPERADMIN)
-            ->setParameter('serviceIds', $serviceIds)
-            ->setParameter('servicesLength', count($serviceIds));
-
-        return $query->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @param array $serviceIds
-     * @return User[] Returns an array of User objects
-     */
-    public function findProfessionalByServices(array $serviceIds): array
-    {
-        $query =  $this->createQueryBuilder('u')
-            ->join('u.services', 'service')
-            ->join('u.roles', 'role')
-            ->addSelect('service')
-            ->where("(
-                    SELECT COUNT(s1.id) 
-                    FROM App\Entity\Service\Service as s1 
-                    LEFT JOIN s1.professionals as p1
-                    WHERE s1.id IN(:services) AND p1.id = u.id
-                ) = :servicesLength
-            ")
-            ->andWhere('role.id != :superadmin')
-            ->andWhere('u.status = 1')
-            ->setParameter('superadmin', Role::ROLE_SUPERADMIN)
-            ->setParameter('services', $serviceIds)
-            ->setParameter('servicesLength', sizeof($serviceIds));
-
-
-        return $query->getQuery()
-            ->getArrayResult();
-    }
-
-    /**
-     * @param array $serviceIds
-     * @return User[] Returns an array of User objects
-     */
-    public function findProfessionalByServicesAndDate(array $serviceIds, string $date): array
-    {
-        $datetime = UTCDateTime::setUTC(UTCDateTime::create('Y-m-d', $date));
-        $query =  $this->createQueryBuilder('u')
-            ->join('u.roles', 'userHasRole')
-            ->join('userHasRole.role', 'role')
-            ->join('u.services', 'service')
-            ->addSelect('service')
-            ->join('u.schedules', 'schedules', 'WITH', 'schedules.week_day = :weekDay')
-            ->where("(
-                    SELECT COUNT(s1.id) 
-                    FROM App\Entity\Service\Service as s1 
-                    LEFT JOIN s1.professionals as p1
-                    WHERE s1.id IN(:services) AND p1.id = u.id
-                ) = :servicesLength
-            ")
-            ->andWhere('u.status = 1')
-            ->setParameter('weekDay', $datetime->format('w'))
-            ->setParameter('services', $serviceIds)
-            ->setParameter('servicesLength', sizeof($serviceIds));
-
-
-        return $query->getQuery()
-            ->getArrayResult();
-    }
-
     public function findNonAdminUsers()
     {
         return $this->createQueryBuilder('u')
@@ -368,45 +245,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->join('userHasRole.role', 'role')
             ->join('u.services', 'service')
             ->andWhere('role.admin = 0')
-            ->andWhere('u.status = 1')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findMentorUsers()
-    {
-        return $this->createQueryBuilder('u')
-            ->join('u.roles', 'userHasRole')
-            ->join('userHasRole.role', 'role')
-            ->andWhere('role.id = 3')
-            ->andWhere('u.status = 1')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findMentorUsersByArea($id){
-        return $this->createQueryBuilder('u')
-            ->join('u.roles', 'userHasRole')
-            ->join('userHasRole.role', 'role')
-            ->join('u.areas','userHasArea')
-            ->join('userHasArea.area','area')
-            ->andWhere('area.id IN(:ids)')
-            ->setParameter('ids', $id)
-            ->andWhere('role.id = 3')
-            ->andWhere('u.status = 1')
-            ->getQuery()
-            ->getResult();
-
-    }
-
-    public function findDirector($centerId){
-        return $this->createQueryBuilder('u')
-            ->join('u.roles', 'userHasRole')
-            ->join('userHasRole.role', 'role')
-            ->join('u.center','center')
-            ->andWhere('center.id IN(:ids)')
-            ->setParameter('ids', $centerId)
-            ->andWhere('role.id = 2')
             ->andWhere('u.status = 1')
             ->getQuery()
             ->getResult();

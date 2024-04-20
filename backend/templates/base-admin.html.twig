@@ -141,7 +141,7 @@
                             {% endif %}
 
                             <li class="sidebar-list">
-                                <a href="#" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) == 'appointment_index' %}nav-active{% endif %}" data-original-title="" title="">
+                                <a href="{{ path('schedule_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) == 'schedule_index' %}nav-active{% endif %}" data-original-title="" title="">
                                     <i data-feather="calendar"></i>
                                     <span>{{ 'Calendar'|trans }}</span>
                                 </a>

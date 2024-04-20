@@ -1,0 +1,908 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'Calendar'|trans }}{% endblock %}
+
+{% block page_title %}{{ 'Calendar'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="app-calendar overflow-hidden border">
+            <div class="row no-gutters">
+                <!-- Calendar -->
+                <div class="col position-relative">
+                    <div class="card shadow-none border-0 mb-0 rounded-0">
+                        <div class="card-body pb-0">
+                            <div id="calendar"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Calendar -->
+                <div class="body-content-overlay"></div>
+            </div>
+        </div>
+
+    </div>
+    <form class="d-none" id="selectForm">
+
+    </form>
+
+    {% if userPermission.can('create', 'schedules') %}
+    <div class="modal fade" id="redirectToCreateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">{{ 'Create Schedule'|trans }}</h4>
+                    <button type="button" class="close btn btn-transparent" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body flex-grow-1 pb-sm-0 pb-3">
+                        <form class="event-form needs-validation" id="redirectToCreateForm" onsubmit="updateDates()" action="#" method="GET">
+                            <input type="hidden" id="referer" name="referer" value="{{ app.request.getUri() }}">
+                            <input type="hidden" id="scheduleDateModal" name="schedule_date">
+                            <h4>{{ 'Fill in the data to load the schedule creation page'|trans }}</h4>
+
+                            <div class="form-group position-relative col-md-12 m-t-10">
+                                <label for="userCreateModal">{{ 'User'|trans }}</label>
+                                <select class="select2 select-guests" name="user" onchange="changeUserCreateModal()" id="userCreateModal">
+                                    {% if app.user.isTeacher() %}
+                                        <option value="{{ app.user.getId() }}" selected >{{ app.user.fullName }}</option>
+                                    {% else %}
+                                        <option value="" selected disabled>{{ 'Select an option'|trans }}</option>
+                                        {% for user in users %}
+                                            {% if user.isTeacher %}
+                                                <option value="{{ user.id }}">{{ user.fullName }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <div class="form-group position-relative col-md-12 m-t-10">
+                                <label for="lessonModal">{{ 'Lessons'|trans }}</label>
+                                <select class="select2 select-guests" name="lesson" id="lessonModal">
+
+                                </select>
+                            </div>
+
+                            <div class="form-group position-relative col-md-12 m-t-10">
+                                <label for="roomModal">{{ 'Rooms'|trans }}</label>
+                                <select class="select2 select-guests" name="room" id="roomModal">
+
+                                </select>
+                            </div>
+
+                            <div class="form-group d-flex flex-column flex-md-row mt-3 gap-2 ">
+                                <div class="col-md-6 text-start">
+                                    <button type="submit" class="btn btn-primary add-event-btn mr-1">{{ 'Go'|trans }}</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-cancel" data-bs-dismiss="modal">
+                                        {{ 'Cancel'|trans }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <!-- Full calendar end -->
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside d-flex flex-row" >
+        {% if userPermission.can('create', 'schedules') %}
+            <a class="nav-link d-flex flex-row" href="{#{{ path('schedule_new') }}?referer={{ app.request.getUri() }}#}#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Crear horario">
+                <i class="ficon" data-feather="plus-circle"></i><div class="d-none d-md-block">Horario</div>
+            </a>
+        {% endif %}
+
+    </li>
+{% endblock %}
+
+{% block stylesheets %}
+
+    <link rel="stylesheet" type="text/css"
+          href="{{ asset('assets/css/vendors/calendar/fullcalendar2.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/calendar/app-calendar.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/jquery.contextMenu.min.css') }}">
+    <style>
+        .fc-more-popover {
+            max-height: 65%;
+            overflow-y: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/js/calendar/fullcalendar2.min.js') }}"></script>
+    <script src="{{ asset('assets/js/calendar/locales-all.min.js') }}"></script>
+    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.contextMenu.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery-ui/jquery.ui.position.min.js') }}"></script>
+    <script src="{{ asset('assets/js/lockr/lockr.js') }}"></script>
+
+    <script>
+        let calendar = null;
+        let calendarDate = null;
+
+        const filterForm = document.getElementById('filter_form');
+
+        const EVENT_CALENDAR_KEY_DATES = "{{ configuration.app_name|replace({' ': "_" }) }}_calendar_dates";
+        const EVENT_CALENDAR_VIEW = "{{ configuration.app_name|replace({' ': "_" }) }}_calendar_view";
+
+        function focusSpecificDate(date){
+            calendar.gotoDate(date);
+        }
+
+        function changeOrder(eventOrder){
+            if(!eventOrder){
+                eventOrder = 'start';
+            }
+            calendar.setOption('eventOrder', eventOrder);
+        }
+
+        function updateDates()
+        {
+            if(calendar){
+                let dateFrom = calendar.getDate();
+                setCalendarSavedDates(
+                    moment(dateFrom).startOf('month').format('DD-MM-YYYY'),
+                    moment(dateFrom).clone().endOf('month').format('DD-MM-YYYY')
+                );
+            }
+        }
+
+        const getCalendarSavedDates = () => {
+            let selectedDates = Lockr.get(EVENT_CALENDAR_KEY_DATES);
+            let dateFrom = moment().clone().startOf('month').format('DD-MM-YYYY');
+            let dateTo = moment().clone().endOf('month').format('DD-MM-YYYY');
+            let expire = moment().clone().endOf('year').toString();
+            document.cookie = "{{ configuration.app_name|replace({' ': "_" }) }}_date_from=" + dateFrom + "; expires="+expire;
+            document.cookie = "{{ configuration.app_name|replace({' ': "_" }) }}_date_to=" + dateTo + "; expires="+expire;
+            if(typeof selectedDates !== "undefined") {
+                return selectedDates;
+            } else {
+                Lockr.set(EVENT_CALENDAR_KEY_DATES, {
+                    dateFrom: moment().clone().startOf('month').format('DD-MM-YYYY'),
+                    dateTo: moment().clone().endOf('month').format('DD-MM-YYYY'),
+                });
+                return Lockr.get(EVENT_CALENDAR_KEY_DATES);
+            }
+        }
+
+
+        const setCalendarSavedDates = (dateFrom, dateTo) => {
+            $('#date_from').val(dateFrom);
+            $('#date_to').val(dateTo);
+            Lockr.set(EVENT_CALENDAR_KEY_DATES, {
+                dateFrom,
+                dateTo
+            });
+        }
+
+        const setCalendarView = (view) => {
+            Lockr.set(EVENT_CALENDAR_VIEW, view);
+        }
+
+        const getCalendarView = () => {
+            let calendarView = Lockr.get(EVENT_CALENDAR_VIEW);
+            if(typeof  calendarView !== 'undefined')
+                return calendarView;
+            else
+                return 'dayGridMonth';
+        }
+
+
+        const getEventsFromFilter = (info, successCallback, failureCallback) => {
+            console.log(info);
+            if(typeof info !== "undefined") {
+                setCalendarSavedDates(
+                    moment(info.start).format('DD-MM-YYYY'),
+                    moment(info.end).format('DD-MM-YYYY')
+                );
+            }
+            let formData = $(filterForm).serialize();
+            getEvents(formData).then(schedules => {
+                console.log(typeof successCallback);
+                if(typeof successCallback !== "undefined") {
+                    successCallback([...schedules]);
+                }
+            });
+        }
+
+        const getEvents = (formData) => {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: '{{ path('schedule_get_json') }}',
+                    type: 'get',
+                    data: formData,
+                    success: (response) => {
+                        if(response.success) {
+                            resolve(response.data);
+                        } else {
+
+                        }
+                    },
+                    error: (err) => {
+
+                    }
+                });
+            });
+        }
+
+        const detectCalendarChangedDate = () => {
+
+            let date = calendar.getDate();
+            let dateFrom = moment(date).clone().startOf('month').format('DD-MM-YYYY');
+            let dateTo = moment(date).clone().endOf('month').format('DD-MM-YYYY');
+            setCalendarSavedDates(dateFrom, dateTo);
+        }
+
+        // detect change on any field for submit filter form
+        $(function () {
+
+            $('.select2').select2();
+            $('.select2').on('change.select2', function () {
+                calendar.refetchEvents()
+            });
+            $('#resetFilters').on('click', function () {
+                window.location.href = "{{ path('schedule_index') }}";
+            })
+            $('.type-filter').change(function () {
+                calendar.refetchEvents()
+            });
+            $('.title-filter').change(function () {
+                calendar.refetchEvents()
+            });
+
+        });
+
+        $(document).on('click', '.fc-sidebarToggle-button', function (e) {
+            $('.app-calendar-sidebar, .body-content-overlay').addClass('show');
+
+        });
+
+        $(document).on('click', '.body-content-overlay', function (e) {
+            $('.app-calendar-sidebar, .body-content-overlay').removeClass('show');
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let calendarEl = document.getElementById('calendar'),
+                toggleSidebarBtn = $('.btn-toggle-sidebar')
+            ;
+
+            // Event click function
+            function eventClick(info) {
+                let eventToUpdate = info.event;
+                let scheduleId = eventToUpdate.extendedProps.id;
+
+                window.location.href = "{{ path('schedule_show') }}/" + scheduleId;
+            }
+
+            // Modify sidebar toggler
+            function modifyToggler() {
+                $('.fc-sidebarToggle-button')
+                    .empty()
+                    // .append(feather.icons['filter'].toSvg({class: 'ficon'}));
+            }
+
+            // Calendar plugins
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: getCalendarView(),
+                schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+                buttonText: {
+                    'day': '{{ 'Day'|trans }}',
+                    'month': '{{ 'Month'|trans }}',
+                    'list': '{{ 'Listing'|trans }}',
+                    'week': '{{ 'Week'|trans }}'
+                },
+                //displayEventTime : false
+                editable: false,
+                locale: locale,
+                locales:locale,
+                slotDuration: '{% if app.user.calendarInterval %}{{ app.user.calendarInterval|date('H:i:s') }}{% elseif configuration.calendar_interval %}{{ configuration.calendar_interval|date('H:i:s') }}{% else %}00:15:00{% endif %}',
+                timeZone: 'local',
+                firstDay: 1,
+                eventResizableFromStart: true,
+                eventColor: 'white',
+                customButtons: {
+                    sidebarToggle: {
+                        text: 'Sidebar'
+                    }
+                },
+                headerToolbar: {
+                    start: 'sidebarToggle, prev,next, title',
+                    end: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                },
+                initialDate: moment().format('YYYY-MM-DD'),
+                eventTimeFormat: { // like '14:30:00'
+                    hour: '2-digit',
+                    minute: '2-digit'
+                },
+                views: {
+                    dayGridMonth: {
+                        dayMaxEventRows: 5,
+                        moreLinkContent: function (object) {
+                            const {num} = object;
+                            return num+" {{ 'Schedules More'|trans }}";
+
+
+                        },
+                    }
+                },
+                navLinks: true, // can click day/week names to navigate views
+                events: getEventsFromFilter,
+                eventDidMount: function(event) { //Run when events are rendered
+                    event.el.className = event.el.className + " context-menu-one";
+                    event.el.setAttribute('data-id', event.event._def.extendedProps.id);
+                    event.el.style.borderColor = event.event._def.extendedProps.borderColor;
+                    event.el.style.backgroundColor = event.event._def.extendedProps.backgroundColor;
+                },
+                eventClassNames: function ({event: calendarEvent}) {
+                    //const colorName = calendarsColor[calendarEvent._def.extendedProps.calendar];
+
+                    return [
+                        'eventCalendar'
+                    ]
+                },
+                eventClick: function (info) {
+                    eventClick(info);
+
+                },
+                dateClick: function(info) {
+                    let date = moment(info.dateStr);
+                    $('#scheduleDateModal').val(date.format('YYYY-MM-DD'));
+                    $('#lessonModal option').remove();
+
+                    calendarDate = date;
+
+
+                    {% if userPermission.can('create', 'schedules') %}
+                    changeUserCreateModal()
+                    $('#redirectToCreateModal').modal('show');
+                    {% endif %}
+                    {#window.location.href = "{{ path('schedule_new') }}?referer={{ app.request.getUri() }}&schedule_date="+date.format('DD-MM-YYYY');#}
+                },
+                datesSet: function () {
+                    modifyToggler();
+                },
+                viewClassNames: function (e) {
+                    setCalendarView(e.view.type);
+                },
+                viewDidMount: (view) => {
+                    modifyToggler();
+                    detectCalendarChangedDate();
+                    getEventsFromFilter();
+                    // Cuando se pulsa en el botón de anterior,
+                    $('.fc-prev-button').off('click');
+                    $('.fc-prev-button').click(function(){
+                        detectCalendarChangedDate();
+                        getEventsFromFilter();
+                    });
+
+                    $('.fc-next-button').off('click');
+                    $('.fc-next-button').click(function(){
+                        detectCalendarChangedDate();
+                        getEventsFromFilter();
+                    });
+
+
+                }
+            });
+            // Render calendar
+            calendar.render();
+            // Modify sidebar toggler
+            modifyToggler();
+
+            // Sidebar Toggle Btn
+            if (toggleSidebarBtn.length) {
+                toggleSidebarBtn.on('click', function () {
+                    cancelBtn.removeClass('d-none');
+                });
+            }
+
+        });
+
+        {% if userPermission.can('create', 'schedules') %}
+        function changeUserCreateModal(){
+            $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('lesson_get_by_user') }}",
+                data: {
+                    user: $('#userCreateModal').val(),
+                    _token: '{{ csrf_token('get-lessons-by-user') }}'
+                },
+                success: function(data){
+
+                    $('#lessonModal option').remove();
+                    data['lessons'].forEach(lesson => {
+
+                        $('#lessonModal').append('<option value="'+lesson['id']+'">'+lesson['name']+'</option>').trigger('change');
+
+                    });
+                }
+            });
+
+            $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('room_get_by_user') }}",
+                data: {
+                    user: $('#userCreateModal').val(),
+                    _token: '{{ csrf_token('get-rooms-by-user') }}'
+                },
+                success: function(data){
+
+                    $('#roomModal option').remove();
+                    data['rooms'].forEach(room => {
+
+                        $('#roomModal').append('<option value="'+room['id']+'">Planta '+room['floor']+', habitación'+room['number']+'</option>').trigger('change');
+
+                    });
+                }
+            });
+        }
+        {% endif %}
+
+        $(function() {
+            $.contextMenu({
+                selector: '.fc-event',
+                callback: function(key, options) {
+
+                    let date = calendar.getDate();
+                    let dateFrom =  moment(date).clone().startOf('month').format('DD-MM-YYYY');
+                    let dateTo =  moment(date).clone().endOf('month').format('DD-MM-YYYY');
+                    let scheduleId = this[0].getAttribute('data-id');
+
+                    setCalendarSavedDates(dateFrom, dateTo);
+
+                    if(key === 'show') {
+                        {% if userPermission.can('show', 'appointments') %}
+                            window.location.href = "{{ path('appointment_show') }}/" + scheduleId;
+                        {% endif %}
+                    }else if(key === 'edit'){
+                        {% if userPermission.can('edit', 'appointments') %}
+                            window.location.href = "{{ path('appointment_edit') }}/" + scheduleId;
+                        {% endif %}
+                    }else if(key === 'complete'){
+                        {% if userPermission.can('edit', 'appointments') %}
+                            completeAppointment(scheduleId);
+                        {% endif %}
+                    }else if(key === 'liberate'){
+                        {% if userPermission.can('edit', 'appointments') %}
+                            liberateAppointment(scheduleId)
+                        {% endif %}
+                    }else if(key === 'copy'){
+                        {% if userPermission.can('create', 'appointments') %}
+                            copyAppointment(scheduleId);
+                        {% endif %}
+                    }else if(key === 'delete'){
+                        {% if userPermission.can('delete', 'appointments') %}
+                            deleteAppointment(scheduleId)
+                        {% endif %}
+                    }
+                    return true;
+
+                },
+                items: {
+                    {% if userPermission.can('show', 'appointments') %}
+                    "show": {
+                        name: "{{ 'Show'|trans }}",
+                        icon: function(opt, $itemElement, itemKey, item){
+                            // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                            $itemElement.html("<i data-feather='eye'></i> {{ 'Show'|trans }}" );
+
+                            if (feather) {
+                                feather.replace({
+                                    width: 14,
+                                    height: 14
+                                });
+                            }
+                            // Add the context-menu-icon-updated class to the item
+                            return 'context-menu-icon-updated';
+                        }
+                    },
+                    {% endif %}
+                    {% if userPermission.can('edit', 'appointments') %}
+                    "edit": {
+                        name: "{{ 'Edit'|trans }}",
+                        icon: function(opt, $itemElement, itemKey, item){
+                            // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                            $itemElement.html("<i data-feather='edit'></i> {{ 'Edit'|trans }}" );
+
+                            if (feather) {
+                                feather.replace({
+                                    width: 14,
+                                    height: 14
+                                });
+                            }
+                            // Add the context-menu-icon-updated class to the item
+                            return 'context-menu-icon-updated';
+                        }
+                    },
+                    "complete": {
+                        name: "{{ 'Complete'|trans }}",
+                        icon: function(opt, $itemElement, itemKey, item){
+                            // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                            $itemElement.html("<i data-feather='check-square'></i> {{ 'Complete'|trans }}" );
+
+                            if (feather) {
+                                feather.replace({
+                                    width: 14,
+                                    height: 14
+                                });
+                            }
+                            // Add the context-menu-icon-updated class to the item
+                            return 'context-menu-icon-updated';
+                        }
+                    },
+                    "liberate": {
+                        name: "{{ 'Liberate'|trans }}",
+                        icon: function(opt, $itemElement, itemKey, item){
+                            // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                            $itemElement.html("<i data-feather='unlock'></i> {{ 'Liberate'|trans }}" );
+
+                            if (feather) {
+                                feather.replace({
+                                    width: 14,
+                                    height: 14
+                                });
+                            }
+                            // Add the context-menu-icon-updated class to the item
+                            return 'context-menu-icon-updated';
+                        }
+                    },
+
+                    {% endif %}
+                    {% if userPermission.can('create', 'appointments') %}
+                    "copy": {
+                        name: "{{ 'Copy'|trans }}",
+                        icon: function(opt, $itemElement, itemKey, item){
+                            // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                            $itemElement.html("<i data-feather='clipboard'></i> {{ 'Copy'|trans }}");
+
+                            if (feather) {
+                                feather.replace({
+                                    width: 14,
+                                    height: 14
+                                });
+                            }
+                            // Add the context-menu-icon-updated class to the item
+                            return 'context-menu-icon-updated';
+                        }
+                    },
+                    {% endif %}
+                    {% if userPermission.can('delete', 'appointments') %}
+                    "sep1": "---------",
+                    "delete": {
+                        name: "{{ 'Delete'|trans }}",
+                        icon: function(opt, $itemElement, itemKey, item){
+                            // Set the content to the menu trigger selector and add an bootstrap icon to the item.
+                            $itemElement.html("<i data-feather='delete'></i> {{ 'Delete'|trans }}");
+
+                            if (feather) {
+                                feather.replace({
+                                    width: 14,
+                                    height: 14
+                                });
+                            }
+                            // Add the context-menu-icon-updated class to the item
+                            return 'context-menu-icon-updated';
+                        }
+                    }
+                    {% endif %}
+                }
+            });
+        });
+
+        {% if userPermission.can('create', 'appointments') %}
+        let selectedServices = [];
+        let selectedServicesFormatted = [];
+
+        flatpickr('#quickDateSelect', {
+            locale: locale,
+            dateFormat: "d-m-Y",
+            inline: true,
+            onChange: function(dateStr) {
+                focusSpecificDate(dateStr[0]);
+            }
+        });
+
+        function updateDisplayServices()
+        {
+            let formatted = [];
+            let badgeList = $('#serviceBadgeList');
+
+            badgeList.children().remove();
+
+            for(let i = 0; i < selectedServices.length; i++) {
+                let service = selectedServices[i];
+                service['count'] = 1;
+
+                if(!formatted[service['id']]){
+                    formatted[service['id']] = service;
+                }else{
+                    formatted[service['id']]['count']++;
+                }
+
+            }
+
+            selectedServicesFormatted = formatted;
+
+
+            formatted.forEach(function(service){
+                badgeList.append(`<span class="badge bg-primary mr-1">${service['name']} x${service['count']} <span class="cursor-pointer" onclick="deleteService(${service['id']})"><i data-feather="delete"></i></span></span>`)
+            })
+
+            if (feather) {
+                feather.replace({
+                    width: 14,
+                    height: 14
+                });
+            }
+
+        }
+
+        function deleteService(service)
+        {
+
+            if(selectedServices.length > 0){
+                for (let i = 0; selectedServices.length > i; i++){
+                    if(selectedServices[i]['id'] == service){
+                        selectedServices.splice(i, 1)
+                        break;
+                    }
+                }
+
+                updateDisplayServices();
+            }
+        }
+
+        async function copyAppointment(id) {
+
+            let responseData = null;
+
+            swal.fire({
+                title: '{{ "Copy Appointments"|trans }}',
+                /*
+                text: 'Introduce la fecha en la que quieres copiar las citas',
+                input: 'text',
+                inputAttributes: {
+                    id: 'swal-input-date'
+                },
+                */
+                html:
+                    '<div id="swal2-content" class="swal2-html-container" style="display: block;">{{ 'Enter the date on which you want to copy the appointments'|trans }}</div>' +
+                    '<input id="swal-input-date" class="swal2-input">' +
+                    '<div id="swal2-content2" class="swal2-html-container" style="display: block;">{{ 'Schedule'|trans }}</div>' +
+                    '<select id="swal-input-schedule" class="swal2-input select2"></select>'
+                ,
+                showCancelButton: true,
+                confirmButtonText: '{{ 'Copy'|trans }}',
+                cancelButtonText: '{{ 'Cancel'|trans }}',
+                showLoaderOnConfirm: true,
+                didOpen: () => {
+                    flatpickr('#swal-input-date', {
+                        locale: locale,
+                        dateFormat: "d-m-Y",
+                        "disable": [
+                            function(date) {
+                                if(date < new Date()){
+                                    return true;
+                                }
+
+                            }
+                        ],
+                    });
+
+                    $('#swal-input-date').on('change', function(){
+                        $.ajax({
+                            type: 'post',
+                            cache: "true",
+                            dataType: 'json',
+                            url: "{{ path('schedules_get_availables_by_appointment_and_date') }}",
+                            data: {
+                                date: $('#swal-input-date').val(),
+                                id: id
+                            },
+                            success: function (data) {
+                                $('#swal-input-schedule option').remove();
+
+                                data.forEach(schedule => {
+                                    let timeMin = schedule['time_from']['date'].split(' ')[1].split(':')[0] + ':' + schedule['time_from']['date'].split(' ')[1].split(':')[1];
+                                    let timeMax = schedule['time_to']['date'].split(' ')[1].split(':')[0] + ':' + schedule['time_to']['date'].split(' ')[1].split(':')[1];
+
+                                    $('#schedule').append('<option data-time-from="'+timeMin+'" data-time-to="'+timeMax+'" value="'+schedule['id']+'">'+timeMin+' - '+timeMax+'</option>').trigger('change');
+
+                                });
+
+                            }
+                        });
+                    });
+                },
+                preConfirm: async (result) => {
+                    let date = $('#swal-input-date').val();
+                    let schedule = $('#swal-input-schedule').val();
+
+                    if (result) {
+                        let ajaxData =
+                            await $.ajax({
+                                type: 'post',
+                                cache: "true",
+                                dataType: 'json',
+                                url: "{{ path('copy_appointment') }}/"+id,
+                                data: {
+                                    date: date,
+                                    schedule: schedule
+                                },
+                                success: function (data) {
+                                    return data;
+
+                                }
+                            });
+                        return ajaxData;
+                    }
+
+                    return responseData;
+
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    if(result.value['errors'].length == 0){
+                        Swal.fire({
+                            title: '{{ 'Copied'|trans }}',
+                            text: '{{ 'Selected appointments have been copied'|trans }}.',
+                            icon: 'success'
+                        });
+                    }else{
+                        let list = '';
+                        for (let i = 0; i < result.value['errors'].length; i++) {
+                            list += '<li>'+result.value['errors'][i]+'</li>';
+                        }
+
+                        Swal.fire({
+                            title: '{{ 'Copied'|trans }}',
+                            text: '{{ 'Selected appointments have been copied'|trans }}.',
+                            icon: 'success'
+                        }).then((result2) => {
+                            Swal.fire({
+                                title: '{{ 'Info'|trans }}',
+                                icon: 'info',
+                                html:
+                                    '<ul>' +
+                                    list +
+                                    '</ul>'
+                            })
+                        })
+                    }
+
+                }
+            })
+
+        }
+        {% endif %}
+
+        {% if userPermission.can('edit', 'appointments') %}
+        function completeAppointment(id){
+            let form = document.getElementById('selectForm');
+            form.method =  "POST";
+            form.action = "{{ path('change_status_appointment') }}/"+id;
+
+            let method = document.createElement("input");
+            method.type = "text";
+            method.name =  "method";
+            method.value = "POST";
+
+            let token = document.createElement("input");
+            token.type = "text";
+            token.name =  "_token";
+            token.value = "{{ csrf_token('change-status') }}";
+
+            let status = document.createElement("input");
+            status.type = "text";
+            status.name =  "status";
+            status.value = "3";
+
+
+            form.appendChild(method);
+
+            form.appendChild(token);
+
+            form.appendChild(status);
+
+            form.submit();
+
+        }
+        {% endif %}
+
+        {% if userPermission.can('edit', 'appointments') %}
+        function liberateAppointment(id){
+            let form = document.getElementById('selectForm');
+            form.method =  "POST";
+            form.action = "{{ path('change_status_appointment') }}/"+id;
+
+            let method = document.createElement("input");
+            method.type = "text";
+            method.name =  "method";
+            method.value = "POST";
+
+            let token = document.createElement("input");
+            token.type = "text";
+            token.name =  "_token";
+            token.value = "{{ csrf_token('liberate') }}";
+
+            let status = document.createElement("input");
+            status.type = "text";
+            status.name =  "status";
+            status.value = "1";
+
+            form.appendChild(method);
+
+            form.appendChild(token);
+
+            form.appendChild(status);
+
+            form.submit();
+
+        }
+        {% endif %}
+
+        {% if userPermission.can('delete', 'appointments') %}
+        function deleteAppointment(id){
+            Swal.fire({
+                title: '{{ 'Are You Sure?'|trans }}',
+                text: '{{ 'The appointment will be deleted, this cannot be undone'|trans }}',
+                showCancelButton: true,
+                confirmButtonText: '{{ 'Delete'|trans }}',
+                cancelButtonText: `{{ 'Cancel'|trans }}`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+
+                    let form = document.getElementById('selectForm');
+                    form.method =  "POST";
+                    form.action = "{{ path('appointment_delete') }}/"+id;
+
+                    let method = document.createElement("input");
+                    method.type = "text";
+                    method.name =  "method";
+                    method.value = "DELETE";
+
+                    let token = document.createElement("input");
+                    token.type = "text";
+                    token.name =  "_token";
+                    token.value = "{{ csrf_token('delete') }}";
+
+                    let url = document.createElement("input");
+                    url.type = "text";
+                    url.name =  "url";
+                    url.value = "{{ app.request.uri }}";
+
+
+                    form.appendChild(method);
+
+                    form.appendChild(token);
+
+                    form.appendChild(url);
+
+                    form.submit();
+
+                }
+            })
+
+
+        }
+        {% endif %}
+
+
+    </script>
+
+{% endblock %}

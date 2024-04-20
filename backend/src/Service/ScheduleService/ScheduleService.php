@@ -3,9 +3,14 @@
 namespace App\Service\ScheduleService;
 
 use App\Repository\ScheduleRepository;
+use App\Repository\StatusRepository;
+use App\Repository\UserRepository;
 use App\Shared\Classes\AbstractService;
+use App\Shared\Classes\UTCDateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
@@ -20,6 +25,8 @@ class ScheduleService extends AbstractService
 
     public function __construct(
         private readonly ScheduleRepository $scheduleRepository,
+        private readonly UserRepository $userRepository,
+        private readonly StatusRepository $statusRepository,
         EntityManagerInterface $em,
         RouterInterface $router,
         Environment $twig,
@@ -54,17 +61,102 @@ class ScheduleService extends AbstractService
     // ----------------------------------------------------------------
     public function index(): Response
     {
+        $users = [];
+
+        if ($this->getUser()->isTeacher()) {
+            $this->filterService->addFilter('users', [$this->getUser()->getId()]);
+            $this->filterService->addFilter('status', true);
+        }else{
+            $users = $this->userRepository->findAll();
+        }
+
+        $from = (UTCDateTime::create())->modify('first day of this month')->format('d-m-Y');
+        $to = (UTCDateTime::create())->modify('last day of this month')->format('d-m-Y');
+
+        $this->filterService->addFilter('min_date', $from);
+        $this->filterService->addFilter('max_date', $to);
+
         $schedules = $this->scheduleRepository->findSchedules($this->filterService, true);
 
-        dd($schedules);
+        return $this->render('schedule/index.html.twig', [
+            'schedules' => $schedules,
+            'users' => $users,
+            'filterService' => $this->filterService
+        ]);
+    }
+    // ----------------------------------------------------------------
 
-        return $this->render('schedules/index.html.twig', [
-            'area' => $areas,  // Asegúrate de que esta variable esté definida
-            'totalResults' => $areas['totalRegisters'],
-            'lastPage' => $areas['lastPage'],
-            'currentPage' => $this->filterService->page,
-            'areas' => $areas['areas'],
-            'filterService' => $this->filterService,
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO GET ALL EVENTS FROM SCHEDULES
+     * ES: SERVICIO PARA OBTENER LOS EVENTOS DE TODOS LOS HORARIOS
+     *
+     * @return array
+     */
+    // ----------------------------------------------------------------
+    public function getEventsSchedulesFromRequest(): array
+    {
+        $this->filterService->setLimit(5000);
+        $isSuperAdmin = false;
+
+        if ($this->getUser()->isSuperAdmin()) {
+            $isSuperAdmin = true;
+        } else {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+            $this->filterService->addFilter('user', $this->getUser()->getId());
+        }
+
+        $this->filterService->addFilter('dateRange', $this->filterService->getFilterValue('date_from') . ' a ' . $this->filterService->getFilterValue('date_to'));
+        $this->filterService->addFilter('date_from', null);
+        $this->filterService->addFilter('date_to', null);
+
+        $schedules = $this->scheduleRepository->findSchedules($this->filterService, true)['schedules'];
+
+        return [
+            'success' => true,
+            'message' => 'OK',
+            'data'    => $this->formatSchedulesToEvents($schedules, $isSuperAdmin)
+        ];
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO FORMAT SCHEDULES INTO EVENTS
+     * ES: SERVICIO PARA FORMATEAR HORARIOS A EVENTOS
+     *
+     * @param array $schedules
+     * @param bool $isSuperAdmin
+     * @return array
+     */
+    // ----------------------------------------------------------------
+    public function formatSchedulesToEvents(array $schedules, bool $isSuperAdmin = false): array
+    {
+        $scheduleEvents = [];
+        foreach ($schedules as $schedule) {
+            $scheduleEvents[] = $schedule->toEvent($isSuperAdmin);
+        }
+        return $scheduleEvents;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO SHOW A SCHEDULE'S DATA
+     * ES: SERVICIO PARA MOSTRAR LOS DATOS DE UN HORARIO
+     *
+     * @param string $scheduleId
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function show(string $scheduleId): Response
+    {
+        $schedule = $this->scheduleRepository->findById($scheduleId, false);
+
+        return $this->render('schedule/show.html.twig', [
+            'schedule' => $schedule,
+            'statuses' => $this->statusRepository->findAll()
         ]);
     }
     // ----------------------------------------------------------------

@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
@@ -77,6 +78,29 @@ class LessonService extends AbstractService
             'lessons' => $lessons['lessons'],
             'filterService' => $this->filterService,
         ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO GET ALL LESSONS BY USER ID
+     * ES: SERVICIO PARA OBTENER TODAS LAS CLASES POR ID DE USUARIO
+     *
+     * @return JsonResponse
+     */
+    // ----------------------------------------------------------------
+    public function getByUserId(): JsonResponse
+    {
+        $lessons = [];
+        $status = false;
+        if ($this->isCsrfTokenValid('get-lessons-by-user', $this->getRequestPostParam('_token'))) {
+            $this->filterService->addFilter('teacher', $this->getRequestPostParam('user'));
+
+            $lessons = $this->lessonRepository->findLessons($this->filterService, true, true)['lessons'];
+            $status = true;
+        }
+
+        return new JsonResponse(['lessons' => $lessons, 'status' => $status]);
     }
     // ----------------------------------------------------------------
 

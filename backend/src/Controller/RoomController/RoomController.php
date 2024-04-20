@@ -35,6 +35,22 @@ class RoomController extends AbstractController
 
     // ----------------------------------------------------------------
     /**
+     * EN: ENDPOINT TO GET ALL ROOMS BY USER ID
+     * ES: ENDPOINT PARA OBTENER TODAS LAS HABITACIONES POR ID DE USUARIO
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/get-by-user', name: 'room_get_by_user', methods: ["POST"])]
+    #[Permission(group: 'rooms', action: 'list')]
+    public function getByUserId(): Response
+    {
+        return $this->roomService->getByUserId();
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
      * EN: ENDPOINT TO SHOW A ROOM'S DATA
      * ES: ENDPOINT PARA MOSTRAR LA INFORMACIÓN DE UNA HABITACIÓN
      *

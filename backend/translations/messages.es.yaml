@@ -241,7 +241,7 @@ An error occurred while retrieving appointments: Ha ocurrido un error al recuper
 Copy Appointments: Copiar citas
 A server error has occurred: Ha ocurrido un error en el servidor
 Tasks More: Tareas más
-Appointments More: Citas más
+Schedules More: Horarios más
 Listing: Lista
 More: Más
 Nothing: Nada,
@@ -418,7 +418,7 @@ Date Range: Rango de días
 Reset Filters: Reestablecer filtros
 Order: Orden
 Go: Ir
-Fill in the data to load the appointment creation page: Rellene los datos para cargar la página de creación de cita
+Fill in the data to load the schedule creation page: Rellene los datos para cargar la página de creación de horario
 Enter the date on which you want to copy the appointments: Introduce la fecha en la que quieres copiar las citas
 The appointment will be deleted, this cannot be undone: Se eliminará la cita, esto no podrá deshacerse
 Change history: Histórico de cambios
