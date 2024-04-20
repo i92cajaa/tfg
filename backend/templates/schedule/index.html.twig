@@ -93,7 +93,7 @@
 {% block action_buttons %}
     <li class="level-menu outside d-flex flex-row" >
         {% if userPermission.can('create', 'schedules') %}
-            <a class="nav-link d-flex flex-row" href="{#{{ path('schedule_new') }}?referer={{ app.request.getUri() }}#}#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Crear horario">
+            <a class="nav-link d-flex flex-row" href="{{ path('schedule_create') }}?referer={{ app.request.getUri() }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Crear horario">
                 <i class="ficon" data-feather="plus-circle"></i><div class="d-none d-md-block">Horario</div>
             </a>
         {% endif %}

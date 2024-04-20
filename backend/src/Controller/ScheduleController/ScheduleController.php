@@ -45,7 +45,6 @@ class ScheduleController extends AbstractController
     #[Permission(group: 'schedules', action:"list")]
     public function getSchedulesJson(): JsonResponse
     {
-
         return $this->json($this->scheduleService->getEventsSchedulesFromRequest());
     }
     // ----------------------------------------------------------------
@@ -60,11 +59,27 @@ class ScheduleController extends AbstractController
      * @throws NonUniqueResultException
      */
     // ----------------------------------------------------------------
-    #[Route(path: '/schedule/show/{schedule}', name: 'schedule_show', defaults: ["schedule" => null], methods: ["GET"])]
+    #[Route(path: '/schedule/show/{schedule}', name: 'schedule_show', defaults: ["schedule" => null], methods: ["GET", "POST"])]
     #[Permission(group: 'schedules', action: 'show')]
     public function show(string $schedule): Response
     {
         return $this->scheduleService->show($schedule);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO CREATE A NEW SCHEDULE
+     * ES: ENDPOINT PARA CREAR UN HORARIO NUEVO
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/schedule/new', name: 'schedule_create', methods: ["GET", "POST"])]
+    #[Permission(group: 'schedules', action: 'create')]
+    public function new(): Response
+    {
+        return $this->scheduleService->new();
     }
     // ----------------------------------------------------------------
 }

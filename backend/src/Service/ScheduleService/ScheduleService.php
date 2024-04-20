@@ -2,6 +2,9 @@
 
 namespace App\Service\ScheduleService;
 
+use App\Entity\Schedule\Schedule;
+use App\Entity\Status\Status;
+use App\Form\ScheduleType;
 use App\Repository\ScheduleRepository;
 use App\Repository\StatusRepository;
 use App\Repository\UserRepository;
@@ -158,6 +161,47 @@ class ScheduleService extends AbstractService
             'schedule' => $schedule,
             'statuses' => $this->statusRepository->findAll()
         ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO CREATE A NEW SCHEDULE
+     * ES: SERVICIO PARA CREAR UN HORARIO NUEVO
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function new(): Response
+    {
+        $schedule = new Schedule();
+        $form = $this->createForm(ScheduleType::class, $schedule);
+        $form->handleRequest($this->getCurrentRequest());
+
+        if ($form->isSubmitted() &&
+            $this->getRequestPostParam('schedule')['date_from'] != null &&
+            $this->getRequestPostParam('schedule')['date_to'] != null)
+        {
+            $schedule->setDateFrom(UTCDateTime::create('d/m/Y H:i', $form->get('date_from')->getViewData()));
+            $schedule->setDateTo(UTCDateTime::create('d/m/Y H:i', $form->get('date_to')->getViewData()));
+
+            $schedule->setStatus($this->statusRepository->find(Status::STATUS_AVAILABLE));
+
+            $this->scheduleRepository->save($schedule, true);
+
+            return $this->redirectToRoute('schedule_index');
+        }
+
+        $this->filterService->addFilter('roles', 3);
+
+        $users = $this->userRepository->findUsers($this->filterService, true)['users'];
+
+        return $this->render('schedule/new.html.twig', [
+            'schedule' => $schedule,
+            'users' => $users,
+            'form' => $form->createView()
+        ]);
+
     }
     // ----------------------------------------------------------------
 }

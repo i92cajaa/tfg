@@ -1,493 +1,51 @@
 {% extends 'base-admin.html.twig' %}
 
-{% block title %}Editar Mentoría{% endblock %}
+{% block title %}{{ 'Edit'|trans }}{% endblock %}
 
-{% block page_title %}Editar Mentoría{% endblock %}
+{% block page_title %}
+Editar Habitación{% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
-
-        <div class="card">
-            <div class="card-body">
-                <div class="tab-content">
-                    <!-- Account Tab starts -->
-                    <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
-
-                        <form class="event-form needs-validation w-100 row p-1" id="appointmentForm" enctype="multipart/form-data" data-ajax="false" method="POST" novalidate>
-                            <input type="hidden" id="_method" name="_method" value="POST">
-                            <input type="hidden" id="_method" name="appointment[id]" value="{{ appointment.id }}">
-                            <input type="hidden" id="token" name="_token" value="{{ csrf_token('edit') }}">
-
-                            <div class="col-md-4 col-sm-12 form-group m-b-15">
-                                <label for="roles">{{ 'Proyecto'|trans }}</label>
-                                <select class="select-guests form-select select2" id="client" onchange="updateServices()" name="appointment[client]" required>
-                                    <option value="" selected disabled>{{'Select an option'|trans}}</option>
-                                    {% for client in clients %}
-                                        <option value="{{ client.id }}" data-user="" {% if client.id == appointment.client.id %} selected="selected" {% endif %}>{{ client.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="col-md-4 col-sm-12 form-group m-b-15">
-                                <label for="roles">Mentores</label>
-                                <select class="select-guests form-select select2" id="user" onchange="updateServices()" name="appointment[user]" required>
-                                    <option value="" selected disabled>{{'Select an option'|trans}}</option>
-                                    {% for user in users %}
-                                        {% if user is not null %}
-                                            <option value="{{ user.id }}" data-user="" {% if appointment.user is not null %}{% if user.id == appointment.user.id %} selected="selected" {% endif %}{% endif %}>{{ user.getFullNameMentor }}</option>
-                                        {% endif %}
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div id="field2" class="form-group m-b-15 position-relative col-md-4">
-                                <label for="roles">{{ 'Área de Mentorización'|trans }}</label>
-                                <select class="form-select select-guests" id="areas" name="appointment[area]" required="required" onchange="updateMentores()">
-                                    <option disabled selected>{{ 'Select an option'|trans }}</option>
-                                    {% for area in areas %}
-                                        <option id="area{{ area.id }}" value="{{ area.id }}"  {% if appointment.area is not null %}{% if area.id == appointment.area.id %} selected="selected" {% endif %}{% endif %}>{{ area.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="col-12">
-                                <hr>
-                            </div>
-
-                            {% set eafCounter = 0 %}
-                            {% if extra_appointment_field_types[constant('App\\Entity\\ExtraAppointmentField\\ExtraAppointmentFieldType::POSITION_HEADER')]|length > 0 %}
-
-                                {% for extra_appointment_field_type in extra_appointment_field_types[constant('App\\Entity\\ExtraAppointmentField\\ExtraAppointmentFieldType::POSITION_HEADER')] %}
-
-                                    <div class="form-group m-b-15 col-md-4 col-sm-6 {% if extra_appointment_field_type.division %}division-extra-field d-none{% endif %}" {% if extra_appointment_field_type.division %}data-division="{{ extra_appointment_field_type.division.id }}"{% endif %}>
-                                        <label class="form-control-label" for="{{ eafCounter }}">{{extra_appointment_field_type.name}}</label>
-                                        <input type="hidden" name="extra_appointment_fields[{{ eafCounter }}][title]" value="{{ extra_appointment_field_type.name}}">
-                                        <input type="hidden" name="extra_appointment_fields[{{ eafCounter }}][type]" value="{{ extra_appointment_field_type.type}}">
-                                        {% include 'extra_appointment_field/render_extra_appointment_field_form_field.html.twig' with {'entity': extra_appointment_field_type, 'formName': 'extra_appointment_fields[' ~ eafCounter ~ '][value]', 'id': eafCounter, 'value': appointment.extraFieldValueByTitle(extra_appointment_field_type.name)} %}
-                                    </div>
-                                    {% set eafCounter = eafCounter + 1 %}
-                                {% endfor %}
-                                <div class="divider col-12"></div>
-                            {% endif %}
-
-                            <div class="form-group m-b-15 position-relative col-md-4">
-                                <label for="roles">{{ 'Tipo de Mentoría'|trans }}</label>
-                                <select class="select2 select-guests form-select" id="services" name="appointment[services][]">
-                                            {% for service in services %}
-                                                <option id="service{{ service.id }}" value="{{ service.id }}" data-price="{{ service.price }}" data-time="{{ service.neededTime|default(0) }}" data-division="{{ service.division ? service.division.id : '' }}"
-                                                {% if service.id in appointment.getArrayServicesIds %}
-                                                    selected="selected"
-                                                {% endif %}
-                                                >{{ service.name }}</option>
-                                            {% endfor %}
-                                </select>
-                            </div>
-
-
-                            <div class="form-group m-b-15 position-relative col-md-2">
-                                <p class="text-left text-primary">
-                                    <b>{{ 'Estimated Time'|trans }}:</b><br> <span id="totalServicesTime">{{ appointment.getServiceMinutes }} {{ 'Minutes'|trans }}</span>
-                                    <br>
-                                    {# <b>{{ 'Price'|trans }}:</b><br> <span id="totalServicesPrice">{{ appointment.totalPrice }} €</span> #}
-                                </p>
-
-                            </div>
-
-
-                            <div class="form-group position-relative col-md-3">
-                                <label for="appointmentDate" class="form-label">{{ 'Date'|trans }}</label>
-                                <input type="text" class="form-control" name="appointment[appointmentDate]" id="appointmentDate" placeholder="{{ 'Date'|trans }}" required />
-                            </div>
-
-                            <div class="col-md-3 form-group m-b-15">
-                                <div>
-                                    <label for="roles">{{ 'Actual Schedule'|trans }}</label>
-                                    <select class="select-guests form-select selectSchedules select2" disabled>
-                                        <option>{{ appointment.timeFrom|UTCDateTimeFormat('H:i') }} - {{ appointment.timeTo|UTCDateTimeFormat('H:i') }} {% if appointment.user is not null %} ({{ appointment.user.fullName }}) {% endif %}</option>
-                                    </select>
-                                </div>
-
-                                <div class="m-t-10">
-                                    <label for="roles">{{ 'Create Schedule'|trans }}</label>
-                                    <select class="select-guests form-select selectSchedules select2" id="schedule" >
-
-                                    </select>
-                                    <input type="hidden" class="custom-validate" name="appointment[schedules]" id="schedule-input" value="{% if appointment.schedule is not null %}{{ appointment.schedule.id }} {% endif %} ">
-                                    <input type="hidden" class="custom-validate" name="appointment[time_from]" id="timeFrom" value="{{ appointment.timeFrom|UTCDateTimeFormat('H:i') }}">
-                                    <input type="hidden" class="custom-validate" name="appointment[time_to]" id="timeTo" value="{{ appointment.timeTo|UTCDateTimeFormat('H:i') }}">
-                                </div>
-
-
-                            </div>
-
-                            <div class="col-md-3 form-group m-b-15">
-
-                            </div>
-
-                            {% if configuration.meeting %}
-                                <div class="form-group m-b-15 pt-2 col-md-12">
-                                    <h6 class="text-muted">{{ 'Attached Meeting?'|trans }} <input type="checkbox" {% if appointment.meetingAttached %}checked="checked"{% endif%} id="meeting_attached" name="appointment[meeting_attached]"></h6>
-                                </div>
-                            {% endif %}
-
-
-                            <!--{% if extra_appointment_field_types[constant('App\\Entity\\ExtraAppointmentField\\ExtraAppointmentFieldType::POSITION_FOOTER')]|length > 0 %}
-                                <div class="divider col-12"></div>
-                                {% for extra_appointment_field_type in extra_appointment_field_types[constant('App\\Entity\\ExtraAppointmentField\\ExtraAppointmentFieldType::POSITION_FOOTER')] %}
-                                    <div class="form-group m-b-15 col-md-4 col-sm-6 {% if extra_appointment_field_type.division %}division-extra-field d-none{% endif %}" {% if extra_appointment_field_type.division %}data-division="{{ extra_appointment_field_type.division.id }}"{% endif %}>
-                                        <label class="form-control-label" for="{{ eafCounter }}">{{extra_appointment_field_type.name}}</label>
-                                        <input type="hidden" name="extra_appointment_fields[{{ eafCounter }}][title]" value="{{ extra_appointment_field_type.name}}">
-                                        <input type="hidden" name="extra_appointment_fields[{{ eafCounter }}][type]" value="{{ extra_appointment_field_type.type}}">
-                                        {% include 'extra_appointment_field/render_extra_appointment_field_form_field.html.twig' with {'entity': extra_appointment_field_type, 'formName': 'extra_appointment_fields[' ~ eafCounter ~ '][value]', 'id': eafCounter, 'value': appointment.extraFieldValueByTitle(extra_appointment_field_type.name)} %}
-                                    </div>
-
-                                    {% set eafCounter = eafCounter + 1 %}
-                                {% endfor %}
-                            {% endif %}-->
-
-                            <div class="col-12 form-group d-flex justify-content-end p-1">
-
-                                <button type="button" onclick="submitForm()" class="btn btn-primary add-event-btn mr-1">
-                                    {{ 'Edit'|trans }}</button>
-                            </div>
-                        </form>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- Account Tab starts -->
+                <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
+                    <!-- users edit media object start -->
+                    <!-- users edit media object ends -->
+                    <!-- users edit account form start -->
+                    {{ include('schedule/_form.html.twig', {'button_label': 'Update'|trans}) }}
+                    <!-- users edit account form ends -->
+                    <br>
+                    <div class="row d-flex justify-content-end">
+                        <div class="mr-2 text-end">
+                            {{ include('schedule/_delete_form.html.twig') }}
+                        </div>
                     </div>
                 </div>
+                <!-- Account Tab ends -->
             </div>
         </div>
     </div>
+</div>
 
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ asset('assets/js/calendar/fullcalendar2.min.js') }}"></script>
-    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
     <script>
-
-        let calendarDate = null;
-        let availableDates = [];
-
-
-
-        $(document).ready(async function() {
-
-            await reinstanceCalendar();
-            let dateString = '{{ appointment.timeFrom|UTCDateTimeFormat('d-m-Y') }}';
-            let dateParts = dateString.split('-');
-
-            let selectedDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-            calendarDate.selectedDates[0] = selectedDate;
-            calendarDate.latestSelectedDateObj = selectedDate;
-            calendarDate.input.value = '{{ appointment.timeFrom|UTCDateTimeFormat('d-m-Y') }}';
-
-            await updateSchedules();
-
-            updateDivisionsDisplay();
-            {% if appointment.schedule is not null %}
-            $('#schedule-input').val('{{ appointment.schedule.id }}');
-            {% endif %}
-            $('#timeFrom').val('{{ appointment.timeFrom|UTCDateTimeFormat('H:i') }}');
-            $('#timeTo').val('{{ appointment.timeTo|UTCDateTimeFormat('H:i') }}');
+        $(function() {
 
         });
-
-        function updateServices(){
-
-            let client = $('#client').val();
-
-            $.ajax({
-                type: 'post',
-                cache: "true",
-                dataType: 'json',
-                url: "{{ path('service_get_by_client') }}",
-                data: {
-                    client: client
-                },
-                success: function(data){
-                    $('#service option').remove();
-                    $('#service').val(null).trigger('change').trigger('change.select2');
-                    data.forEach(service => {
-
-                        $('#schedule').append('<option value="'+service["id"]+'">'+service["name"]+'</option>').trigger('change').trigger('change.select2');
-
-                    });
-                }
-            });
-
-            $('#usersNames').val($('#client option:selected').attr('data-user'));
-            
-            updateValuesOfCalendar();
-
-        }
-
-
-
-        $('#services').on('change',async function() {
-            updateValuesOfCalendar();
-        });
-
-        async function updateValuesOfCalendar() {
-
-
-            updateTotalTime();
-            updateTotalPrice();
-            updateDivisionsDisplay()
-
-
-            await reinstanceCalendar();
-
-            //updateSchedules();
-        }
-
-        function updateTotalPrice()
-        {
-            let servicesSelected = $('#services option:selected');
-            let totalAmount = 0;
-            for (let i = 0; servicesSelected.length > i; i++){
-                totalAmount += parseFloat(servicesSelected[i].getAttribute('data-price'));
-            }
-            $('#totalServicesPrice').text(totalAmount.toFixed(2)+'€');
-
-        }
-
-        function updateDivisionsDisplay()
-        {
-            let servicesSelected = $('#services option:selected');
-            let divisions = [];
-            for (let i = 0; servicesSelected.length > i; i++){
-                divisions.push(parseInt(servicesSelected[i].getAttribute('data-division')));
-            }
-
-            divisions = divisions.filter((v, i, a) => a.indexOf(v) === i);
-
-            $('.division-extra-field').addClass('d-none').prop( "disabled", true );
-            for (let i = 0; i < divisions.length; i++) {
-                $('.division-extra-field[data-division="' + divisions[i] + '"]').prop( "disabled", false ).removeClass('d-none')
-            }
-
-        }
-
-        function updateTotalTime()
-        {
-            let servicesSelected = $('#services option:selected');
-            let totalTime = 0;
-
-            for (let i = 0; servicesSelected.length > i; i++){
-                totalTime += parseInt(servicesSelected[i].getAttribute('data-time'));
-            }
-
-            $('#totalServicesTime').text(totalTime + ' Minutos');
-        }
-
-
-        function checkValues(){
-            let schedulesInput = $('#schedulesDiv').find('.custom-validate');
-
-
-            if(schedulesInput.length > 0){
-                for (let i = 0; i < schedulesInput.length; i++) {
-
-                    if(!schedulesInput[i].value ){
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        function updateSchedules(){
-            $('#schedule option').remove();
-            $('#schedule').removeAttr('disabled');
-
-            let day = calendarDate.latestSelectedDateObj;
-            console.log(day);
-            let currDateLoop = day.getFullYear()+'-'+month_number(day)+'-'+day_of_the_month(day);
-
-            let serviceIds = $('#services').val();
-            let client = $('#client').val();
-
-            var userValue = $('#user').val();
-            var usersValue = $('#users').val();
-            let user = userValue
-
-            if (userValue === null || userValue === '') {
-                user = '{{ app.user.id }}'
-            } else if (Array.isArray(usersValue) && usersValue.length === 0) {
-                user = userValue
-            }
-
-
-            $.ajax({
-                type: 'post',
-                cache: "true",
-                dataType: 'json',
-                url: "{{ path('schedules_get_availables') }}",
-                data: {
-                    user: user,
-                    selected_date: currDateLoop,
-                    selected_services: serviceIds,
-                    client: client
-                },
-                success: function(data){
-                    $('#schedule').append('<option disabled selected>{{ 'Select an option'|trans }}</option>');
-                    data['schedules'].forEach(schedule => {
-
-                        let timeMin = schedule['timeFrom']['date'].split(' ')[1].split(':')[0] + ':' + schedule['timeFrom']['date'].split(' ')[1].split(':')[1];
-                        let timeMax = schedule['timeTo']['date'].split(' ')[1].split(':')[0] + ':' + schedule['timeTo']['date'].split(' ')[1].split(':')[1];
-                        let user = schedule['user'];
-
-                        let exist = false;
-
-                        if(!exist){
-
-                            // $('#schedule').append('<option data-time-from="'+timeMin+'" data-time-to="'+timeMax+'" value="'+schedule['id']+'">'+timeMin+' - '+timeMax+' (' + user + ')</option>').trigger('change');
-                            $('#schedule').append('<option data-time-from="'+timeMin+'" data-time-to="'+timeMax+'" value="'+schedule['id']+'">'+timeMin+' - '+timeMax+'</option>').trigger('change');
-
-                            $('#schedule').on('change', function() {
-                                $('#schedule-input').val($('#schedule').val());
-                                $('#timeFrom').val($('#schedule option:selected').data('time-from'));
-                                $('#timeTo').val($('#schedule option:selected').data('time-to'));
-                            })
-                        }
-
-                    });
-                }
-            });
-
-        }
-
-        function updateMentores(){
-            var selectArea = document.getElementById('areas');
-            var areaId = selectArea.value;
-
-            $.ajax({
-                type: 'post',
-                cache: "true",
-                dataType: 'json',
-                url: "{{ path('get_mentores_by_area') }}",
-                data: {
-                    area: areaId
-                },
-                success: function(data){
-                    var selectUser = $('#user');
-                    selectUser.empty();
-
-                    selectUser.append('<option disabled selected>{{ 'Select an option'|trans }}</option>');
-
-                    data['mentores'].forEach(item => {
-                        selectUser.append('<option value="' + item.id + '">' + item.name + '</option>');
-                    });
-
-                }
-            })
-        }
-
-
-
-        async function reinstanceCalendar()
-        {
-
-            let today = new Date()
-            let currentMonth = month_number(today);
-            let currentYear = today.getFullYear();
-            await getAvailableDates(currentMonth, currentYear);
-
-            calendarDate = await flatpickr('#appointmentDate',{
-                locale: locale,
-                allowInput: true,
-                firstDayOfWeek : 1,// start week on Monday,
-                disable: [
-                    function(date) {
-
-                        let dateFormatted = date.getFullYear() + '-' + month_number(date) + '-' + day_of_the_month(date);
-                        {% if not app.user.isSuperAdmin %}
-                        if(!availableDates.includes(dateFormatted) || date < today){
-                            return true;
-                        }
-                        {% endif %}
-                    }
-                ],
-                onMonthChange: async function(){
-                    let month = ((calendarDate.currentMonth + 1) < 10 ? '0' : '') + (calendarDate.currentMonth + 1);
-                    let year = calendarDate.currentYear;
-
-                    await getAvailableDates(month, year);
-                    calendarDate.redraw()
-                },
-                onYearChange: async function(){
-                    let month = ((calendarDate.currentMonth) < 10 ? '0' : '') + (calendarDate.currentMonth);
-                    let year = calendarDate.currentYear;
-
-                    await getAvailableDates(month, year);
-                    calendarDate.redraw()
-                },
-                onChange: function (selectedDates, dateStr, instance) {
-
-                    updateSchedules()
-                }
-            });
-
-        }
-
-        async function getAvailableDates(month, year){
-            let serviceIds = $('#services').val();
-            let client = $('#client').val();
-            availableDates = await $.ajax({
-                type: 'post',
-                cache: "true",
-                dataType: 'json',
-                url: "{{ path('schedules_get_available_dates') }}",
-                data: {
-                    client: client,
-                    user: $('#user').val(),
-                    month: month,
-                    year: year
-                },
-                success: function (data) {
-
-                    return data;
-                }
-            });
-        }
-
-        function day_of_the_month(d)
-        {
-            return (d.getDate() < 10 ? '0' : '') + d.getDate();
-        }
-
-        function month_number(d)
-        {
-            let month = d.getMonth();
-            return ((month + 1) < 10 ? '0' : '') + (month+1);
-
-        }
-
-        function submitForm(){
-
-            if(checkValues()){
-                $('#appointmentForm').submit();
-            }else{
-                swal.fire({
-                    icon: 'error',
-                    title: '{{ 'Error'|trans }}',
-                    text: '{{ 'Not all fields have been filled in. Please double check the data you have entered'|trans }}.',
-                    timer: 3000,
-                    confirmButton: false
-                })
-            }
-        }
-
-
     </script>
 {% endblock %}
 
+
 {% block action_buttons %}
     <li class="level-menu outside">
-
-        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'appointments') ? path('appointment_list') : '#' }}"  >
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'schedules') ? path('schedule_index') : '#' }}"  >
             <i class="ficon" data-feather="chevron-left"></i>
         </a>
     </li>
-
 {% endblock %}
+
