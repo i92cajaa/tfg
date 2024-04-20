@@ -204,4 +204,47 @@ class ScheduleService extends AbstractService
 
     }
     // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO EDIT A SCHEDULE
+     * ES: SERVICIO PARA EDITAR UN HORARIO
+     *
+     * @param string $scheduleId
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function edit(string $scheduleId): Response
+    {
+        $schedule = $this->scheduleRepository->findById($scheduleId, false);
+        $form = $this->createForm(ScheduleType::class, $schedule);
+        $form->handleRequest($this->getCurrentRequest());
+
+        if ($form->isSubmitted() &&
+            $this->getRequestPostParam('schedule')['date_from'] != null &&
+            $this->getRequestPostParam('schedule')['date_to'] != null)
+        {
+            $schedule->setDateFrom(UTCDateTime::create('d/m/Y H:i', $form->get('date_from')->getViewData()));
+            $schedule->setDateTo(UTCDateTime::create('d/m/Y H:i', $form->get('date_to')->getViewData()));
+
+            $schedule->setStatus($this->statusRepository->find(Status::STATUS_AVAILABLE));
+
+            $this->scheduleRepository->save($schedule, true);
+
+            return $this->redirectToRoute('schedule_index');
+        }
+
+        $this->filterService->addFilter('roles', 3);
+
+        $users = $this->userRepository->findUsers($this->filterService, true)['users'];
+
+        return $this->render('schedule/edit.html.twig', [
+            'schedule' => $schedule,
+            'users' => $users,
+            'form' => $form->createView()
+        ]);
+
+    }
+    // ----------------------------------------------------------------
 }

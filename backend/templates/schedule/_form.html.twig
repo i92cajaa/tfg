@@ -39,7 +39,7 @@
 
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="{{ field_name(form.date_from) }}">{{ field_label(form.date_from) }} <span class="text-danger">*</span></label>
-            <input class="form-control flatpickr" type="text" placeholder="{{ field_label(form.date_from) }}" id="{{ field_name(form.date_from) }}" name="{{ field_name(form.date_from) }}" required>
+            <input class="form-control flatpickr" type="text" placeholder="{{ field_label(form.date_from) }}" id="{{ field_name(form.date_from) }}" name="{{ field_name(form.date_from) }}" value="{{ field_value(form.date_from)['date']['day'] }}/{{ field_value(form.date_from)['date']['month'] }}/{{ field_value(form.date_from)['date']['year'] }} {{ field_value(form.date_from)['time']['hour'] }}:{{ field_value(form.date_from)['time']['minute'] }}" required>
             {% for error in field_errors(form.date_from) %}
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}
@@ -47,7 +47,7 @@
 
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="{{ field_name(form.date_to) }}">{{ field_label(form.date_to) }} <span class="text-danger">*</span></label>
-            <input class="form-control flatpickr" type="text" placeholder="{{ field_label(form.date_to) }}" id="{{ field_name(form.date_to) }}" name="{{ field_name(form.date_to) }}" required>
+            <input class="form-control flatpickr" type="text" placeholder="{{ field_label(form.date_to) }}" id="{{ field_name(form.date_to) }}" name="{{ field_name(form.date_to) }}" value="{{ field_value(form.date_to)['date']['day'] }}/{{ field_value(form.date_to)['date']['month'] }}/{{ field_value(form.date_to)['date']['year'] }} {{ field_value(form.date_to)['time']['hour'] }}:{{ field_value(form.date_to)['time']['minute'] }}" required>
             {% for error in field_errors(form.date_to) %}
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}

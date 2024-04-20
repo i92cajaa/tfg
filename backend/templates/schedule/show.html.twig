@@ -204,10 +204,10 @@
     {% if userPermission.can('edit', 'schedules') %}
         <li class="level-menu outside ms-2">
             <div class="d-none d-md-block">
-                <a href="{#{{ path('appointment_edit', {'appointment': appointment.id}) }}#}" class="btn btn-primary">{{ 'Edit'|trans }}</a>
+                <a href="{{ path('schedule_edit', {'schedule': schedule.id}) }}" class="btn btn-primary">{{ 'Edit'|trans }}</a>
             </div>
             <div class="d-block d-md-none">
-                <a href="{#{{ path('appointment_edit', {'appointment': appointment.id}) }}#}" class="nav-link"><i data-feather="edit" style="width: 16px"></i></a>
+                <a href="{{ path('schedule_edit', {'schedule': schedule.id}) }}" class="nav-link"><i data-feather="edit" style="width: 16px"></i></a>
             </div>
         </li>
 

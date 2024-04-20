@@ -82,4 +82,22 @@ class ScheduleController extends AbstractController
         return $this->scheduleService->new();
     }
     // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO EDIT A SCHEDULE
+     * ES: ENDPOINT PARA EDITAR UN HORARIO
+     *
+     * @param string $schedule
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/schedule/edit/{schedule}', name: 'schedule_edit', methods: ["GET", "POST"])]
+    #[Permission(group: 'schedules', action: 'edit')]
+    public function edit(string $schedule): Response
+    {
+        return $this->scheduleService->edit($schedule);
+    }
+    // ----------------------------------------------------------------
 }
