@@ -1,8 +1,8 @@
 {% extends 'base-admin.html.twig' %}
 
-{% block title %}Mostrar Mentoría{% endblock %}
+{% block title %}Mostrar Horario{% endblock %}
 
-{% block page_title %}Mostrar Mentoría{% endblock %}
+{% block page_title %}Mostrar Horario{% endblock %}
 
 {% block body %}
     {% set appointmentService = '' %}
@@ -130,7 +130,7 @@
                     '<label class="form-control-label" for="swal-input-select">{{ 'Status'|trans }}</label>' +
                     '<select class="form-control" id="swal-input-select" name="status">' +
                         {% for status in statuses %}
-                    '<option value="{{ status.id }}">{{ status.name|trans }}</option>' +
+                    '<option value="{{ status.id }}" {% if status.id == schedule.status.id %}selected{% endif %}>{{ status.name|trans }}</option>' +
                         {% endfor %}
                     '</select>' +
                     '</div>'
@@ -157,7 +157,7 @@
                 let form = document.createElement('form');
 
                 form.setAttribute('method', "post");
-                form.setAttribute('action', "{#{{ path('change_status_schedule', {'schedule': schedule.id}) }}#}");
+                form.setAttribute('action', "{{ path('change_status_schedule', {'schedule': schedule.id}) }}");
 
                 let statusInput = document.createElement('input')
                 statusInput.type = 'hidden';
@@ -174,9 +174,7 @@
                 form.appendChild(tokenInput);
 
                 document.body.appendChild(form);
-                console.log(form);
                 form.submit();
-
             }
 
         }
@@ -202,17 +200,18 @@
     </li>
 
     {% if userPermission.can('edit', 'schedules') %}
-        <li class="level-menu outside ms-2">
-            <div class="d-none d-md-block">
-                <a href="{{ path('schedule_edit', {'schedule': schedule.id}) }}" class="btn btn-primary">{{ 'Edit'|trans }}</a>
-            </div>
-            <div class="d-block d-md-none">
-                <a href="{{ path('schedule_edit', {'schedule': schedule.id}) }}" class="nav-link"><i data-feather="edit" style="width: 16px"></i></a>
-            </div>
-        </li>
+        {% if schedule.status.id != 4 %}
+            <li class="level-menu outside ms-2">
+                <div class="d-none d-md-block">
+                    <a href="{{ path('schedule_edit', {'schedule': schedule.id}) }}" class="btn btn-primary">{{ 'Edit'|trans }}</a>
+                </div>
+                <div class="d-block d-md-none">
+                    <a href="{{ path('schedule_edit', {'schedule': schedule.id}) }}" class="nav-link"><i data-feather="edit" style="width: 16px"></i></a>
+                </div>
+            </li>
+        {% endif %}
 
-
-        <li>
+        <li {% if schedule.status.id == 4 %}class="level-menu outside ms-2"{% endif %}>
             <div class="d-none d-md-block">
             <a class="mr-1" onclick="openStatusModal()"><button class="btn btn-primary">{{ 'Change Status'|trans }}</button></a>
             </div>

@@ -49,6 +49,9 @@ class Lesson
     #[ORM\Column(name:"name", type:"string", length:255, nullable:false)]
     private string $name;
 
+    #[ORM\Column(name:"duration", type:"float", nullable:false)]
+    private float $duration;
+
     #[ORM\Column(name:"description", type:"string", length:255, nullable:true)]
     private ?string $description;
 
@@ -118,6 +121,14 @@ class Lesson
     }
 
     /**
+     * @return float
+     */
+    public function getDuration(): float
+    {
+        return $this->duration;
+    }
+
+    /**
      * @return string|null
      */
     public function getDescription(): ?string
@@ -184,6 +195,16 @@ class Lesson
     public function setName(string $name): Lesson
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @param float $duration
+     * @return $this
+     */
+    public function setDuration(float $duration): Lesson
+    {
+        $this->duration = $duration;
         return $this;
     }
 

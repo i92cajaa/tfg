@@ -116,7 +116,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->status = true;
         $this->locale = 'ES';
-        $this->menuExpanded = false;
+        $this->menuExpanded = true;
         $this->createdAt = UTCDateTime::setUTC(UTCDateTime::create());
 
         $this->roles = new ArrayCollection();

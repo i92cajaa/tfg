@@ -42,7 +42,17 @@
                                                 <span class="card-text user-info-title font-weight-bold mb-0">Área: <strong>{{ center.area.name }}</strong></span>
                                             </div>
                                         </div>
-
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <div class="col-md-2">
+                                                <i class="ficon m-r-5" data-feather="clock"></i>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Hora de Apertura: <strong>{{ center.openingTime|UTCDateTimeFormat('H:i') }}</strong></span>
+                                            </div>
+                                            <div class="col-md-5 align-items-center">
+                                                <span class="card-text user-info-title font-weight-bold mb-0 ">Hora de Cierre: <strong>{{ center.closingTime|UTCDateTimeFormat('H:i') }}</strong></span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

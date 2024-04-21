@@ -15,6 +15,18 @@
             {% endfor %}
         </div>
         <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.duration) }}">{{ field_label(form.duration) }} <span class="text-danger">*</span></label>
+            <select class="form-control select2" id="{{ field_name(form.duration) }}" name="{{ field_name(form.duration) }}" required>
+                <option value="" {% if field_value(form.duration) == null %}selected{% endif %} disabled>{{ field_label(form.duration) }}</option>
+                <option value="1" {% if field_value(form.duration) == '1,0' %}selected{% endif %}>1h</option>
+                <option value="1.5" {% if field_value(form.duration) == '1,5' %}selected{% endif %}>1.5h</option>
+                <option value="2" {% if field_value(form.duration) == '2,0' %}selected{% endif %}>2h</option>
+            </select>
+            {% for error in field_errors(form.duration) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="{{ field_name(form.center) }}">{{ field_label(form.center) }} <span class="text-danger">*</span></label>
             <select class="form-control select2" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" required>
                 {% for center in centers %}

@@ -13,6 +13,7 @@ use App\Repository\CenterRepository;
 use App\Repository\RoleRepository;
 use App\Service\DocumentService\DocumentService;
 use App\Shared\Classes\AbstractService;
+use App\Shared\Classes\UTCDateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -114,7 +115,13 @@ class CenterService extends AbstractService
         $form = $this->createForm(CenterType::class, $center);
         $form->handleRequest($this->getCurrentRequest());
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() &&
+            $this->getRequestPostParam('center')['opening_time'] != null &&
+            $this->getRequestPostParam('center')['closing_time'] != null)
+        {
+
+            $center->setOpeningTime(UTCDateTime::create('H:i', $form->get('opening_time')->getViewData()));
+            $center->setClosingTime(UTCDateTime::create('H:i', $form->get('closing_time')->getViewData()));
 
             $file = $form->get('logo')->getData();
             if($file != null){
@@ -154,17 +161,22 @@ class CenterService extends AbstractService
         $form = $this->createForm(CenterType::class, $center);
         $form->handleRequest($this->getCurrentRequest());
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->centerRepository->save($center,true);
+        if ($form->isSubmitted() &&
+            $this->getRequestPostParam('center')['opening_time'] != null &&
+            $this->getRequestPostParam('center')['closing_time'] != null)
+        {
 
+            $center->setOpeningTime(UTCDateTime::create('H:i', $form->get('opening_time')->getViewData()));
+            $center->setClosingTime(UTCDateTime::create('H:i', $form->get('closing_time')->getViewData()));
 
             $file = $form->get('logo')->getData();
             if($file != null){
                 $imgProfile = $this->documentService->uploadDocument($file, 'center');
                 $center->setLogo($imgProfile);
-                $this->centerRepository->save($center,true);
-
             }
+
+            $this->centerRepository->save($center,true);
+
             return $this->redirectToRoute('center_index');
         }
 

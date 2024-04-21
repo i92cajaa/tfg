@@ -6,6 +6,7 @@ use App\Entity\Area\Area;
 use App\Entity\Center\Center;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -51,6 +52,14 @@ class CenterType extends AbstractType
             ])
             ->add('phone',TextType::class,[
                 'label' => 'Teléfono',
+                'required' => true
+            ])
+            ->add('opening_time',DateTimeType::class,[
+                'placeholder' => 'Selecciona una fecha y hora',
+                'required' => true
+            ])
+            ->add('closing_time',DateTimeType::class,[
+                'placeholder' => 'Selecciona una fecha y hora',
                 'required' => true
             ])
             ->add('color', TextType::class, [

@@ -29,17 +29,27 @@
                                 </th>
                                 <th>
                                     <a href="{{ filterService.orderBy("address", filterService.getInversedOrder("address")) }}">
-                                        Dirección {% if filterService.isOrdered("address") %}<i data-feather="{{ filterService.getOrder("address").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        Dirección {% if filterService.isOrdered("address") %}<i data-feather="{{ filterService.getOrder("address").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
                                     </a>
                                 </th>
                                 <th>
                                     <a href="{{ filterService.orderBy("area", filterService.getInversedOrder("area")) }}">
-                                        Área {% if filterService.isOrdered("area") %}<i data-feather="{{ filterService.getOrder("area").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        Área {% if filterService.isOrdered("area") %}<i data-feather="{{ filterService.getOrder("area").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
                                     </a>
                                 </th>
                                 <th>
                                     <a href="{{ filterService.orderBy("phone", filterService.getInversedOrder("phone")) }}">
-                                        Teléfono {% if filterService.isOrdered("phone") %}<i data-feather="{{ filterService.getOrder("phone").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        Teléfono {% if filterService.isOrdered("phone") %}<i data-feather="{{ filterService.getOrder("phone").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("opening_time", filterService.getInversedOrder("opening_time")) }}">
+                                        Hora de Apertura {% if filterService.isOrdered("opening_time") %}<i data-feather="{{ filterService.getOrder("opening_time").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("closing_time", filterService.getInversedOrder("closing_time")) }}">
+                                        Hora de Cierre {% if filterService.isOrdered("closing_time") %}<i data-feather="{{ filterService.getOrder("closing_time").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
                                     </a>
                                 </th>
                                 <th>
@@ -57,9 +67,11 @@
                                     </svg></td>
                                 <td><img data-bs-toggle="tooltip" data-html="true" data-placement="bottom" title='' src="{% if center.logo != null %}{{ documentImage.DocumentImage(center.logo) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" class="" style="width: 90px !important;"  alt=""></td>
                                 <td>{{ center.name }}</td>
-                                <td style="width: 40%">{{ center.address }}</td>
+                                <td style="width: 30%">{{ center.address }}</td>
                                 <td>{{ center.area.name }}</td>
                                 <td>{{ center.phone }}</td>
+                                <td><span class="badge badge-light-primary badge-pill">{{ center.openingTime|UTCDateTimeFormat('H:i') }}</span></td>
+                                <td><span class="badge badge-light-secondary badge-pill">{{ center.closingTime|UTCDateTimeFormat('H:i') }}</span></td>
                                 <td class="text-nowrap">
                                     <div class="d-inline-flex gap-1">
                                         {% if userPermission.can('show', 'centers') %}

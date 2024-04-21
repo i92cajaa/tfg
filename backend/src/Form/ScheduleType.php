@@ -49,11 +49,9 @@ class ScheduleType extends AbstractType
                 'label' => 'Habitación',
                 'attr' => ['class' => 'form-check mb-2 select2', 'autocomplete' => 'off'],
             ])
-            ->add('date_from', DateTimeType::class, [
-                'placeholder' => 'Selecciona una fecha y hora',
-            ])
-            ->add('date_to', DateTimeType::class, [
-                'placeholder' => 'Selecciona una fecha y hora',
+            ->add('range', null, [
+                'mapped' => false,
+                'required' => true
             ])
         ;
     }

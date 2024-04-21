@@ -16,6 +16,7 @@
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
+
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="{{ field_name(form.address) }}">{{ field_label(form.address) }} <span class="text-danger">*</span></label>
             <input class="form-control" type="text" placeholder="{{ field_label(form.address) }}" id="{{ field_name(form.address) }}"
@@ -24,6 +25,7 @@
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
+
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="{{ field_name(form.area) }}">{{ field_label(form.area) }} <span class="text-danger">*</span></label>
             <select class="form-control select2" type="text" id="{{ field_name(form.area) }}"
@@ -33,6 +35,7 @@
                 {% endfor %}
             </select>
         </div>
+
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="country">{{ field_label(form.phone) }} <span class="text-danger">*</span></label>
             <input id="country" type="tel" class="form-control"
@@ -41,6 +44,7 @@
             <span id="valid-msg" class="invisible hide"></span>
             <span id="error-msg" class="hide text-danger"></span>
         </div>
+
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="{{ field_name(form.color) }}">{{ field_label(form.color) }} <span class="text-danger">*</span></label>
             <input class="form-control" type="color" placeholder="{{ field_label(form.color) }}" id="{{ field_name(form.color) }}" name="{{ field_name(form.color) }}" value="{{ field_value(form.color) }}" required>
@@ -48,14 +52,22 @@
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
-{#        <div class="col-md-4 col-sm-6 mt-3">#}
-{#            <label class="form-label" for="{{ field_name(form.director) }}">{{ field_label(form.director) }} <span class="text-danger">*</span></label>#}
-{#            <input class="form-control" type="text" placeholder="{{ field_label(form.director) }}" id="{{ field_name(form.director) }}"#}
-{#                   name="{{ field_name(form.director) }}" value="{{ field_value(form.director) }}" required>#}
-{#            {% for error in field_errors(form.director) %}#}
-{#                <span class="text-danger">{{ error }}</span>#}
-{#            {% endfor %}#}
-{#        </div>#}
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.opening_time) }}">{{ field_label(form.opening_time) }} <span class="text-danger">*</span></label>
+            <input class="form-control timepickr" type="text" placeholder="{{ field_label(form.opening_time) }}" id="{{ field_name(form.opening_time) }}" name="{{ field_name(form.opening_time) }}" value="{{ field_value(form.opening_time)['time']['hour'] }}:{{ field_value(form.opening_time)['time']['minute'] }}" required>
+            {% for error in field_errors(form.opening_time) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.closing_time) }}">{{ field_label(form.closing_time) }} <span class="text-danger">*</span></label>
+            <input class="form-control timepickr" type="text" placeholder="{{ field_label(form.closing_time) }}" id="{{ field_name(form.closing_time) }}" name="{{ field_name(form.closing_time) }}" value="{{ field_value(form.closing_time)['time']['hour'] }}:{{ field_value(form.closing_time)['time']['minute'] }}" required>
+            {% for error in field_errors(form.closing_time) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
 
         {{ form_row(form._token) }}
 
@@ -70,12 +82,4 @@
 </form>
 
 <script>
-    function triggerAutonomous(){
-
-        if(document.getElementById("user_autonomous").checked === false){
-            document.getElementById("user_appointment_percentage_div").classList.add("d-none");
-        }else{
-            document.getElementById("user_appointment_percentage_div").classList.remove("d-none");
-        }
-    }
 </script>

@@ -51,6 +51,23 @@ class ScheduleController extends AbstractController
 
     // ----------------------------------------------------------------
     /**
+     * EN: ENDPOINT TO GET ALL TIMES AVAILABLE FOR A SELECTED DAY AND ROOM
+     * ES: ENDPOINT PARA OBTENER LOS HORARIOS DISPONIBLES PARA UN DÍA Y HABITACIÓN SELECCIONADOS
+     *
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/schedule/get-times', name: 'schedule_get_available_times', methods: ["POST"])]
+    #[Permission(group: 'schedules', action:"list")]
+    public function getScheduleTimes(): Response
+    {
+        return $this->scheduleService->getScheduleTimes();
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
      * EN: ENDPOINT TO SHOW A SCHEDULE'S DATA
      * ES: ENDPOINT PARA MOSTRAR LA INFORMACIÓN DE UN HORARIO
      *
@@ -98,6 +115,24 @@ class ScheduleController extends AbstractController
     public function edit(string $schedule): Response
     {
         return $this->scheduleService->edit($schedule);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO CHANGE A SCHEDULE'S STATUS
+     * ES: ENDPOINT PARA CAMBIAR EL ESTADO DE UN HORARIO
+     *
+     * @param string $schedule
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/schedule/change-status/{schedule}', name: 'change_status_schedule', methods: ["GET", "POST"])]
+    #[Permission(group: 'schedules', action: 'edit')]
+    public function changeStatus(string $schedule): Response
+    {
+        return $this->scheduleService->changeStatus($schedule);
     }
     // ----------------------------------------------------------------
 }

@@ -20,9 +20,13 @@
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="lesson">{{ field_label(form.lesson) }} <span class="text-danger">*</span></label>
             <select class="form-control select2" id="lesson" name="{{ field_name(form.lesson) }}" required>
-
+                {% if edit %}
+                    {% for lesson in lessons %}
+                        <option value="{{ lesson.id }}" {% if lesson.id == field_value(form.lesson) %}selected{% endif %}>{{ lesson.name }}</option>
+                    {% endfor %}
+                {% endif %}
             </select>
-            {% for error in field_errors(form.room) %}
+            {% for error in field_errors(form.lesson) %}
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
@@ -30,7 +34,11 @@
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="room">{{ field_label(form.room) }} <span class="text-danger">*</span></label>
             <select class="form-control select2" id="room" name="{{ field_name(form.room) }}" required>
-
+                {% if edit %}
+                    {% for room in rooms %}
+                        <option value="{{ room.id }}" {% if room.id == field_value(form.room) %}selected{% endif %}>Planta {{ room.floor }}, habitación {{ room.number }}</option>
+                    {% endfor %}
+                {% endif %}
             </select>
             {% for error in field_errors(form.room) %}
                 <span class="text-danger">{{ error }}</span>
@@ -38,17 +46,16 @@
         </div>
 
         <div class="col-md-4 col-sm-6 mt-3">
-            <label class="form-label" for="{{ field_name(form.date_from) }}">{{ field_label(form.date_from) }} <span class="text-danger">*</span></label>
-            <input class="form-control flatpickr" type="text" placeholder="{{ field_label(form.date_from) }}" id="{{ field_name(form.date_from) }}" name="{{ field_name(form.date_from) }}" value="{{ field_value(form.date_from)['date']['day'] }}/{{ field_value(form.date_from)['date']['month'] }}/{{ field_value(form.date_from)['date']['year'] }} {{ field_value(form.date_from)['time']['hour'] }}:{{ field_value(form.date_from)['time']['minute'] }}" required>
-            {% for error in field_errors(form.date_from) %}
-                <span class="text-danger">{{ error }}</span>
-            {% endfor %}
+            <label class="form-label" for="day">Día<span class="text-danger">*</span></label>
+            <input class="form-control flatpickr" type="text" placeholder="Día de la reserva" id="day" name="schedule[day]" {% if edit %}value="{{ field_value(form.range)['date']['day'] }}/{{ field_value(form.range)['date']['month'] }}/{{ field_value(form.range)['date']['year'] }}"{% endif %} required>
         </div>
 
         <div class="col-md-4 col-sm-6 mt-3">
-            <label class="form-label" for="{{ field_name(form.date_to) }}">{{ field_label(form.date_to) }} <span class="text-danger">*</span></label>
-            <input class="form-control flatpickr" type="text" placeholder="{{ field_label(form.date_to) }}" id="{{ field_name(form.date_to) }}" name="{{ field_name(form.date_to) }}" value="{{ field_value(form.date_to)['date']['day'] }}/{{ field_value(form.date_to)['date']['month'] }}/{{ field_value(form.date_to)['date']['year'] }} {{ field_value(form.date_to)['time']['hour'] }}:{{ field_value(form.date_to)['time']['minute'] }}" required>
-            {% for error in field_errors(form.date_to) %}
+            <label class="form-label" for="room">{{ field_label(form.range) }} <span class="text-danger">*</span></label>
+            <select class="form-control select2" id="range" name="{{ field_name(form.range) }}" required>
+
+            </select>
+            {% for error in field_errors(form.range) %}
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
@@ -110,13 +117,56 @@
             });
         }
 
+        function getAvailableDates(date, room, lesson) {
+            $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('schedule_get_available_times') }}",
+                data: {
+                    date: date,
+                    room: room,
+                    lesson: lesson,
+                    _token: '{{ csrf_token('get-date-available-times') }}'
+                },
+                success: function(data){
+
+                    $('#range option').remove();
+                    data['ranges'].forEach(range => {
+
+                        $('#range').append('<option value="'+range['start']+' - '+range['end']+'">'+range['start']+' - '+range['end']+'</option>').trigger('change');
+
+                    });
+                }
+            });
+        }
+
         {% if app.user.isTeacher %}
             changeLessonsAndRooms({{ app.user.id }});
         {% else %}
             $("#teacher").on("change", function () {
-                console.log(1);
                 changeLessonsAndRooms($(this).val());
+
+                $('#day').val();
             });
         {% endif %}
+
+        $('#room').on('change', function () {
+            if ($('#day').val() != '') {
+                getAvailableDates($('#day').val(), $(this).val(), $('#lesson').val());
+            }
+        });
+
+        $('#lesson').on('change', function () {
+            if ($('#day').val() != '') {
+                getAvailableDates($('#day').val(), $('#room').val(), $(this).val());
+            }
+        });
+
+        $('#day').on('change', function () {
+            if ($('#room').val() != null || $('#lesson').val() != null) {
+                getAvailableDates($(this).val(), $('#room').val(), $('#lesson').val());
+            }
+        });
     });
 </script>

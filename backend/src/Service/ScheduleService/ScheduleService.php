@@ -5,13 +5,19 @@ namespace App\Service\ScheduleService;
 use App\Entity\Schedule\Schedule;
 use App\Entity\Status\Status;
 use App\Form\ScheduleType;
+use App\Repository\CenterRepository;
+use App\Repository\LessonRepository;
+use App\Repository\RoomRepository;
 use App\Repository\ScheduleRepository;
 use App\Repository\StatusRepository;
 use App\Repository\UserRepository;
+use App\Service\FilterService;
 use App\Shared\Classes\AbstractService;
 use App\Shared\Classes\UTCDateTime;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
+use Exception;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -20,6 +26,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
@@ -30,6 +37,8 @@ class ScheduleService extends AbstractService
         private readonly ScheduleRepository $scheduleRepository,
         private readonly UserRepository $userRepository,
         private readonly StatusRepository $statusRepository,
+        private readonly LessonRepository $lessonRepository,
+        private readonly RoomRepository $roomRepository,
         EntityManagerInterface $em,
         RouterInterface $router,
         Environment $twig,
@@ -73,8 +82,8 @@ class ScheduleService extends AbstractService
             $users = $this->userRepository->findAll();
         }
 
-        $from = (UTCDateTime::create())->modify('first day of this month')->format('d-m-Y');
-        $to = (UTCDateTime::create())->modify('last day of this month')->format('d-m-Y');
+        $from = (UTCDateTime::create())->modify('first day of this month')->format('d/m/Y');
+        $to = (UTCDateTime::create())->modify('last day of this month')->format('d/m/Y');
 
         $this->filterService->addFilter('min_date', $from);
         $this->filterService->addFilter('max_date', $to);
@@ -125,8 +134,96 @@ class ScheduleService extends AbstractService
 
     // ----------------------------------------------------------------
     /**
+     * EN: SERVICE TO GET ALL TIMES AVAILABLE FOR A SELECTED DAY AND ROOM
+     * ES: SERVICIO PARA OBTENER LOS HORARIOS DISPONIBLES PARA UN DÍA Y HABITACIÓN SELECCIONADOS
+     *
+     * @return JsonResponse
+     * @throws NonUniqueResultException
+     * @throws Exception
+     */
+    // ----------------------------------------------------------------
+    public function getScheduleTimes(): JsonResponse
+    {
+        $this->filterService->addFilter('room', $this->getRequestPostParam('room'));
+        $this->filterService->addFilter('min_date', $this->getRequestPostParam('date'));
+        $this->filterService->addFilter('max_date', $this->getRequestPostParam('date'));
+
+        $schedules = $this->scheduleRepository->findSchedules($this->filterService, true)['schedules'];
+
+        $lesson = $this->lessonRepository->findById($this->getRequestPostParam('lesson'), false);
+        $duration = $lesson->getDuration();
+
+        $availableRanges = $this->formatDayIntoRanges($lesson->getCenter()->getOpeningTime(), $lesson->getCenter()->getClosingTime(), $duration, $schedules);
+
+        return new JsonResponse(['ranges' => $availableRanges, 'status' => true]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
      * EN: SERVICE TO FORMAT SCHEDULES INTO EVENTS
      * ES: SERVICIO PARA FORMATEAR HORARIOS A EVENTOS
+     *
+     * @param DateTime $openingTime
+     * @param DateTime $closingTime
+     * @param float $duration
+     * @param array|Collection $schedules
+     * @return array
+     * @throws Exception
+     */
+    // ----------------------------------------------------------------
+    public function formatDayIntoRanges(DateTime $openingTime, DateTime $closingTime,
+                                        float $duration, array|Collection $schedules): array
+    {
+        $availableRanges = [];
+        $currentOpeningTime = clone $openingTime;
+
+        while ($currentOpeningTime < $closingTime) {
+            $currentClosingTime = clone $currentOpeningTime;
+            $hours = floor($duration);
+            $minutes = ($duration - $hours) * 60;
+            $currentClosingTime->add(new \DateInterval('PT' . $hours . 'H' . $minutes . 'M'));
+
+            $inBetween = false;
+            foreach ($schedules as $schedule) {
+                $scheduleDateFrom = clone $schedule->getDateFrom();
+                $scheduleDateFrom->setDate(
+                    $currentOpeningTime->format('Y'),
+                    $currentOpeningTime->format('m'),
+                    $currentOpeningTime->format('d')
+                );
+                $scheduleDateTo = clone $schedule->getDateTo();
+                $scheduleDateTo->setDate(
+                    $currentOpeningTime->format('Y'),
+                    $currentOpeningTime->format('m'),
+                    $currentOpeningTime->format('d')
+                );
+
+                if (($scheduleDateFrom >= $currentOpeningTime && $scheduleDateFrom <= $currentClosingTime) ||
+                    ($scheduleDateTo >= $currentOpeningTime && $scheduleDateTo <= $currentClosingTime)) {
+                    $inBetween = true;
+                    break;
+                }
+            }
+
+            if (!$inBetween) {
+                $availableRanges[] = [
+                    'start' => $currentOpeningTime->format('H:i'),
+                    'end' => $currentClosingTime->format('H:i')
+                ];
+            }
+
+            $currentOpeningTime = $currentClosingTime;
+        }
+
+        return $availableRanges;
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO FORMAT DATE INTO AVAILABLE RANGES
+     * ES: SERVICIO PARA FORMATEAR UN DÍA EN RANGOS DISPONIBLES
      *
      * @param array $schedules
      * @param bool $isSuperAdmin
@@ -193,12 +290,12 @@ class ScheduleService extends AbstractService
         }
 
         $this->filterService->addFilter('roles', 3);
-
         $users = $this->userRepository->findUsers($this->filterService, true)['users'];
 
         return $this->render('schedule/new.html.twig', [
             'schedule' => $schedule,
             'users' => $users,
+            'edit' => false,
             'form' => $form->createView()
         ]);
 
@@ -236,14 +333,51 @@ class ScheduleService extends AbstractService
         }
 
         $this->filterService->addFilter('roles', 3);
-
         $users = $this->userRepository->findUsers($this->filterService, true)['users'];
+
+        $this->filterService->addFilter('teacher', $schedule->getTeacher()->getId());
+        $lessons = $this->lessonRepository->findLessons($this->filterService, true)['lessons'];
+
+        $this->filterService->addFilter('center', $schedule->getTeacher()->getCenter()->getId());
+        $rooms = $this->roomRepository->findRooms($this->filterService, true)['rooms'];
 
         return $this->render('schedule/edit.html.twig', [
             'schedule' => $schedule,
             'users' => $users,
+            'edit' => true,
+            'lessons' => $lessons,
+            'rooms' => $rooms,
             'form' => $form->createView()
         ]);
+
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO CHANGE A SCHEDULE'S STATUS
+     * ES: SERVICIO PARA CAMBIAR EL ESTADO DE UN HORARIO
+     *
+     * @param string $scheduleId
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function changeStatus(string $scheduleId): Response
+    {
+        $schedule = $this->scheduleRepository->findById($scheduleId, false);
+        if ($this->isCsrfTokenValid('change-status', $this->getRequestPostParam('_token'))) {
+            $status = $this->statusRepository->find($this->getRequestPostParam('status'));
+
+            if($status->getId()==Status::STATUS_CANCELED){
+                $this->email($schedule);
+            }
+
+            $schedule->setStatus($status);
+
+            $this->scheduleRepository->save($schedule, true);
+        }
+        return $this->redirectToRoute('schedule_show', ['schedule' => $schedule->getId()]);
 
     }
     // ----------------------------------------------------------------

@@ -33,6 +33,11 @@
                                 </th>
                                 <th>
                                     <a>
+                                        {{ 'Duration'|trans }}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a>
                                         {{ 'Description'|trans }}
                                     </a>
                                 </th>
@@ -54,6 +59,7 @@
                                 <td><img data-bs-toggle="tooltip" data-html="true" data-placement="bottom" title='' src="{% if lesson.image != null %}{{ documentImage.DocumentImage(lesson.image) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" class="" style="width: 90px !important;"  alt=""></td>
                                 <td>{{ lesson.name }}</td>
                                 <td>{{ lesson.center.name }}</td>
+                                <td><span class="badge badge-info">{{ lesson.duration }}h</span></td>
                                 <td style="width: 40%">{{ lesson.description }}</td>
                                 <td>
                                     {% if lesson.status %}

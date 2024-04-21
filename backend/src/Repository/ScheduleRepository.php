@@ -218,8 +218,8 @@ class ScheduleRepository extends ServiceEntityRepository
             $minDate = $filterService->getFilterValue('min_date');
             $maxDate = $filterService->getFilterValue('max_date');
             if ($minDate !== null && $maxDate !== null) {
-                $dateFrom = \DateTime::createFromFormat('d-m-Y', $minDate)->setTime(0,0);
-                $dateTo = \DateTime::createFromFormat('d-m-Y', $maxDate)->setTime(23, 59, 59);
+                $dateFrom = \DateTime::createFromFormat('d/m/Y', $minDate)->setTime(0,0);
+                $dateTo = \DateTime::createFromFormat('d/m/Y', $maxDate)->setTime(23, 59, 59);
 
                 $query->andWhere('sc.dateFrom BETWEEN :dateFrom AND :dateTo OR sc.dateTo BETWEEN :dateFrom AND :dateTo')
                     ->setParameter('dateFrom', $dateFrom)

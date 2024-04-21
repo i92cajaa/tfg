@@ -32,7 +32,7 @@
 
                                         </div>
                                         <div class="mb-3 d-flex">
-                                            <div class="col-md-8">
+                                            <div class="col-md-7">
                                                 <span class="card-text user-info-title font-weight-bold mb-0">Descripción: <strong>{{ lesson.description }}</strong></span>
                                             </div>
                                             <div class="col-md-3">
@@ -46,6 +46,12 @@
                                                     {% else %}
                                                         <span  class="badge text-capitalize badge-light-secondary badge-pill"> Inactivo </span>
                                                     {% endif %}
+                                                </span>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">
+                                                    Duración:
+                                                    <span class="badge text-capitalize badge-light-info badge-pill"> {{ lesson.duration }}h </span>
                                                 </span>
                                             </div>
                                         </div>

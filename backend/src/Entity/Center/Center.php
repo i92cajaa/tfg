@@ -8,6 +8,8 @@ use App\Entity\Document\Document;
 use App\Entity\Room\Room;
 use App\Entity\User\User;
 use App\Repository\CenterRepository;
+use App\Shared\Classes\UTCDateTime;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -58,6 +60,12 @@ class Center
 
     #[ORM\Column(name:"phone", type:"string", length:255, nullable:false)]
     private string $phone;
+
+    #[ORM\Column(name:"opening_time", type:"datetime", nullable:false)]
+    private DateTime $openingTime;
+
+    #[ORM\Column(name:"closing_time", type:"datetime", nullable:false)]
+    private DateTime $closingTime;
 
     #[ORM\Column(name:"color", type: 'string', length:255, nullable: false)]
     private string $color;
@@ -147,6 +155,23 @@ class Center
     public function getPhone(): string
     {
         return $this->phone;
+    }
+
+
+    /**
+     * @return \DateTimeInterface
+     */
+    public function getOpeningTime(): \DateTimeInterface
+    {
+        return UTCDateTime::format($this->openingTime);
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getClosingTime(): ?\DateTimeInterface
+    {
+        return UTCDateTime::format($this->closingTime);
     }
 
     /**
@@ -248,6 +273,26 @@ class Center
     public function setPhone(string $phone): Center
     {
         $this->phone = $phone;
+        return $this;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $openingTime
+     * @return $this
+     */
+    public function setOpeningTime(?\DateTimeInterface $openingTime): Center
+    {
+        $this->openingTime = UTCDateTime::setUTC($openingTime);
+        return $this;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $closingTime
+     * @return $this
+     */
+    public function setClosingTime(?\DateTimeInterface $closingTime): Center
+    {
+        $this->closingTime = UTCDateTime::setUTC($closingTime);
         return $this;
     }
 
