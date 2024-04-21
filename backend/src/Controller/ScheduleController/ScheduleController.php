@@ -152,4 +152,19 @@ class ScheduleController extends AbstractController
         return $this->scheduleService->delete($schedule);
     }
     // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO TOGGLE MENU
+     * ES: ENDPOINT PARA ALTERNAR EL MENÚ
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/toggle-menu', name: 'toggle_menu')]
+    public function toggleMenuExpanded(): Response
+    {
+        return $this->scheduleService->toggleMenuExpanded();
+    }
+    // ----------------------------------------------------------------
 }

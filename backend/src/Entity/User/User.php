@@ -503,7 +503,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @param bool $menuExpanded
      * @return $this
      */
-    public function setManuExpanded(bool $menuExpanded): User
+    public function setMenuExpanded(bool $menuExpanded): User
     {
         $this->menuExpanded = $menuExpanded;
         return $this;

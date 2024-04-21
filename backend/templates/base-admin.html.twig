@@ -226,9 +226,6 @@
                 <div class="row">
                     <div class="col-md-12 footer-copyright text-center">
                         <p class="mb-0"> {{ configuration.app_name }}  </p>
-                        <div class="mt-3 d-flex justify-content-center d-none d-md-block"><img src="{{ asset('assets/images/footer_AOF.png') }}" alt=""></div>
-                        <div class="mt-3 d-flex justify-content-center d-block d-md-none"><img src="{{ asset('assets/images/footer_AOF-1.png') }}" alt=""></div>
-                        <div class="mt-3 d-flex justify-content-center d-block d-md-none"><img src="{{ asset('assets/images/footer_AOF-2.png') }}" alt=""></div>
                     </div>
                 </div>
             </div>
@@ -355,10 +352,6 @@
             });
         }
 
-        $('#toggleMode').on('click', function () {
-            toggleMode();
-        });
-
         $('#toggleMenu').on('click', function () {
             toggleMenu();
         });
@@ -430,19 +423,6 @@
     /* Set the width of the sidebar to 0 and the left margin of the page content to 0 */
     function closeNav() {
         document.getElementById("filterSidebar").style.width = "0px";
-    }
-
-    function toggleMode() {
-        $.ajax({
-            type: 'get',
-            cache: "true",
-            dataType: 'json',
-            url: "{{ path('toggle_mode') }}",
-            data: {},
-            success: function (data) {
-
-            }
-        });
     }
 
     function toggleMenu() {

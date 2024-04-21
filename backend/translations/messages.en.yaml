@@ -27,16 +27,8 @@ Number: Number
 Confirmation: Confirmation
 Selector: Selector
 Name: Name
-The following questionnaire has as its main function to ensure the most optimal start for your therapeutic process. In this way, the questionnaire will be read by the clinical director and he/she will look for the therapist profile that best fits the emotional situation explained. If you can´t find the words to describe what you need, don´t worry, you can put "I don´t know", "I prefer to talk about it when the time comes", "I wouldn´t know how to define it"... This questionnaire is confidential and only the clinical director and the therapist assigned to you for the process will have access to it. At the end of the questionnaire you will find the information you need to fill in to register and start the process.: The following questionnaire has as its main function to ensure the most optimal start for your therapeutic process. In this way, the questionnaire will be read by the clinical director and he/she will look for the therapist profile that best fits the emotional situation explained. If you can´t find the words to describe what you need, don´t worry, you can put "I don´t know", "I prefer to talk about it when the time comes", "I wouldn´t know how to define it"... This questionnaire is confidential and only the clinical director and the therapist assigned to you for the process will have access to it. At the end of the questionnaire you will find the information you need to fill in to register and start the process.
-How would you define what made you ask for help?: How would you define what made you ask for help?
-What do you think the problems you describe above are due to?: What do you think the problems you describe above are due to?
-Since you have been like this, what things have you tried to feel better?: Since you have been like this, what things have you tried to feel better?
-Which ones have worked? Even if only for a limited time.: Which ones have worked? Even if only for a limited time.
-Have you gone through any therapy process before?: Have you gone through any therapy process before?
-Do you think there is anything we should be aware of that we haven´t asked?: Do you think there is anything we should be aware of that we haven´t asked?
 Previous: Previous
 Next: Next
-Contact Fluxua: Contact Fluxua
 Hour: Hour
 Weekday: Weekday
 Delete: Delete
@@ -56,7 +48,6 @@ you have an appointment with us: you have an appointment with us
 Access platform: Access platform
 these are your login credentials: these are your login credentials
 Username: Username
-This is an informative email to remind you that you need to make the payment to complete the first step.: This is an informative email to remind you that you need to make the payment to complete the first step.
 List Appointments: List Appointments
 Modules: Modules
 Appointments, Tasks & More: Appointments, Tasks & More
@@ -70,7 +61,6 @@ Results: Results
 Show: Show
 Filters: Filters
 Filter: Filter
-Templates: Templates
 Object: Object
 Description: Description
 Active: Active
@@ -79,10 +69,6 @@ Type: Type
 Options: Options
 Lines: Lines
 Clients: Clients
-Patients: Patients
-patients: patients
-patient: Patient
-professional: Professional
 patient Phone: Patient Phone
 patient Address: Patient Address
 ID: ID

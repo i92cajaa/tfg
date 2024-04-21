@@ -24,27 +24,20 @@
                                 </th>
                                 <th>
                                     <a href="{{ filterService.orderBy("name", filterService.getInversedOrder("name")) }}">
-                                        {{ 'Name'|trans }} {% if filterService.isOrdered("name") %}<i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        {{ 'Name'|trans }} {% if filterService.isOrdered("name") %}<i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
                                     </a>
                                 </th>
                                 <th>
-                                    <a href="">
-                                        Datos de Contacto
-                                    </a>
+                                    Datos de Contacto
                                 </th>
-{#                                <th>#}
-{#                                    <a href="{{ filterService.orderBy("phone", filterService.getInversedOrder("phone")) }}">#}
-{#                                        {{ 'Phone'|trans }} {% if filterService.isOrdered("phone") %}<i data-feather="{{ filterService.getOrder("phone").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}#}
-{#                                    </a>#}
-{#                                </th>#}
                                 <th>
                                     <a href="{{ filterService.orderBy("roles", filterService.getInversedOrder("roles")) }}">
-                                        {{ 'Roles'|trans }} {% if filterService.isOrdered("roles") %}<i data-feather="{{ filterService.getOrder("roles").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        {{ 'Roles'|trans }} {% if filterService.isOrdered("roles") %}<i data-feather="{{ filterService.getOrder("roles").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
                                     </a>
                                 </th>
                                 <th>
                                     <a href="{{ filterService.orderBy("status", filterService.getInversedOrder("status")) }}">
-                                        Estado {% if filterService.isOrdered("status") %}<i data-feather="{{ filterService.getOrder("status").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        Estado {% if filterService.isOrdered("status") %}<i data-feather="{{ filterService.getOrder("status").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
                                     </a>
                                 </th>
                                 <th>

@@ -24,7 +24,7 @@
                                 </th>
                                 <th>
                                     <a href="{{ filterService.orderBy("name", filterService.getInversedOrder("name")) }}">
-                                        Nombre {% if filterService.isOrdered("name") %}<i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>{% endif %}
+                                        Nombre {% if filterService.isOrdered("name") %}<i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
                                     </a>
                                 </th>
                                 <th>

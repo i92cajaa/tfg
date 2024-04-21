@@ -11,6 +11,7 @@ use App\Repository\RoomRepository;
 use App\Repository\ScheduleRepository;
 use App\Repository\StatusRepository;
 use App\Repository\UserRepository;
+use App\Service\ConfigService\ConfigService;
 use App\Service\FilterService;
 use App\Shared\Classes\AbstractService;
 use App\Shared\Classes\UTCDateTime;
@@ -39,6 +40,7 @@ class ScheduleService extends AbstractService
         private readonly StatusRepository $statusRepository,
         private readonly LessonRepository $lessonRepository,
         private readonly RoomRepository $roomRepository,
+        private readonly ConfigService $configService,
         EntityManagerInterface $em,
         RouterInterface $router,
         Environment $twig,
@@ -406,6 +408,32 @@ class ScheduleService extends AbstractService
         $this->scheduleRepository->remove($schedule,true);
 
         return $this->redirectToRoute('schedule_index');
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO TOGGLE MENU
+     * ES: SERVICIO PARA ALTERNAR EL MENÚ
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function toggleMenuExpanded(): Response
+    {
+        $this->configService->toggleMenuExpanded();
+        $user = $this->getUser();
+        $newUser = $this->userRepository->find($user->getId());
+
+        if($newUser->isMenuExpanded()){
+            $newUser->setMenuExpanded(false);
+        }else{
+            $newUser->setMenuExpanded(true);
+        }
+
+        $this->userRepository->persist($newUser);
+
+        return new Response("Modo guardado satisfactoriamente", 200);
     }
     // ----------------------------------------------------------------
 }

@@ -64,18 +64,18 @@ class ConfigService extends AbstractService
         );
     }
 
-    public function toggleDarkMode()
+    public function toggleDarkMode(): void
     {
-        if($this->getSession()->get('darkMode') == null || $this->getSession()->get('darkMode') != true ){
+        if($this->getSession()->get('darkMode') == null || !$this->getSession()->get('darkMode')){
             $this->getSession()->set('darkMode', true);
         }else{
             $this->getSession()->set('darkMode', false);
         };
     }
 
-    public function toggleMenuExpanded()
+    public function toggleMenuExpanded(): void
     {
-        if($this->getSession()->get('menuExpanded') == null || $this->getSession()->get('menuExpanded') != true ){
+        if($this->getSession()->get('menuExpanded') == null || !$this->getSession()->get('menuExpanded')){
             $this->getSession()->set('menuExpanded', true);
         }else{
             $this->getSession()->set('menuExpanded', false);
