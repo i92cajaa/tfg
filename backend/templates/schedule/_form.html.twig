@@ -47,12 +47,12 @@
 
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="day">Día<span class="text-danger">*</span></label>
-            <input class="form-control flatpickr" type="text" placeholder="Día de la reserva" id="day" name="schedule[day]" {% if edit %}value="{{ field_value(form.range)['date']['day'] }}/{{ field_value(form.range)['date']['month'] }}/{{ field_value(form.range)['date']['year'] }}"{% endif %} required>
+            <input class="form-control flatpickr" type="text" placeholder="Día de la reserva" id="day" name="schedule[day]" {% if edit %}value="{{ schedule.getDateFrom|UTCDateTimeFormat('d/m/Y') }}"{% endif %} required>
         </div>
 
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="room">{{ field_label(form.range) }} <span class="text-danger">*</span></label>
-            <select class="form-control select2" id="range" name="{{ field_name(form.range) }}" required>
+            <select class="form-control select2" id="range" name="{{ field_name(form.range) }}" {% if not edit %}required{% endif %}>
 
             </select>
             {% for error in field_errors(form.range) %}
@@ -132,6 +132,7 @@
                 success: function(data){
 
                     $('#range option').remove();
+                    $('#range').append('<option value="" selected disabled>Seleccione un rango de fechas</option>').trigger('change');
                     data['ranges'].forEach(range => {
 
                         $('#range').append('<option value="'+range['start']+' - '+range['end']+'">'+range['start']+' - '+range['end']+'</option>').trigger('change');

@@ -199,8 +199,8 @@ class ScheduleService extends AbstractService
                     $currentOpeningTime->format('d')
                 );
 
-                if (($scheduleDateFrom >= $currentOpeningTime && $scheduleDateFrom <= $currentClosingTime) ||
-                    ($scheduleDateTo >= $currentOpeningTime && $scheduleDateTo <= $currentClosingTime)) {
+                if (($scheduleDateFrom >= $currentOpeningTime && $scheduleDateFrom < $currentClosingTime) ||
+                    ($scheduleDateTo > $currentOpeningTime && $scheduleDateTo <= $currentClosingTime)) {
                     $inBetween = true;
                     break;
                 }
@@ -276,11 +276,14 @@ class ScheduleService extends AbstractService
         $form->handleRequest($this->getCurrentRequest());
 
         if ($form->isSubmitted() &&
-            $this->getRequestPostParam('schedule')['date_from'] != null &&
-            $this->getRequestPostParam('schedule')['date_to'] != null)
+            $this->getRequestPostParam('schedule')['range'] !== null &&
+            $this->getRequestPostParam('schedule')['day'] !== null)
         {
-            $schedule->setDateFrom(UTCDateTime::create('d/m/Y H:i', $form->get('date_from')->getViewData()));
-            $schedule->setDateTo(UTCDateTime::create('d/m/Y H:i', $form->get('date_to')->getViewData()));
+            $day = $this->getRequestPostParam('schedule')['day'];
+            $range = explode(' - ', $this->getRequestPostParam('schedule')['range']);
+
+            $schedule->setDateFrom(UTCDateTime::create('d/m/Y H:i', $day . ' ' . $range[0]));
+            $schedule->setDateTo(UTCDateTime::create('d/m/Y H:i', $day . ' ' . $range[1]));
 
             $schedule->setStatus($this->statusRepository->find(Status::STATUS_AVAILABLE));
 
@@ -319,13 +322,16 @@ class ScheduleService extends AbstractService
         $form->handleRequest($this->getCurrentRequest());
 
         if ($form->isSubmitted() &&
-            $this->getRequestPostParam('schedule')['date_from'] != null &&
-            $this->getRequestPostParam('schedule')['date_to'] != null)
+            $this->getRequestPostParam('schedule')['day'] !== null)
         {
-            $schedule->setDateFrom(UTCDateTime::create('d/m/Y H:i', $form->get('date_from')->getViewData()));
-            $schedule->setDateTo(UTCDateTime::create('d/m/Y H:i', $form->get('date_to')->getViewData()));
+            $day = $this->getRequestPostParam('schedule')['day'];
 
-            $schedule->setStatus($this->statusRepository->find(Status::STATUS_AVAILABLE));
+            if (isset($this->getRequestPostParam('schedule')['range'])) {
+                $range = explode(' - ', $this->getRequestPostParam('schedule')['range']);
+
+                $schedule->setDateFrom(UTCDateTime::create('d/m/Y H:i', $day . ' ' . $range[0]));
+                $schedule->setDateTo(UTCDateTime::create('d/m/Y H:i', $day . ' ' . $range[1]));
+            }
 
             $this->scheduleRepository->save($schedule, true);
 
@@ -370,7 +376,7 @@ class ScheduleService extends AbstractService
             $status = $this->statusRepository->find($this->getRequestPostParam('status'));
 
             if($status->getId()==Status::STATUS_CANCELED){
-                $this->email($schedule);
+                //$this->email($schedule);
             }
 
             $schedule->setStatus($status);
