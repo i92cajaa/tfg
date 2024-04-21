@@ -75,6 +75,7 @@
                                         {% endif %}
                                         {% if userPermission.can('edit', 'lessons') %}
                                             <a href="{{ path('lesson_edit', {'lesson': lesson.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
+                                            <a href="{{ path('lesson_change_status', {'lesson': lesson.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{% if lesson.status %}Desactivar{% else %}Activar{% endif %} clase"><i class="align-middle" data-feather='power'></i><span class="align-middle"></span></a>
                                         {% endif %}
                                         {% if userPermission.can('delete', 'lessons') %}
                                             <div class="dropdown-divider"></div>

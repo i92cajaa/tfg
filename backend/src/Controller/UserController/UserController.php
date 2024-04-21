@@ -5,6 +5,7 @@ namespace App\Controller\UserController;
 use App\Annotation\Permission;
 use App\Service\UserService\UserService;
 use DateTime;
+use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,6 +44,7 @@ class UserController extends AbstractController
      *
      * @param string $user
      * @return Response
+     * @throws NonUniqueResultException
      */
     // ----------------------------------------------------------------
     #[Route(path: '/show/{user}', name: 'user_show', methods: ["GET", "POST"])]
@@ -61,6 +63,7 @@ class UserController extends AbstractController
      * @param string $user
      * @param Request $request
      * @return Response
+     * @throws NonUniqueResultException
      */
     // ----------------------------------------------------------------
     #[Route(path: '/view_profile/{user}', name: 'user_view_profile', methods: ["GET", "POST"])]
@@ -111,6 +114,7 @@ class UserController extends AbstractController
      *
      * @param string $user
      * @return Response
+     * @throws NonUniqueResultException
      */
     // ----------------------------------------------------------------
     #[Route(path: '/change-status/{user}', name: 'user_change_status', methods: ["GET", "POST"])]

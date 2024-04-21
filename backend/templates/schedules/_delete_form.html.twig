@@ -1,5 +1,0 @@
-<form method="post" action="{{ path('schedules_delete', {'schedule': schedule.id}) }}" class="deleteForm">
-    <input type="hidden" name="_method" value="DELETE">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ schedule.id) }}">
-    <button class="btn btn-grey">{{ 'Delete'|trans }}</button>
-</form>

@@ -3,8 +3,7 @@ Enter your email & password to login: Introduzca su correo electrónico y contra
 Email Address: Correo Electrónico
 ModifyPass: Aceptar
 Reset your password: Restablecer tu contraseña
-Follow this link to reset your user account password in: Sigue este enlace para restablecer la contraseña de tu cuenta de usuario en 
-Andalucia Open Future: Andalucía Open Future.
+Follow this link to reset your user account password in: Sigue este enlace para restablecer la contraseña de tu cuenta de usuario en
 If you did not request a new password you can safely delete this email: Si no solicitaste una nueva contraseña puedes borrar este correo electrónico de manera segura.
 Enter a new password (Remember it must be at least 8 characters long, contain a punctuation mark, and an uppercase letter): Introduzca una nueva contraseña (Recuerde que debe tener 8 caracteres mínimo, un signo de puntuación y una mayúscula).
 Password: Contraseña
@@ -17,7 +16,6 @@ Notifications: Notificaciones
 My profile: Mi perfil
 Logout: Cerrar sesión
 Click here to see it: Haz click aquí para verlo
-Mark as read: Marcar como leído
 Administration: Administración
 Dashboards & configuration: Panel de control y configuración
 Dashboard: Panel de control
@@ -38,116 +36,49 @@ New: Nuevo
 Edit: Editar
 List: Listar
 Delete: Eliminar
-professionals: Profesionales
-List Appointments: Listar Citas
 List Clients: Listar Clientes
-List Patients: Listar Pacientes
-List Requests: Listar Solicitudes
 List Configs: Listar Configuraciones
-List Divisions: Listar Divisiónes
-List Extra Appointment Fields: Listar Campo Adicionales
-List Absences: Listar Ausencias
-List Payment Methods: Listar Método de Pagos
-List Payments: Listar Pagos
 List Schedules: Listar Horarios
-List Services: Listar Servicios
-List Tasks: Listar Tareas
-List Templates: Listar Fichas
-List Template Types: Listar Tipos de Fichas
 List Users: Listar Usuarios
-List Professionals: Listar Profesionales
-List professionals: Listar Profesionales
-List patients: Listar Pacientes
-List Invoices: Listar Facturas
-Create Appointment: Crear Cita
+List Areas: Listar Áreas
+List Centers: Listar Centros
+List Lessons: Listar Clases
+List Rooms: Listar Habitaciones
 Create Client: Crear Cliente
-Create Patient: Crear Paciente
-Create Request: Crear Solicitud
 Create Config: Crear Configuración
-Create Division: Crear División
-Create Extra Appointment Field: Crear Campo Adicional
-Create Absence: Crear Ausencia
-Create Payment Method: Crear Método de Pago
-Create Payment: Crear Pago
 Create Schedule: Crear Horario
-Create Service: Crear Servicio
-Create Task: Crear Tarea
-Create Template: Crear Ficha
-Create Template Type: Crear Tipo de Ficha
 Create User: Crear Usuario
-Create Professional: Crear Profesional
-Create Invoice: Crear Factura
-Edit Appointment: Editar Cita
+Create Area: Crear Área
+Create Center: Crear Centro
+Create Lesson: Crear Clase
+Create Room: Crear Habitación
 Edit Client: Editar Cliente
-Edit Patient: Editar Paciente
-Edit Request: Editar Solicitud
+Edit Lesson: Editar Clase
 Edit Config: Editar Configuración
-Edit Division: Editar División
-Edit Extra Appointment Field: Editar Campo Adicional
-Edit Absence: Editar Ausencia
-Edit Payment Method: Editar Método de Pago
-Edit Payment: Edit Pago
 Edit Schedule: Editar Horario
-Edit Service: Editar Servicio
-Edit Task: Editar Tarea
-Edit Template: Editar Ficha
-Edit Template Type: Editar Tipo de Ficha
 Edit User: Editar Usuario
-Edit Professional: Editar Profesional
-Edit Invoice: Editar Factura
-Show Appointment: Ver Cita
+Edit Area: Editar Área
+Edit Center: Editar Centro
+Edit Room: Editar Habitación
 Show Client: Ver Cliente
-Show Patient: Ver Paciente
-Show patient: Ver Paciente
-Show Request: Ver Solicitud
 Show Config: Ver Configuración
-Show Division: Ver División
-Show Extra Appointment Field: Ver Campo Adicional
-Show Absence: Ver Ausencia
-Show Payment Method: Ver Método de Pago
-Show Payment: Ver Pago
 Show Schedule: Ver Horario
-Show Service: Ver Servicio
-Show Task: Ver Tarea
-Show Template: Ver Ficha
-Show Template Type: Ver Tipo de Ficha
 Show User: Ver Usuario
-Show Professional: Ver Profesional
-Show Invoice: Ver Factura
-Show Client Invoice: Ver Factura de Cliente
-Show Patient Invoice: Ver Factura de Paciente
-Show User Invoice: Ver Factura de Usuario
-Show Professional Invoice: Ver Factura de Profesional
-Delete Appointment: Eliminar Cita
+Show Area: Ver Área
+Show Center: Ver Centro
+Show Lesson: Ver Clase
+Show Room: Ver Habitación
 Delete Client: Eliminar Cliente
-Delete Request: Eliminar Solicitud
 Delete Config: Eliminar Configuración
-Delete Division: Eliminar División
-Delete Extra Appointment Field: Eliminar Campo Adicional
-Delete Absence: Eliminar Ausencia
-Delete Payment Method: Eliminar Método de Pago
-Delete Payment: Eliminar Pago
 Delete Schedule: Eliminar Horario
-Delete Service: Eliminar Servicio
-Delete Task: Eliminar Tarea
-Delete Template: Eliminar Ficha
-Delete Template Type: Eliminar Tipo de Ficha
 Delete User: Eliminar Usuario
-Delete Professional: Eliminar Profesional
-Delete Invoice: Eliminar Factura
-Modules: Módulos
-Appointments, Tasks & More: Citas, Tareas y Más
 Users: Usuarios
 User: Usuario
-Professional: Profesional
 Delete image: Eliminar imagen
 Image: Imagen
 Name: Nombre
 Surnames: Apellidos
 Email: Correo Electrónico
-Appointment Color: Color de Cita
-Appointment: Cita
-Task Color: Color de Tareas
 Permissions: Permisos
 Update: Actualizar
 Create: Crear

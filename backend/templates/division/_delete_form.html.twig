@@ -1,5 +1,0 @@
-<form method="post" action="{{ path('division_delete', {'division': division.id}) }}" class="deleteForm">
-    <input type="hidden" name="_method" value="DELETE">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ division.id) }}">
-    <button class="btn btn-grey">{{ 'Delete'|trans }}</button>
-</form>

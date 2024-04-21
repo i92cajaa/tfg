@@ -103,6 +103,24 @@ class LessonController extends AbstractController
 
     // ----------------------------------------------------------------
     /**
+     * EN: ENDPOINT TO CHANGER A LESSON'S STATUS
+     * ES: ENDPOINT PARA CAMBIAR EL ESTADO DE UNA CLASE
+     *
+     * @param string $lesson
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/change-status/{lesson}', name: 'lesson_change_status', methods: ["GET", "POST"])]
+    #[Permission(group: 'lessons', action: 'edit')]
+    public function changeStatus(string $lesson): Response
+    {
+        return $this->lessonService->changeStatus($lesson);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
      * EN: ENDPOINT TO DELETE A LESSON
      * ES: ENDPOINT PARA BORRAR UNA CLASE
      *

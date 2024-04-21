@@ -63,39 +63,13 @@
 
                                 <!-- Invoice Note starts -->
                                 <div class="card-body invoice-padding pt-0 text-end border-top-0">
-                                    {% if userPermission.can('delete', 'appointments') %}
-                                        {% if periodic %}
-                                            {% if prev > 0 %}
-                                                <a class="deletePrevAppointments" data-id="{{ appointment.id }}"><button class="btn btn-outline-danger">
-                                                    {{ 'Delete Previous'|trans }}</button></a>
-                                                <form method="post" id="deletePrevAppointments" action="{{ path('appointment_delete_periodic', {'appointment': appointment.id}) }}" class=" deleteForm d-none">
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
-                                                    <input type="hidden" name="operator" value="prev">
-                                                </form>
-                                            {% endif %}
-                                            <a class="btn btn-outline-danger" onclick="$('#deleteForm_appointment_{{ appointment.id }}').submit()">{{ 'Delete'|trans }}</a>
-                                            <form method="post" id="deleteForm_appointment_{{ appointment.id }}" action="{{ path('appointment_delete', {'appointment': appointment.id}) }}" class="deleteForm d-none">
-                                                <input type="hidden" name="_method" value="DELETE">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
-                                                <input type="hidden" name="route" value="{{ path('appointment_list') }}">
-                                            </form>
-                                            {% if next > 0 %}
-                                                <a class="deleteNextAppointments" data-id="{{ appointment.id }}"><button class="btn btn-outline-danger">{{ 'Delete Next'|trans }}</button></a>
-                                                <form method="post" id="deleteNextAppointments" action="{{ path('appointment_delete_periodic', {'appointment': appointment.id}) }}" class="deleteForm d-none">
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
-                                                    <input type="hidden" name="operator" value="next">
-                                                </form>
-                                            {% endif %}
-                                        {% else %}
-                                            <a class="btn btn-outline-danger" onclick="$('#deleteForm_appointment_{{ appointment.id }}').submit()">{{ 'Delete'|trans }}</a>
-                                            <form method="post" id="deleteForm_appointment_{{ appointment.id }}" action="{{ path('appointment_delete', {'appointment': appointment.id}) }}" class="deleteForm d-none">
-                                                <input type="hidden" name="_method" value="DELETE">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
-                                                <input type="hidden" name="route" value="{{ path('appointment_list') }}">
-                                            </form>
-                                        {% endif %}
+                                    {% if userPermission.can('delete', 'schedules') %}
+                                        <a class="btn btn-outline-danger" onclick="$('#deleteForm_schedule_{{ schedule.id }}').submit()">{{ 'Delete'|trans }}</a>
+                                        <form method="post" id="deleteForm_schedule_{{ schedule.id }}" action="{{ path('schedule_delete', {'schedule': schedule.id}) }}" class="deleteForm d-none">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
+                                            <input type="hidden" name="route" value="{{ path('schedule_index') }}">
+                                        </form>
                                     {% endif %}
                                 </div>
                                 <!-- Invoice Note ends -->

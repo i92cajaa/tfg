@@ -293,6 +293,7 @@ class ScheduleService extends AbstractService
         }
 
         $this->filterService->addFilter('roles', 3);
+        $this->filterService->addFilter('status', true);
         $users = $this->userRepository->findUsers($this->filterService, true)['users'];
 
         return $this->render('schedule/new.html.twig', [
@@ -339,6 +340,7 @@ class ScheduleService extends AbstractService
         }
 
         $this->filterService->addFilter('roles', 3);
+        $this->filterService->addFilter('status', true);
         $users = $this->userRepository->findUsers($this->filterService, true)['users'];
 
         $this->filterService->addFilter('teacher', $schedule->getTeacher()->getId());
@@ -365,26 +367,45 @@ class ScheduleService extends AbstractService
      * ES: SERVICIO PARA CAMBIAR EL ESTADO DE UN HORARIO
      *
      * @param string $scheduleId
+     * @param int|null $status
      * @return Response
      * @throws NonUniqueResultException
      */
     // ----------------------------------------------------------------
-    public function changeStatus(string $scheduleId): Response
+    public function changeStatus(string $scheduleId, ?int $status = null): Response
     {
         $schedule = $this->scheduleRepository->findById($scheduleId, false);
-        if ($this->isCsrfTokenValid('change-status', $this->getRequestPostParam('_token'))) {
-            $status = $this->statusRepository->find($this->getRequestPostParam('status'));
 
-            if($status->getId()==Status::STATUS_CANCELED){
-                //$this->email($schedule);
-            }
+        $status = $this->statusRepository->find($status ?: $this->getRequestPostParam('status'));
 
-            $schedule->setStatus($status);
-
-            $this->scheduleRepository->save($schedule, true);
+        if ($status->getId() == Status::STATUS_CANCELED) {
+            //$this->email($schedule);
         }
+
+        $schedule->setStatus($status);
+
+        $this->scheduleRepository->save($schedule, true);
+
         return $this->redirectToRoute('schedule_show', ['schedule' => $schedule->getId()]);
 
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO DELETE A SCHEDULE
+     * ES: SERVICIO PARA BORRAR UN HORARIO
+     *
+     * @param string $scheduleId
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function delete(string $scheduleId): Response
+    {
+        $schedule = $this->getEntity($scheduleId);
+        $this->scheduleRepository->remove($schedule,true);
+
+        return $this->redirectToRoute('schedule_index');
     }
     // ----------------------------------------------------------------
 }

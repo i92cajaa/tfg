@@ -195,7 +195,7 @@
                                     <li class="sidebar-list">
                                         <a href="{{ path('user_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'user_index' %}nav-active{% endif %}" data-original-title="" title="">
                                             <i data-feather="user"></i>
-                                            <span>Usuarios</span>
+                                            <span>{{ 'Users'|trans }}</span>
                                         </a>
                                     </li>
                                 {% endif %}
@@ -204,11 +204,10 @@
                                     <li class="sidebar-list">
                                         <a href="{{ path('config_edit') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'config_' %}nav-active{% endif %}" data-original-title="" title="">
                                             <i data-feather="settings"></i>
-                                            <span>Configuración</span>
+                                            <span>{{ 'Configuration'|trans }}</span>
                                         </a>
                                     </li>
                                 {% endif %}
-
                             {% endif %}
 
                         </ul>

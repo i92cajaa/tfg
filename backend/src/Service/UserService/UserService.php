@@ -8,6 +8,7 @@ use App\Repository\ClientHasDocumentRepository;
 use App\Repository\LessonRepository;
 use App\Repository\SurveyRangeRepository;
 use App\Service\FilterService;
+use App\Service\ScheduleService\ScheduleService;
 use DateTime;
 use App\Entity\Area\Area;
 use App\Entity\Center\Center;
@@ -68,6 +69,7 @@ class UserService extends AbstractService
     public function __construct(
         private readonly DocumentService $documentService,
         private readonly PermissionService $permissionService,
+        private readonly ScheduleService $scheduleService,
         private readonly UserRepository $userRepository,
         private readonly RoleRepository $roleRepository,
         private readonly AreaRepository $areaRepository,
@@ -75,7 +77,6 @@ class UserService extends AbstractService
         private readonly ClientRepository $clientRepository,
         private readonly StatusRepository $statusRepository,
         private readonly LessonRepository $lessonRepository,
-        private readonly ClientHasDocumentRepository $clientHasDocumentRepository,
 
         EntityManagerInterface $em,
 
@@ -443,10 +444,9 @@ class UserService extends AbstractService
 
                         foreach ($lesson->getSchedules() as $schedule) {
                             if ($schedule->getDateFrom() > UTCDateTime::create('NOW')) {
-                                //Do the change of schedule to canceled in the schedule service (email sent)
+                                $this->scheduleService->changeStatus($schedule->getId(), Status::STATUS_CANCELED);
                             }
                         }
-                        //save lesson status
                     }
                 }
                 $this->getSession()->getFlashBag()->add('success', 'Usuario desactivado correctamente.');

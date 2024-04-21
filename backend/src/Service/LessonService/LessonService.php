@@ -11,6 +11,7 @@ use App\Repository\UserHasLessonRepository;
 use App\Repository\UserRepository;
 use App\Service\DocumentService\DocumentService;
 use App\Shared\Classes\AbstractService;
+use App\Shared\Classes\UTCDateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
@@ -95,12 +96,45 @@ class LessonService extends AbstractService
         $status = false;
         if ($this->isCsrfTokenValid('get-lessons-by-user', $this->getRequestPostParam('_token'))) {
             $this->filterService->addFilter('teacher', $this->getRequestPostParam('user'));
+            $this->filterService->addFilter('status', true);
 
             $lessons = $this->lessonRepository->findLessons($this->filterService, true, true)['lessons'];
             $status = true;
         }
 
         return new JsonResponse(['lessons' => $lessons, 'status' => $status]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO CHANGE A LESSON'S STATUS
+     * ES: SERVICIO PARA CAMBIAR EL ESTADO DE UNA CLASE
+     *
+     * @param string $statusId
+     * @return JsonResponse
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function changeStatus(string $statusId): Response
+    {
+        $lesson = $this->lessonRepository->findById($statusId, false);
+
+        try {
+            if ($lesson->isStatus()) {
+                $lesson->setStatus(false);
+                $this->getSession()->getFlashBag()->add('success', 'Clase desactivada correctamente.');
+            } else {
+                $lesson->setStatus(true);
+                $this->getSession()->getFlashBag()->add('success', 'Clase activada correctamente.');
+            }
+
+            $this->lessonRepository->save($lesson, true);
+        } catch (\Exception $error) {
+            $this->getSession()->getFlashBag()->add('danger', 'Error al cambiar el estado de la clase');
+        }
+
+        return $this->redirectToRoute('lesson_index');
     }
     // ----------------------------------------------------------------
 

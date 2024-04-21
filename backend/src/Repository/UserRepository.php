@@ -70,7 +70,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->leftJoin('userHasDocuments.document', 'document')
             ->leftJoin('u.lessons', 'userHasLessons')
             ->leftJoin('userHasLessons.lesson', 'lesson')
-            ->leftJoin('u.schedules', 'schedules')
+            ->leftJoin('lesson.schedules', 'schedules')
             ->addSelect('imgProfile')
             ->addSelect('center')
             ->addSelect('userHasRoles')

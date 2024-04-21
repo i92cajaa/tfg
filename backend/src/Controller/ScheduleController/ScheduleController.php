@@ -135,4 +135,21 @@ class ScheduleController extends AbstractController
         return $this->scheduleService->changeStatus($schedule);
     }
     // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO DELETE A SCHEDULE
+     * ES: ENDPOINT PARA BORRAR UN HORARIO
+     *
+     * @param string $schedule
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/schedule/delete/{schedule}', name: 'schedule_delete', methods: ["POST"])]
+    #[Permission(group: 'schedules', action: 'delete')]
+    public function delete(string $schedule): Response
+    {
+        return $this->scheduleService->delete($schedule);
+    }
+    // ----------------------------------------------------------------
 }

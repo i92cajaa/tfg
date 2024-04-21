@@ -2,8 +2,7 @@ Sign in to account: Sign in to account
 Enter your email & password to login: Enter your email & password to login
 Email Address: Email Address
 ModifyPass: Accept
-Follow this link to reset your user account password in: Follow this link to reset the password for your user account at 
-Andalucia Open Future: Andalucía Open Future. 
+Follow this link to reset your user account password in: Follow this link to reset the password for your user account at
 If you did not request a new password you can safely delete this email: If you didn't request a new password, you can safely delete this email.
 Reset your password: Reset your password
 Enter a new password (Remember it must be at least 8 characters long, contain a punctuation mark, and an uppercase letter): Enter a new password (Remember it must be at least 8 characters long, contain a punctuation mark, and an uppercase letter).
@@ -13,13 +12,10 @@ Remember password: Remember password
 Recover password: Recover password
 Sign in: Sign in
 Actions: Actions
-Create Appointment: Create Appointment
-Create Task: Create Task
 Notifications: Notifications
 My profile: My profile
 Logout: Logout
 Click here to see it: Click here to see it
-Mark as read: Mark as read
 Administration: Administration
 Dashboards & configuration: Dashboards & configuration
 Dashboard: Dashboard
@@ -31,8 +27,6 @@ Number: Number
 Confirmation: Confirmation
 Selector: Selector
 Name: Name
-Treatment Initiation Questionnaire: Treatment Initiation Questionnaire
-Welcome to Fluxua!: Welcome to Fluxua!
 The following questionnaire has as its main function to ensure the most optimal start for your therapeutic process. In this way, the questionnaire will be read by the clinical director and he/she will look for the therapist profile that best fits the emotional situation explained. If you can´t find the words to describe what you need, don´t worry, you can put "I don´t know", "I prefer to talk about it when the time comes", "I wouldn´t know how to define it"... This questionnaire is confidential and only the clinical director and the therapist assigned to you for the process will have access to it. At the end of the questionnaire you will find the information you need to fill in to register and start the process.: The following questionnaire has as its main function to ensure the most optimal start for your therapeutic process. In this way, the questionnaire will be read by the clinical director and he/she will look for the therapist profile that best fits the emotional situation explained. If you can´t find the words to describe what you need, don´t worry, you can put "I don´t know", "I prefer to talk about it when the time comes", "I wouldn´t know how to define it"... This questionnaire is confidential and only the clinical director and the therapist assigned to you for the process will have access to it. At the end of the questionnaire you will find the information you need to fill in to register and start the process.
 How would you define what made you ask for help?: How would you define what made you ask for help?
 What do you think the problems you describe above are due to?: What do you think the problems you describe above are due to?
@@ -467,7 +461,7 @@ Create Professional: Create Professional
 Create Invoice: Create Invoice
 Edit Appointment: Edit Appointment
 Edit Client: Edit Client
-Edit Patient: Edit Patient
+Edit Lesson: Edit Class
 Edit Request: Edit Request
 Edit Config: Edit Config
 Edit Division: Edit Division
