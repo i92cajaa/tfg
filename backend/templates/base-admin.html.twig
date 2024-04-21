@@ -131,39 +131,12 @@
                                 <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
                             </li>
 
-                            {% if userPermission.can('list', 'user') %}
-                                <li class="sidebar-list">
-                                    <a href="#" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'appointment_' and 'request_' not in app.request.attributes.get( '_route' ) != 'appointment_index'  %}nav-active{% endif %}" data-original-title="" title="">
-                                        <i data-feather="layers"></i>
-                                        <span>Mentorías</span>
-                                    </a>
-                                </li>
-                            {% endif %}
-
                             <li class="sidebar-list">
                                 <a href="{{ path('schedule_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) == 'schedule_index' %}nav-active{% endif %}" data-original-title="" title="">
                                     <i data-feather="calendar"></i>
                                     <span>{{ 'Calendar'|trans }}</span>
                                 </a>
                             </li>
-
-                            {% if userPermission.can('list', 'centers') %}
-                                <li class="sidebar-list">
-                                        <a href="{{ path('center_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'center_' %}nav-active{% endif %}" data-original-title="" title="">
-                                            <i data-feather="map-pin"></i>
-                                            <span>Centros</span>
-                                        </a>
-                                </li>
-                            {% endif %}
-
-                            {% if userPermission.can('list', 'areas') %}
-                                <li class="sidebar-list">
-                                    <a href="{{ path('area_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'area_' %}nav-active{% endif %}" data-original-title="" title="">
-                                        <i data-feather="map"></i>
-                                        <span>Áreas</span>
-                                    </a>
-                                </li>
-                            {% endif %}
 
                             {% if userPermission.can('list', 'lessons') %}
                                 <li class="sidebar-list">
@@ -179,6 +152,24 @@
                                     <a href="{{ path('room_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'room_' %}nav-active{% endif %}" data-original-title="" title="Habitaciones">
                                         <i data-feather="home"></i>
                                         <span>Habitaciones</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if userPermission.can('list', 'centers') %}
+                                <li class="sidebar-list">
+                                    <a href="{{ path('center_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'center_' %}nav-active{% endif %}" data-original-title="" title="">
+                                        <i data-feather="map-pin"></i>
+                                        <span>Centros</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if userPermission.can('list', 'areas') %}
+                                <li class="sidebar-list">
+                                    <a href="{{ path('area_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'area_' %}nav-active{% endif %}" data-original-title="" title="">
+                                        <i data-feather="map"></i>
+                                        <span>Áreas</span>
                                     </a>
                                 </li>
                             {% endif %}
