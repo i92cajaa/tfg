@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Document\Document;
-use App\Entity\Document\SurveyRange;
 use App\Shared\Traits\DoctrineStorableObject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityRepository;
@@ -30,11 +29,6 @@ class DocumentRepository extends ServiceEntityRepository
      * @param string $mimetype
      * @param string $subdirectory
      * @param bool $status
-     * @param bool|null $isStartupSurvey
-     * @param bool|null $isMentorSurvey
-     * @param float|null $totalPointsMentorSurvey
-     * @param SurveyRange|null $surveyRange
-     * @param int|null $mentoredTime
      * @return Document
      */
     public function createDocument(
@@ -43,12 +37,7 @@ class DocumentRepository extends ServiceEntityRepository
         string $extension,
         string $mimetype,
         string $subdirectory,
-        bool $status = true,
-        bool $isStartupSurvey = null,
-        bool $isMentorSurvey = null,
-        float $totalPointsMentorSurvey = null,
-        SurveyRange $surveyRange = null,
-        float $mentoredTime = null
+        bool $status = true
     ): Document
     {
         $document = (new Document())
@@ -76,20 +65,6 @@ class DocumentRepository extends ServiceEntityRepository
     public function deleteDocument(Document $document): void
     {
         $this->delete($this->_em, $document);
-    }
-
-    /**
-     * @param Document $document
-     * @return void
-     */
-    public function addSurveyRangeToDocument(Document $document, SurveyRange $surveyRange): void
-    {
-        $document = $this->findDocument($document->getId());
-
-        $document->setSurveyRange($surveyRange);
-
-        $this->_em->persist($document);
-        $this->_em->flush();
     }
 
     /**

@@ -2,15 +2,12 @@
 
 namespace App\Controller\ClientController;
 
-use App\Entity\Client\Client;
-use App\Service\ClientService\ClientService;
 use App\Annotation\Permission;
+use App\Service\ClientService\ClientService;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 #[Route(path: '/client')]
 class ClientController extends AbstractController
@@ -18,67 +15,109 @@ class ClientController extends AbstractController
 
     public function __construct(
         private readonly ClientService $clientService
-
-    )
-    {
+    ) {
     }
 
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO LIST ALL CLIENTS
+     * ES: ENDPOINT PARA LISTAR TODOS LOS CLIENTES
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
     #[Route(path: '/', name: 'client_index', methods: ["GET"])]
-    #[Permission(group: 'clients', action:"list")]
+    #[Permission(group: 'clients', action: "list")]
     public function index(): Response
     {
         return $this->clientService->index();
     }
+    // ----------------------------------------------------------------
 
-    
-
-    #[Route(path: '/new', name: 'client_new', methods: ["GET", "POST"])]
-    #[Permission(group: 'clients', action:"create")]
-    public function new(): Response
-    {
-        return $this->clientService->new();
-    }
-
-    #[Route(path: '/{client}', name: 'client_show', defaults:["client" => null], methods: ["GET", "POST"])]
-    #[Permission(group: 'clients', action:"show")]
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO SHOW A CLIENT'S DATA
+     * ES: ENDPOINT PARA MOSTRAR LOS DATOS DE UN CLIENTE
+     *
+     * @param string $client
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/show/{client}', name: 'client_show', methods: ["GET", "POST"])]
+    #[Permission(group: 'clients', action: "show")]
     public function show(string $client): Response
     {
         return $this->clientService->show($client);
     }
+    // ----------------------------------------------------------------
 
-    
-    
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO CREATE A NEW CLIENT
+     * ES: ENDPOINT PARA CREAR UN CLIENTE NUEVO
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/new', name: 'client_new', methods: ["GET", "POST"])]
+    #[Permission(group: 'clients', action: "create")]
+    public function new(): Response
+    {
+        return $this->clientService->new();
+    }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO EDIT A CLIENT
+     * ES: ENDPOINT PARA EDITAR UN CLIENTE
+     *
+     * @param string $client
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
     #[Route(path: '/edit/{client}', name: 'client_edit', methods: ["GET", "POST"])]
-    #[Permission(group: 'clients', action:"edit")]
+    #[Permission(group: 'clients', action: "edit")]
     public function edit(string $client): Response
     {
         return $this->clientService->edit($client);
     }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO CHANGE A CLIENT'S STATUS
+     * ES: ENDPOINT PARA CAMBIAR EL ESTADO DE UN CLIENTE
+     *
+     * @param string $client
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
     #[Route(path: '/change-status/{client}', name: 'client_change_status', methods: ["GET", "POST"])]
-    #[Permission(group: 'clients', action:"edit")]
-    public function changeStatus(string $client): Response
+    #[Permission(group: 'clients', action: "edit")]
+    public function change_status(string $client): Response
     {
-        return $this->clientService->changeStatus($client);
+        return $this->clientService->change_status($client);
     }
+    // ----------------------------------------------------------------
 
-    #[Route(path: '/document/{client}', name: 'client_document', defaults: ["client" => null], methods: ["GET", "POST"])]
-    #[Permission(group: 'clients', action:"show")]
-    public function uploadDocument(string $client,Request $request): Response
-    {
-        return $this->clientService->uploadClientDocument($client,$request);
-    }
-
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO DELETER A CLIENT
+     * ES: ENDPOINT PARA BORRAR UN CLIENTE
+     *
+     * @param string $client
+     * @return Response
+     */
+    // ----------------------------------------------------------------
     #[Route(path: '/delete/{client}', name: 'client_delete', methods: ["POST"])]
-    #[Permission(group: 'clients', action:"delete")]
-    public function delete(string $client, Request $request): Response
+    #[Permission(group: 'clients', action: "delete")]
+    public function delete(string $client): Response
     {
-        return $this->clientService->delete($client, $request);
+        return $this->clientService->delete($client);
     }
-    #[Route(path: '/new/change_status_or_alumni', name: 'client_change_status_or_alumni', methods: ["GET", "POST"])]
-    public function changeStatusOrAlumni(): Response
-    {
-        return $this->clientService->changeStatusOrAlumni();
-    }
+    // ----------------------------------------------------------------
 }

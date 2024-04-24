@@ -6,20 +6,13 @@ use App\Entity\Config\ConfigType;
 use App\Repository\ConfigRepository;
 use App\Repository\ConfigTypeRepository;
 use App\Service\DocumentService\DocumentService;
-use App\Service\MicrosoftGraphsService;
 use App\Shared\Classes\AbstractService;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -29,12 +22,10 @@ class ConfigService extends AbstractService
 
     const UPLOAD_FILES_PATH = 'configs';
 
-    private ConfigTypeRepository $configTypeRepository;
-
-    private ConfigRepository $configRepository;
-
     public function __construct(
-        private readonly DocumentService      $documentService,
+        private readonly DocumentService $documentService,
+        private readonly ConfigRepository $configRepository,
+        private readonly ConfigTypeRepository $configTypeRepository,
 
         EntityManagerInterface $em,
 
@@ -48,9 +39,6 @@ class ConfigService extends AbstractService
         TranslatorInterface $translator
     )
     {
-        $this->configRepository = $em->getRepository(Config::class);
-        $this->configTypeRepository = $em->getRepository(ConfigType::class);
-
         parent::__construct(
             $requestStack,
             $router,

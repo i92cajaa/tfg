@@ -1,0 +1,83 @@
+{#<form name="user" enctype="multipart/form-data" method="post" autocomplete="off">#}
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+    <div class="w-100 row">
+
+        <input type="hidden" id="user_delete_image" name="user[delete_image]" autocomplete="off">
+        <h2>Info de Contacto</h2>
+        <hr>
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.name) }}">{{ field_label(form.name) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.name) }}" id="{{ field_name(form.name) }}" name="{{ field_name(form.name) }}" value="{{ field_value(form.name) }}" required>
+            {% for error in field_errors(form.name) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.surnames) }}">{{ field_label(form.surnames) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.surnames) }}" id="{{ field_name(form.surnames) }}" name="{{ field_name(form.surnames) }}" value="{{ field_value(form.surnames) }}">
+            {% for error in field_errors(form.surnames) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.dni) }}">{{ field_label(form.dni) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.dni) }}" id="{{ field_name(form.dni) }}" name="{{ field_name(form.dni) }}" value="{{ field_value(form.dni) }}" required>
+            {% for error in field_errors(form.dni) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.phone) }}">{{ field_label(form.phone) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.phone) }}" id="{{ field_name(form.phone) }}" name="{{ field_name(form.phone) }}" value="{{ field_value(form.phone) }}" required>
+            {% for error in field_errors(form.phone) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.email) }}">{{ field_label(form.email) }} </label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.email) }}" id="{{ field_name(form.email) }}" name="{{ field_name(form.email) }}" value="{{ field_value(form.email) }}">
+            {% for error in field_errors(form.email) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-2 col-sm-6 mb-3">
+                <label class="form-label" >{{ field_label(form.password.first) }} {% if not edit %}<span class="text-danger">*</span>{% endif %} </label>
+                <input class="form-control" type="password"
+                       placeholder="{{ field_label(form.password.first) }}" id="{{ field_name(form.password.first) }}"
+                       name="{{ field_name(form.password.first) }}"
+                       value="{{ field_value(form.password.first) }}"
+                       {% if not edit %}required{% endif %}>
+                {% for error in field_errors(form.password.first) %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+        </div>
+
+        <div class="col-md-2 col-sm-6 mb-3">
+                <label class="form-label" for="{{ field_name(form.password.second) }}">{{ field_label(form.password.second) }} {% if not edit %}<span class="text-danger">*</span>{% endif %} </label>
+                <input class="form-control" type="password"
+                       placeholder="{{ field_label(form.password.second) }}" id="{{ field_name(form.password.second) }}"
+                       name="{{ field_name(form.password.second) }}"
+                       value="{{ field_value(form.password.second) }}"
+                       {% if not edit %}required{% endif %}>
+                {% for error in field_errors(form.password.second) %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+        </div>
+
+        {{ form_row(form._token) }}
+    </div>
+
+    <input id="deleteImgInput" type="hidden" name="user[deleteImg]">
+{{ form_end(form) }}
+
+<script>
+
+</script>
+
+
+

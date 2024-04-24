@@ -3,32 +3,20 @@
 
 namespace App\Service;
 
-
-
+use App\Entity\Client\Booking;
 use App\Repository\UserRepository;
-use App\Entity\Appointment\Appointment;
 use App\Entity\Client\Client;
 use App\Entity\User\User;
-use App\Entity\ClientRequest\ClientRequest;
-use App\Entity\Config\Config;
 use App\Entity\Config\ConfigType;
-use App\Repository\ConfigRepository;
-use App\Repository\PaymentMethodRepository;
 use App\Service\ConfigService\ConfigService;
-use Doctrine\DBAL\Exception;
-use Doctrine\ORM\EntityManagerInterface;
-use ProxyManager\Exception\ExceptionInterface;
-use Psr\Log\InvalidArgumentException;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Exception\RfcComplianceException;
 use TypeError;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 
 class MailService
@@ -55,11 +43,11 @@ class MailService
         $this->userRepository = $userRepository;
     }
 
-    public function sendEmail(Appointment $appointment, $subject = null, string $title = null, $text = null): bool
+    public function sendEmail(Booking $booking, $subject = null, string $title = null, $text = null): bool
     {
 
         try {
-            $emailTo = new Address($appointment->getClient()->getEmail());
+            $emailTo = new Address($booking->getClient()->getEmail());
         } catch (RfcComplianceException | TypeError $e) {
             return false;
         }
@@ -73,7 +61,7 @@ class MailService
             ->htmlTemplate('email/appointment.html.twig')
             ->context([
                 'appUrl' => $this->app_url,
-                'appointment' => $appointment,
+                'appointment' => $booking,
                 'configuration' => $this->app,
                 'title' => $title,
                 'content' => $text
@@ -126,132 +114,6 @@ class MailService
                 'configuration' => $this->app,
                 'title' => $title,
                 'APP_URL'=> $this->app_url
-            ]);
-
-        try {
-            $this->mailer->send($email);
-            return true;
-        } catch (TransportExceptionInterface $e) {
-            return false;
-        }
-    }
-
-    public function sendAppointmentPayment(Appointment $appointment, $emailToSend, $subject = null, string $title = null, $text = null): bool
-    {
-        try{
-            $emailTo = new Address($emailToSend);
-        } catch (RfcComplianceException | TypeError $e){
-            return false;
-        }
-
-        $email = (new TemplatedEmail())
-            ->from($this->app_email)
-            ->to($emailTo);
-//        var_dump($this->app_email);
-//        var_dump($emailTo);
-//        exit();
-
-        $email->subject("{$this->app[ConfigType::APP_NAME_TAG]}: $subject")
-            ->htmlTemplate('email/request.html.twig')
-            ->context([
-                'appointment' => $appointment,
-                'configuration' => $this->app,
-                'title' => $title,
-                'content' => $text
-            ]);
-
-        try {
-            $this->mailer->send($email);
-            return true;
-        } catch (TransportExceptionInterface $e) {
-            return false;
-        }
-    }
-
-    public function sendPublicEmail(Appointment $appointment = null, $subject = null, string $title = null, $text = null): bool
-    {
-
-        try {
-            $emailTo = new Address("i92cajaa@uco.es");
-        } catch (RfcComplianceException | TypeError $e) {
-            return false;
-        }
-
-        $email = (new TemplatedEmail())
-            ->from($this->app_email)
-            ->to($emailTo);
-
-
-        $email->subject("{$this->app[ConfigType::APP_NAME_TAG]}: $subject")
-            ->htmlTemplate('email/request.html.twig')
-            ->context([
-                'appointment' => $appointment,
-                'configuration' => $this->app,
-                'title' => $title,
-                'content' => $text
-            ]);
-
-        try {
-            $this->mailer->send($email);
-            return true;
-        } catch (TransportExceptionInterface $e) {
-            return false;
-        }
-    }
-
-    public function sendEmailClient(Client $client, $subject = null, string $title = null, $text = null): bool
-    {
-
-        try {
-            $emailTo = new Address($client->getEmail());
-        } catch (RfcComplianceException | TypeError $e) {
-            return false;
-        }
-
-        $email = (new TemplatedEmail())
-            ->from($this->app_email)
-            ->to($emailTo);
-
-
-        $email->subject("{$this->app[ConfigType::APP_NAME_TAG]}: $subject")
-            ->htmlTemplate('email/request.html.twig')
-            ->context([
-                'appointment' => $client,
-                'configuration' => $this->app,
-                'title' => $title,
-                'content' => $text
-            ]);
-
-        try {
-            //$this->mailer->send($email);
-            return true;
-        } catch (TransportExceptionInterface $e) {
-            return false;
-        }
-    }
-
-
-    public function sendEmailRequest(ClientRequest $clientRequest, $subject = null, string $title = null, $text = null): bool
-    {
-
-        try {
-            $emailTo = new Address($clientRequest->getEmail());
-        } catch (RfcComplianceException | TypeError $e) {
-            return false;
-        }
-
-        $email = (new TemplatedEmail())
-            ->from($this->app_email)
-            ->to($emailTo);
-
-
-        $email->subject("{$this->app[ConfigType::APP_NAME_TAG]}: $subject")
-            ->htmlTemplate('email/request.html.twig')
-            ->context([
-                'appointment' => $clientRequest,
-                'configuration' => $this->app,
-                'title' => $title,
-                'content' => $text
             ]);
 
         try {

@@ -7,12 +7,14 @@ use Doctrine\ORM\Mapping\Entity;
 
 trait DoctrineStorableObject
 {
-    private function save(EntityManagerInterface $em, $entity) {
+    private function save(EntityManagerInterface $em, $entity): void
+    {
         $em->persist($entity);
         $em->flush();
     }
 
-    private function delete(EntityManagerInterface $em, $entity) {
+    private function delete(EntityManagerInterface $em, $entity): void
+    {
         $em->remove($entity);
         $em->flush();
     }

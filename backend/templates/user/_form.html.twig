@@ -23,7 +23,7 @@
 
         <div class="col-md-4 col-sm-6 mb-3">
             <label class="form-label" for="{{ field_name(form.phone) }}">{{ field_label(form.phone) }} </label>
-            <input class="form-control" type="text" placeholder="{{ field_label(form.phone) }}" id="{{ field_name(form.phone) }}" name="{{ field_name(form.phone) }}" value="{{ field_value(form.phone) }}" required>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.phone) }}" id="{{ field_name(form.phone) }}" name="{{ field_name(form.phone) }}" value="{{ field_value(form.phone) }}">
             {% for error in field_errors(form.phone) %}
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}

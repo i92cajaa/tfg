@@ -2,33 +2,17 @@
 
 namespace App\Service\UserService;
 
-use App\Entity\Client\ClientHasDocument;
 use App\Entity\User\UserHasRole;
-use App\Repository\ClientHasDocumentRepository;
 use App\Repository\LessonRepository;
-use App\Repository\SurveyRangeRepository;
-use App\Service\FilterService;
 use App\Service\ScheduleService\ScheduleService;
-use DateTime;
-use App\Entity\Area\Area;
-use App\Entity\Center\Center;
-use App\Entity\Client\Client;
-use App\Entity\Document\Document;
-use App\Entity\Role\Role;
-use App\Entity\Role\RoleHasPermission;
 use App\Entity\Status\Status;
 use App\Entity\User\User;
 use App\Entity\User\UserHasPermission;
 use App\Form\UserPasswordUpdateType;
 use App\Form\UserType;
-use App\Repository\AppointmentRepository;
 use App\Repository\CenterRepository;
 use App\Repository\ClientRepository;
-use App\Repository\DivisionRepository;
-use App\Repository\DocumentRepository;
 use App\Repository\RoleRepository;
-use App\Repository\SchedulesRepository;
-use App\Repository\ServiceRepository;
 use App\Repository\StatusRepository;
 use App\Repository\AreaRepository;
 use App\Service\DocumentService\DocumentService;
@@ -37,18 +21,13 @@ use App\Shared\Classes\AbstractService;
 use App\Shared\Classes\UTCDateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -57,9 +36,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 use Twig\Environment;
-use ZipArchive;
-
-use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 class UserService extends AbstractService
 {

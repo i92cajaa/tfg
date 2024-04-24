@@ -7,7 +7,6 @@
 
 namespace App\Service;
 
-
 use Symfony\Component\HttpFoundation\Request;
 
 class FilterService
@@ -41,9 +40,9 @@ class FilterService
         $this->filters = @$queryParams['filter_filters'] ?: [];
         $this->page = @$queryParams['page'] ?: 1;
         $this->limit = @$queryParams['limit'] ?: 25;
-        $pathPaterns = explode("?", $this->request->getUri());
-        $this->stringPath = $pathPaterns[0];
-        $this->stringQuery = isset($pathPaterns[1]) == true ? $pathPaterns[1] : "";
+        $pathPatterns = explode("?", $this->request->getUri());
+        $this->stringPath = $pathPatterns[0];
+        $this->stringQuery = $pathPatterns[1] ?? "";
         $this->parseStringRequest();
     }
 
@@ -51,50 +50,50 @@ class FilterService
      * En el caso de tener una query actual enviada por get,
      * esta función formatea y coloca cada parámetro de la petición
      * actual en las propiedades correspondientes, de manera que se mantengan
-     * los filtros y ordenes actuales.
+     * los filtros y órdenes actuales.
      */
-    private function parseStringRequest()
+    private function parseStringRequest(): void
     {
         if ($this->currentRequest != null and strlen($this->currentRequest) > 0) {
             $tempArray = [];
             parse_str(urldecode($this->currentRequest), $tempArray);
-            $this->order = isset($tempArray["filter_order"]) ? $tempArray["filter_order"] : $this->order;
-            $this->limit = isset($tempArray["limit"]) ? $tempArray["limit"] : $this->limit;
-            $this->page = isset($tempArray["page"]) ? $tempArray["page"] : $this->page;
+            $this->order = $tempArray["filter_order"] ?? $this->order;
+            $this->limit = $tempArray["limit"] ?? $this->limit;
+            $this->page = $tempArray["page"] ?? $this->page;
         } else {
             $this->currentRequest = $this->stringQuery;
         }
     }
 
 
-    private function getPath()
+    private function getPath(): string
     {
         return $this->stringPath;
     }
 
-    public function getQueryString()
+    public function getQueryString(): string
     {
         return $this->stringQuery;
     }
 
 
     /**
-     * Funcion que hace un stringify de los parámetros
+     * Función que hace un stringify de los parámetros
      * para devolver un string con la query
      * @param $param
      * @return string
      */
-    public function buildQuery($param)
+    public function buildQuery($param): string
     {
         return http_build_query($param);
     }
 
 
     /**
-     * Devuelve el array con los parámtros de la query actual.
+     * Devuelve el array con los parámetros de la query actual.
      * @return array
     */
-    public function getAll()
+    public function getAll(): array
     {
         return [
             "filter_order" => $this->order,
@@ -109,7 +108,7 @@ class FilterService
         return $this->order;
     }
 
-    private function addOrder($field, $order, &$currentRequest)
+    private function addOrder($field, $order, &$currentRequest): void
     {
         $exist = false;
         foreach ($currentRequest["filter_order"] as $index => $orderField) {
@@ -128,12 +127,13 @@ class FilterService
         }
     }
 
-    public function addOrderValue($field, $order)
+    public function addOrderValue($field, $order): void
     {
         $this->order = [["field" => $field, 'order' => $order]];
     }
 
-    public function getCurrentRequestParams(){
+    public function getCurrentRequestParams(): array
+    {
         return [
             "filter_order" => $this->order,
             "filter_filters" => $this->filters,
@@ -142,7 +142,8 @@ class FilterService
         ];
     }
 
-    public function addFilter($filterName, $value) {
+    public function addFilter($filterName, $value): static
+    {
         $this->filters[$filterName] =  $value;
         return $this;
     }
@@ -154,11 +155,11 @@ class FilterService
     }
 
     /**
-     * Recupera un order específico si existe en los ordenes establecidos
+     * Recupera un order específico si existe en los órdenes establecidos
      * @param $fieldName
      * @return bool|array
      */
-    public function getOrder($fieldName)
+    public function getOrder($fieldName): bool|array
     {
         foreach ($this->order as $orderField) {
             if ($orderField["field"] == $fieldName) {
@@ -174,7 +175,7 @@ class FilterService
      * @param $fieldName
      * @return bool
      */
-    public function isOrdered($fieldName)
+    public function isOrdered($fieldName): bool
     {
         $parameters = $this->getAll();
         if ($parameters and isset($parameters['filter_order']) and count($parameters['filter_order']) > 0) {
@@ -189,7 +190,7 @@ class FilterService
      * Comprueba si ya existe un orden para ese campo y retorna el orden contrario,
      * Se puede utilizar para mostrar los iconos ordenar en una dirección y otra.
      */
-    public function getInversedOrder($fieldName)
+    public function getInversedOrder($fieldName): string
     {
         $order = $this->getOrder($fieldName);
         if ($order) {
@@ -202,18 +203,18 @@ class FilterService
     /**
      * Obtiene el path completo actual con todos los parámetros enviados port get.
      */
-    public function getUri()
+    public function getUri(): string
     {
         return $this->request->getUri();
     }
 
 
     /**
-     * recibe un array con los parámetros que hay que generar la query del enlace
+     * Recibe un array con los parámetros que hay que generar la query del enlace
      * @param $completeRequest
      * @return string
      */
-    public function getCompletePath($completeRequest)
+    public function getCompletePath($completeRequest): string
     {
         return $this->getPath() . "?" . $this->buildQuery($completeRequest);
     }
@@ -225,7 +226,7 @@ class FilterService
      * @param $order
      * @return string
      */
-    public function orderBy($field, $order)
+    public function orderBy($field, $order): string
     {
         $completeRequest = $this->futureOrderRequest($field, $order);
         // Simulamos como quedaría el array después de añadirle el orden
@@ -233,18 +234,21 @@ class FilterService
     }
 
 
-    public function limitBy($newLimit){
+    public function limitBy($newLimit): string
+    {
         $completeRequest = $this->getCurrentRequestParams();
         $completeRequest["limit"] = $newLimit < 0 ? 50 : $newLimit;
         $completeRequest["page"] = 1;
         return $this->getCompletePath($completeRequest);
     }
 
-    public function setLimit($limit) {
+    public function setLimit($limit): void
+    {
         $this->limit = $limit;
     }
 
-    public function pageBy($page){
+    public function pageBy($page): string
+    {
         $completeRequest = $this->getCurrentRequestParams();
         $completeRequest["page"] = $page < 0 ? 1 : $page;
         return $this->getCompletePath($completeRequest);
@@ -266,17 +270,20 @@ class FilterService
      * @param $order
      * @return array
      */
-    public function futureOrderRequest($fieldName, $order){
+    public function futureOrderRequest($fieldName, $order): array
+    {
         $currentRequest = $this->getCurrentRequestParams();
         $this->addOrder($fieldName,$order, $currentRequest);
         return $currentRequest;
     }
 
-    public function filterField($fieldName){
+    public function filterField($fieldName): string
+    {
         return "filter_filters[$fieldName]";
     }
 
-    public function filterFormField(){
+    public function filterFormField(): string
+    {
         return '<input type="hidden" name="current_request" value="'.$this->getCurrentRequest().'">';
     }
 
@@ -286,7 +293,8 @@ class FilterService
      * @param $fieldName
      * @return mixed
      */
-    public function getFilterValue($fieldName){
+    public function getFilterValue($fieldName): mixed
+    {
         foreach ($this->filters as $indexName => $filter) {
             if($indexName == $fieldName) {
                 return $filter;
@@ -296,7 +304,8 @@ class FilterService
     }
 
 
-    public function getNewFilter() {
+    public function getNewFilter(): FilterService
+    {
         return new FilterService((new Request()));
     }
 

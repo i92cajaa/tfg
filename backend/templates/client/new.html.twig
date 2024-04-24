@@ -1,0 +1,51 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'Create'|trans }}{% endblock %}
+
+{% block page_title %}
+    {{ 'Create Client'|trans }}
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+
+    <div class="card">
+
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- Account Tab starts -->
+                <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
+                    {{ include('client/_form.html.twig', {'button_label': 'Create'|trans}) }}
+                </div>
+                <!-- Account Tab ends -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(function() {
+
+
+        });
+    </script>
+{% endblock %}
+
+
+{% block action_buttons %}
+    <li class="level-menu outside">
+
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'clients') ? path('client_index') : '#' }}"  >
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+
+        <button id="submit-and-same" class="btn btn-primary ms-2" type="submit" name="{{ field_name(form.same_page) }}" value="true" form="form" href="{{ userPermission.can('create', 'clients') ? path('client_new') : '#' }}"  >
+            Guardar
+        </button>
+        <button id="submit-and-goback" class="btn btn-default ms-2" type="submit" form="form" href="{{ userPermission.can('create', 'clients') ? path('client_new') : '#' }}"  >
+            Guardar y volver
+        </button>
+    </li>
+{% endblock %}

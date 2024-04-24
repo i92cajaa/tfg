@@ -4,7 +4,6 @@ namespace App\Controller\UserController;
 
 use App\Annotation\Permission;
 use App\Service\UserService\UserService;
-use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

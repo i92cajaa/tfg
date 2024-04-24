@@ -8,7 +8,6 @@ namespace App\Repository;
 use App\Entity\Role\Role;
 use App\Service\FilterService;
 use App\Shared\Traits\DoctrineStorableObject;
-use App\Shared\Traits\PaginatedRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;

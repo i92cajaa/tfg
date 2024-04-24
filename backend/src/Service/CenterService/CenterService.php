@@ -3,19 +3,14 @@
 namespace App\Service\CenterService;
 
 
-use App\Entity\Area\Area;
 use App\Entity\Center\Center;
-use App\Entity\Role\Role;
-use App\Entity\User\User;
 use App\Form\CenterType;
 use App\Repository\AreaRepository;
 use App\Repository\CenterRepository;
-use App\Repository\RoleRepository;
 use App\Service\DocumentService\DocumentService;
 use App\Shared\Classes\AbstractService;
 use App\Shared\Classes\UTCDateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;

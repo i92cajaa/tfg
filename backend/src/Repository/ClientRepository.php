@@ -7,10 +7,12 @@ use App\Entity\User;
 use App\Service\FilterService;
 use App\Shared\Traits\DoctrineStorableObject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\ManagerRegistry;
@@ -34,155 +36,244 @@ class ClientRepository extends ServiceEntityRepository
         parent::__construct($registry, Client::class);
     }
 
-    public function findOneByEmail(string $email)
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO CREATE A NEW CLIENT
+     * ES: FUNCIÓN PARA CREAR UN CLIENTE NUEVO
+     *
+     * @param Client $entity
+     * @param bool $flush
+     * @return void
+     */
+    // ----------------------------------------------------------------
+    public function save(Client $entity, bool $flush = false): void
     {
-        $query = $this->createQueryBuilder('c')
-            ->addSelect('c')
-            ->andWhere('c.email LIKE :email')
-            ->setParameter('email', $email)
-            ;
+        $this->getEntityManager()->persist($entity);
 
-        try {
-            return $query->getQuery()->getOneOrNullResult();
-        } catch (NonUniqueResultException $e) {
-            return $query->getQuery()->getResult()[0];
+        if ($flush) {
+            $this->getEntityManager()->flush();
         }
     }
+    // ----------------------------------------------------------------
 
+    // ----------------------------------------------------------------
     /**
+     * EN: FUNCTION TO DELETE A CLIENT
+     * ES: FUNCIÓN PARA BORRAR UN CLIENTE
+     *
+     * @param Client $entity
+     * @param bool $flush
+     * @return void
+     */
+    // ----------------------------------------------------------------
+    public function remove(Client $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO GET A CLIENT'S DATA
+     * ES: FUNCIÓN PARA OBTENER LOS DATOS DE UN CLIENTE
+     *
+     * @param string $id
+     * @param bool $array
+     * @return array|Client|null
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function findById(string $id, bool $array): array|Client|null
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.bookings', 'bookings')
+            ->leftJoin('bookings.schedule', 'schedule')
+            ->leftJoin('c.notifications', 'notifications')
+            ->addSelect('bookings')
+            ->addSelect('schedule')
+            ->addSelect('notifications')
+            ->andWhere('c.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO GET A CLIENT'S DATA (SIMPLE METHOD)
+     * ES: FUNCIÓN PARA OBTENER LOS DATOS DE UN CLIENTE (MÉTODO SIMPLE)
+     *
+     * @param string $id
+     * @param bool $array
+     * @return array|Client
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function findByIdSimple(string $id, bool $array): array|Client
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO LIST ALL CLIENTS
+     * ES: FUNCIÓN PARA LISTAR TODOS LOS CLIENTES
+     *
      * @param FilterService $filterService
      * @param bool $showAll
-     * @return User[] Returns an array of User objects
+     * @param bool $array
+     * @return array|null
      */
-    public function findClients(FilterService $filterService, $user, $isAdmin, $showAll = false)
+    // ----------------------------------------------------------------
+    public function findClients(FilterService $filterService, bool $showAll, bool $array = false): ?array
     {
-        $query = $this->createQueryBuilder('p')
-            ->leftJoin('p.center', 'center')
-            ->leftJoin('p.users', 'users')
-            ->leftJoin('users.user', 'user')
-            ->addSelect('users')
-            ->addSelect('user');
+        $query = $this->createQueryBuilder('c')
+            ->leftJoin('c.bookings', 'bookings')
+            ->leftJoin('bookings.schedule', 'schedule')
+            ->leftJoin('c.notifications', 'notifications')
+            ->addSelect('bookings')
+            ->addSelect('schedule')
+            ->addSelect('notifications')
+        ;
 
-
+        $this->setFilters($query, $filterService);
+        $this->setOrders($query, $filterService);
 
         $query->setFirstResult($filterService->page > 1 ? (($filterService->page - 1)*$filterService->limit) : $filterService->page - 1);
-        //$query->setMaxResults($filterService->limit);
-
-        if (count($filterService->getFilters()) > 0) {
-
-            if($filterService->getFilterValue('info')!= ""){
-                $query->andWhere("CONCAT(p.name, ' ', COALESCE(p.phone, ''), ' ', COALESCE(p.representative, ''), ' ', COALESCE(p.email, '')) LIKE :info")
-                    ->setParameter('info', "%" . $filterService->getFilterValue('info') . "%");
-            }
-
-            if($filterService->getFilterValue('status') != null && $filterService->getFilterValue('status') != ''){
-                    $query->andWhere('p.status = :status')
-                    ->setParameter('status', $filterService->getFilterValue('status'));
-            }
-
-            if($filterService->getFilterValue('status_or_alumni') != null && $filterService->getFilterValue('status_or_alumni') != ''){
-                if ($filterService->getFilterValue('status_or_alumni') === '2') {
-                    $query->andWhere('p.alumni = 1');
-                } else {
-                    $query->andWhere('p.status = :status')
-                        ->setParameter('status', $filterService->getFilterValue('status_or_alumni'))
-                        ->andWhere('p.alumni = 0');
-                }
-            }
-            
-            if($filterService->getFilterValue('center') != null && $filterService->getFilterValue('center') != ''){
-                $query->andWhere('p.center = :center')
-                    ->setParameter('center', $filterService->getFilterValue('center'));
-            }
-
-        }
-
-        if(!$isAdmin)
-        {
-            $query->andWhere('user.id = :user')
-                ->setParameter(':user', $user);
-        }
-
-
-
-        if (count($filterService->getOrders()) > 0) {
-            foreach ($filterService->getOrders() as $order) {
-                switch ($order['field']) {
-                    case "name":
-                        $query->orderBy('p.name', $order['order']);
-                        break;
-                    case "center":
-                        $query->orderBy('center.name', $order['order']);
-                        break;
-                    case "surnames":
-                        $query->orderBy('p.surnames', $order['order']);
-                        break;
-                    case "dni":
-                        $query->orderBy('p.dni', $order['order']);
-                        break;
-                    case "phone1":
-                        $query->orderBy('p.phone1', $order['order']);
-                        break;
-                    case "announcementName":
-                        $query->orderBy('p.announcement', $order['order']);
-                        break;
-                    case "phone2":
-                        $query->orderBy('p.phone2', $order['order']);
-                        break;
-                    case "email":
-                        $query->orderBy('p.email', $order['order']);
-                        break;
-                    case "address":
-                        $query->orderBy('p.address', $order['order']);
-                        break;
-                    case "town":
-                        $query->orderBy('p.town', $order['order']);
-                        break;
-                    case "province":
-                        $query->orderBy('p.province', $order['order']);
-                        break;
-                    case "comments":
-                        $query->orderBy('p.comments', $order['order']);
-                        break;
-                    case "status":
-                        $query->orderBy('p.status', $order['order']);
-                        break;
-
-                }
-            }
-        } else {
-            $query->orderBy('p.id', 'DESC');
-        }
 
         if(!$showAll){
-            $query->setFirstResult($filterService->page > 1 ? (($filterService->page - 1) * $filterService->limit) : $filterService->page - 1);
             $query->setMaxResults($filterService->limit);
         }
 
         // Pagination process
-        $paginator = new Paginator($query, $fetchJoinCollection = true);
-
+        $paginator = new Paginator($query);
+        $paginator->getQuery()->setHydrationMode($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
         $totalRegisters = $paginator->count();
-        $result         = [];
+
+        $result = [];
 
         foreach ($paginator as $verification) {
             $result[] = $verification;
         }
 
         $lastPage = (integer)ceil($totalRegisters / $filterService->limit);
-        //$users = $query->getQuery()->getResult();
+
         return [
-            'totalRegisters' => $totalRegisters,
-            'data'           => $result,
-            'lastPage'       => $lastPage
+            'totalRegisters'    => $totalRegisters,
+            'clients'           => $result,
+            'lastPage'          => $lastPage,
+            'filters'           => $filterService->getAll()
         ];
     }
+    // ----------------------------------------------------------------
 
-    public function changeStatus(Client $client, bool $status){
-        $client->setStatus($status);
-        $this->save($this->_em, $client);
+    // --------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO SET FILTERS
+     * ES: FUNCIÓN PARA ESTABLECER FILTROS
+     *
+     * @param QueryBuilder $query
+     * @param FilterService $filterService
+     * @return void
+     */
+    // --------------------------------------------------------------
+    public function setFilters(QueryBuilder $query, FilterService $filterService): void
+    {
+        if (count($filterService->getFilters()) > 0)
+        {
+            $search_array = $filterService->getFilterValue('search_array');
+            if ($search_array != null)
+            {
+                $array_values = explode(' ', $search_array);
+
+                $conditions = [];
+                $parameters = [];
+
+                foreach ($array_values as $index => $value)
+                {
+                    $param = 'search' . $index;
+                    $conditions[] = 'c.name LIKE :' . $param . 'OR c.surnames LIKE :' . $param . 'OR CONCAT(c.name, c.surnames) LIKE :' . $param;
+                    $parameters[$param] = '%' . $value . '%';
+                }
+
+                if (!empty($conditions))
+                {
+                    $query->andWhere(implode(' AND ', $conditions));
+
+                    foreach($parameters as $key => $value)
+                    {
+                        $query->setParameter($key, $value);
+                    }
+                }
+            }
+
+            $status = $filterService->getFilterValue('status');
+            if ($status != null) {
+                $query->andWhere('c.status = 1');
+            } elseif ($status !== null) {
+                $query->andWhere('c.status = 0');
+            }
+
+            $dni = $filterService->getFilterValue('dni');
+            if ($dni !== null) {
+                $query->andWhere('c.dni LIKE :dni')
+                    ->setParameter('dni', '%' . $dni . '%');
+            }
+        }
     }
+    // --------------------------------------------------------------
 
+    // --------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO SET ORDER
+     * ES: FUNCIÓN PARA ESTABLECER ORDEN
+     *
+     * @param QueryBuilder $query
+     * @param FilterService $filterService
+     * @return void
+     */
+    // --------------------------------------------------------------
+    public function setOrders(QueryBuilder $query, FilterService $filterService): void
+    {
+        if (count($filterService->getOrders()) > 0) {
+            foreach ($filterService->getOrders() as $order)
+            {
+                switch ($order['field'])
+                {
+                    case "id":
+                        $query->orderBy('c.id', $order['order']);
+                        break;
+                    case "name":
+                        $query->orderBy('CONCAT(c.name, c.surnames)', $order['order']);
+                        break;
+                    case "dni":
+                        $query->orderBy('c.dni', $order['order']);
+                        break;
+                    case "phone":
+                        $query->orderBy('c.phone', $order['order']);
+                        break;
+                    case "email":
+                        $query->orderBy('c.email', $order['order']);
+                        break;
+                }
+            }
+        }
+        else
+        {
+            $query->orderBy('c.createdAt', 'DESC');
+        }
+    }
+    // --------------------------------------------------------------
 
     /**
      * Used to upgrade (rehash) the client's password automatically over time.
@@ -195,49 +286,6 @@ class ClientRepository extends ServiceEntityRepository
         $newHashedPassword = $this->userPasswordHasher->hashPassword($client, $newHashedPassword);
         $client->setPassword($newHashedPassword);
 
-        $this->persist($client);
+        $this->save($client, true);
     }
-
-    /**
-     * @param \DateTime $dateTimeFrom
-     * @param \DateTime $dateTimeTo
-     * @return Client[] Returns an array of Client objects
-     */
-    public function getCount(\DateTime $dateTimeFrom, \DateTime $dateTimeTo): array
-    {
-        $clientsArray = [];
-        $dateTimeTo->setTime(0,0);
-        $dateTimeToLoop1 = clone $dateTimeTo;
-        $dateTimeFrom->setTime(0,0);
-        $diff = $dateTimeFrom->diff($dateTimeTo)->days;
-
-        for ($i=0; $i < $diff; $i++){
-
-            $query =  $this->createQueryBuilder('p')
-                ->select('count(p.id)')
-                ->where('p.createdAt < :val')
-                ->setParameter('val', $dateTimeToLoop1);
-
-            $clients = $query->getQuery()
-                ->getResult(Query::HYDRATE_SINGLE_SCALAR);
-
-            $clientsArray[] = $clients;
-            $dateTimeToLoop1->modify('-1 day');
-        }
-
-
-        return array_reverse($clientsArray);
-    }
-
-
-    public function persist(Client $client)
-    {
-        $this->save($this->_em, $client);
-    }
-
-    public function remove(Client $client)
-    {
-        $this->delete($this->_em, $client);
-    }
-
 }

@@ -184,9 +184,18 @@
 
                                 {% if userPermission.can('list', 'users') %}
                                     <li class="sidebar-list">
-                                        <a href="{{ path('user_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'user_index' %}nav-active{% endif %}" data-original-title="" title="">
+                                        <a href="{{ path('user_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'user_' %}nav-active{% endif %}" data-original-title="" title="">
                                             <i data-feather="user"></i>
                                             <span>{{ 'Users'|trans }}</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {% if userPermission.can('list', 'clients') %}
+                                    <li class="sidebar-list">
+                                        <a href="{{ path('client_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'client_' %}nav-active{% endif %}" data-original-title="" title="">
+                                            <i data-feather="user"></i>
+                                            <span>{{ 'Clients'|trans }}</span>
                                         </a>
                                     </li>
                                 {% endif %}

@@ -2,7 +2,6 @@
 
 namespace App\Controller\PublicController;
 
-use App\Service\ClientService\ClientService;
 use App\Service\MailService;
 use App\Service\UserService\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +17,7 @@ class PublicController extends AbstractController
     public function __construct(
         private readonly MailService $requestServiceMail,
         private readonly UserService $userService,
-        private readonly ClientService $requestService
+//        private readonly ClientService $requestService
 
     )
     {

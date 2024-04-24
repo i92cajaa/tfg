@@ -7,7 +7,6 @@ use App\Form\AreaType;
 use App\Repository\AreaRepository;
 use App\Shared\Classes\AbstractService;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
