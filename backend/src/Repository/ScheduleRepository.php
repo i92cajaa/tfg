@@ -235,6 +235,18 @@ class ScheduleRepository extends ServiceEntityRepository
                 $query->andWhere('sc.dateTo <= :dateTo')
                     ->setParameter('dateTo', $dateTo);
             }
+
+            $center = $filterService->getFilterValue('center');
+            if ($center !== null) {
+                $query->andWhere('lesson.center = :center')
+                    ->setParameter('center', $center);
+            }
+
+            $teacher = $filterService->getFilterValue('teacher');
+            if ($teacher !== null) {
+                $query->andWhere('teacher.id = :teacher')
+                    ->setParameter('teacher', $teacher);
+            }
         }
     }
     // --------------------------------------------------------------

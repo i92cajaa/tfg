@@ -67,7 +67,11 @@ class LessonType extends AbstractType
                 'multiple' => true,
                 'label' => 'Usuarios',
                 'attr' => ['class' => 'form-check mb-2 select2', 'autocomplete' => 'off'],
-            ]);
+            ])
+            ->add('color', TextType::class, [
+                'label' => 'Color',
+                'required' => true
+            ]);;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

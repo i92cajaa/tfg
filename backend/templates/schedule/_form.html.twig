@@ -117,7 +117,7 @@
             });
         }
 
-        function getAvailableDates(date, room, lesson) {
+        function getAvailableDates(date, room, lesson, teacher) {
             $.ajax({
                 type: 'post',
                 cache: "true",
@@ -127,6 +127,7 @@
                     date: date,
                     room: room,
                     lesson: lesson,
+                    teacher: teacher,
                     _token: '{{ csrf_token('get-date-available-times') }}'
                 },
                 success: function(data){
@@ -154,19 +155,19 @@
 
         $('#room').on('change', function () {
             if ($('#day').val() != '') {
-                getAvailableDates($('#day').val(), $(this).val(), $('#lesson').val());
+                getAvailableDates($('#day').val(), $(this).val(), $('#lesson').val(), $('#teacher').val());
             }
         });
 
         $('#lesson').on('change', function () {
             if ($('#day').val() != '') {
-                getAvailableDates($('#day').val(), $('#room').val(), $(this).val());
+                getAvailableDates($('#day').val(), $('#room').val(), $(this).val(), $('#teacher').val());
             }
         });
 
         $('#day').on('change', function () {
             if ($('#room').val() != null || $('#lesson').val() != null) {
-                getAvailableDates($(this).val(), $('#room').val(), $('#lesson').val());
+                getAvailableDates($(this).val(), $('#room').val(), $('#lesson').val(), $('#teacher').val());
             }
         });
     });
