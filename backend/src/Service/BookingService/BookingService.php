@@ -217,6 +217,10 @@ class BookingService extends AbstractService
             clientId: $clientId,
             array: false);
 
+        if ($booking->getSchedule()->getStatus()->getId() === Status::STATUS_COMPLETED) {
+            $booking->getSchedule()->setStatus($this->statusRepository->findById(Status::STATUS_AVAILABLE, false));
+        }
+
         $this->bookingRepository->remove($booking,true);
 
         return $this->redirectToRoute('booking_index');
