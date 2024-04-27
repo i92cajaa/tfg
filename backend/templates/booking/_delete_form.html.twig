@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('booking_delete', {'client': booking.client.id, 'schedule': booking.schedule.id}) }}" class="deleteForm">
+    <input type="hidden" name="_method" value="DELETE">
+    <button class="btn btn-outline-danger">{{ 'Delete'|trans }}</button>
+</form>

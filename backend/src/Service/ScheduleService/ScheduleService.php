@@ -30,6 +30,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
+use function Symfony\Component\String\s;
 
 class ScheduleService extends AbstractService
 {
@@ -158,6 +159,27 @@ class ScheduleService extends AbstractService
         $availableRanges = $this->formatDayIntoRanges($lesson->getCenter()->getOpeningTime(), $lesson->getCenter()->getClosingTime(), $duration, $schedules);
 
         return new JsonResponse(['ranges' => $availableRanges, 'status' => true]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO GET SCHEDULES BY LESSON
+     * ES: SERVICIO PARA OBTENER LOS HORARIOS DE UNA CLASE
+     *
+     * @return JsonResponse
+     * @throws Exception
+     */
+    // ----------------------------------------------------------------
+    public function getSchedulesByLesson(): JsonResponse
+    {
+        $this->filterService->addFilter('lesson', $this->getRequestPostParam('lesson'));
+        $this->filterService->addFilter('min_date', UTCDateTime::create()->format('d/m/Y'));
+        $this->filterService->addFilter('status', Status::STATUS_AVAILABLE);
+
+        $schedules = $this->scheduleRepository->findSchedules($this->filterService, true, true)['schedules'];
+
+        return new JsonResponse(['schedules' => $schedules, 'status' => true]);
     }
     // ----------------------------------------------------------------
 

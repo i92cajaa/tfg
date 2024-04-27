@@ -5,6 +5,7 @@ namespace App\Controller\ScheduleController;
 use App\Annotation\Permission;
 use App\Service\ScheduleService\ScheduleService;
 use Doctrine\ORM\NonUniqueResultException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,6 +64,23 @@ class ScheduleController extends AbstractController
     public function getScheduleTimes(): Response
     {
         return $this->scheduleService->getScheduleTimes();
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO GET SCHEDULES BY LESSON
+     * ES: ENDPOINT PARA OBTENER LOS HORARIOS DE UNA CLASE
+     *
+     * @return Response
+     * @throws Exception
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/schedule/get-by-lesson', name: 'schedule_get_by_lesson', methods: ["POST"])]
+    #[Permission(group: 'schedules', action:"list")]
+    public function getSchedulesByLesson(): Response
+    {
+        return $this->scheduleService->getSchedulesByLesson();
     }
     // ----------------------------------------------------------------
 

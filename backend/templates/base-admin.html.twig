@@ -138,6 +138,15 @@
                                 </a>
                             </li>
 
+                            {% if userPermission.can('list', 'bookings') %}
+                                <li class="sidebar-list">
+                                    <a href="{{ path('booking_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'booking_' %}nav-active{% endif %}" data-original-title="" title="Reservas">
+                                        <i data-feather="bookmark"></i>
+                                        <span>Reservas</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
                             {% if userPermission.can('list', 'lessons') %}
                                 <li class="sidebar-list">
                                     <a href="{{ path('lesson_index') }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'lesson_' %}nav-active{% endif %}" data-original-title="" title="Clases">

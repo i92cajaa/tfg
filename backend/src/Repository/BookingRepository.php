@@ -203,8 +203,12 @@ class BookingRepository extends ServiceEntityRepository
             {
                 switch ($order['field'])
                 {
+                    case "schedule-start":
                     case "schedule":
                         $query->orderBy('schedule.dateFrom', $order['order']);
+                        break;
+                    case "schedule-end":
+                        $query->orderBy('schedule.dateTo', $order['order']);
                         break;
                     case "client":
                         $query->orderBy('CONCAT(client.name, client.surnames)', $order['order']);

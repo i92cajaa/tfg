@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Status\Status;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,32 +21,64 @@ class StatusRepository extends ServiceEntityRepository
         parent::__construct($registry, Status::class);
     }
 
-    // /**
-    //  * @return Status[] Returns an array of Status objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO SAVE A STATUS
+     * ES: FUNCIÓN PARA GUARDAR UN ESTADO
+     *
+     * @param Status $entity
+     * @param bool $flush
+     * @return void
+     */
+    // ----------------------------------------------------------------
+    public function save(Status $entity, bool $flush = false): void
     {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $this->getEntityManager()->persist($entity);
 
-    /*
-    public function findOneBySomeField($value): ?Status
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
-    */
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO DELETE A STATUS
+     * ES: FUNCIÓN PARA BORRAR UN ESTADO
+     *
+     * @param Status $entity
+     * @param bool $flush
+     * @return void
+     */
+    // ----------------------------------------------------------------
+    public function remove(Status $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO GET AN STATUS'S DATA
+     * ES: FUNCIÓN PARA OBTENER LOS DATOS DE UN ESTADO
+     *
+     * @param string $id
+     * @param bool $array
+     * @return array|Status|null
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function findById(string $id, bool $array): array|Status|null
+    {
+        return $this->createQueryBuilder('st')
+            ->andWhere('st.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
+    }
+    // ----------------------------------------------------------------
 }
