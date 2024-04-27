@@ -1,0 +1,57 @@
+<form name="user" enctype="multipart/form-data" method="post" autocomplete="off">
+    <div class="w-100 row">
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.floor) }}">{{ field_label(form.floor) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="number" placeholder="{{ field_label(form.floor) }}" id="{{ field_name(form.floor) }}" name="{{ field_name(form.floor) }}" value="{{ field_value(form.floor) }}" min="0" required>
+            {% for error in field_errors(form.floor) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.number) }}">{{ field_label(form.number) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="number" placeholder="{{ field_label(form.number) }}" id="{{ field_name(form.number) }}" name="{{ field_name(form.number) }}" value="{{ field_value(form.number) }}" min="1" required>
+            {% for error in field_errors(form.number) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.capacity) }}">{{ field_label(form.capacity) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="number" placeholder="{{ field_label(form.capacity) }}" id="{{ field_name(form.capacity) }}" name="{{ field_name(form.capacity) }}" value="{{ field_value(form.capacity) }}" min="1" required>
+            {% for error in field_errors(form.capacity) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.center) }}">{{ field_label(form.center) }} <span class="text-danger">*</span></label>
+            <select class="form-control select2" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" required>
+                {% for center in centers %}
+                    <option value="{{ center.id }}" {% if field_value(form.center) == center.id %}selected{% endif %}>{{ center.name }}</option>
+                {% endfor %}
+            </select>
+            {% for error in field_errors(form.center) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        {{ form_row(form._token) }}
+
+    </div>
+
+    <input id="deleteImgInput" type="hidden" name="user[deleteImg]">
+    <div class="row d-flex justify-content-end mt-2">
+        <div class="mr-2 text-end">
+            <button class="btn btn-primary text-white waves-effect waves-float waves-light">{{ button_label }}</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    function triggerAutonomous(){
+
+        if(document.getElementById("user_autonomous").checked === false){
+            document.getElementById("user_appointment_percentage_div").classList.add("d-none");
+        }else{
+            document.getElementById("user_appointment_percentage_div").classList.remove("d-none");
+        }
+    }
+</script>

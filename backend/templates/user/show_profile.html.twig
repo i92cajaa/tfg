@@ -1,0 +1,166 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Mostrar Usuarios{% endblock %}
+
+{% block page_title %}
+    {{ ('Show ' ~ configuration.user_nomenclature)|trans }}
+{% endblock %}
+
+{% block body %}
+    <div class="modal fade" id="templateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" id="templateModalContent" >
+
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- User Card starts-->
+            <div class="col-12 p-0">
+                <div class="card user-card">
+                    <div class="card-body pt-3">
+                        <div class="row">
+                            <h2 class="row gap-2 align-items-center m-0 pb-2">
+                                <div class="col-auto">
+                                    <img class="rounded-pill" data-bs-toggle="tooltip"
+                                         data-html="true"
+                                         data-placement="bottom"
+                                         title=''
+                                         src="{% if user.imgProfile != null %}{{ documentImage.DocumentImage(user.imgProfile) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}"
+                                         style="width: 70px !important;" alt="">
+                                </div>
+                                Información Principal
+                            </h2>
+                            <hr>
+                            <div class="col-md-12 pb-2">
+                                <div class="row h-100 gap-2">
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Nombre</label>
+                                        <p class="card-text mb-0">{{ user.name }}</p>
+                                    </div>
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Apellidos</label>
+                                        <p class="card-text">{{ user.surnames }}</p>
+                                    </div>
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Teléfono</label>
+                                        <p class="card-text ">{{ user.phone }}</p>
+                                    </div>
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Correo Electrónico</label>
+                                        <p class="card-text ">{{ user.email }}</p>
+                                    </div>
+
+                                    {% if not user.isSuperAdmin %}
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Centro Asociado</label>
+                                        <p class="card-text ">{{ user.center.name }}</p>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="col-auto align-self-center">
+                                        <label class="form-label fw-bold">Rol</label>
+                                        {% for rol in user.roles %}
+                                            <p class="card-text ">{{ rol }}</p>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="d-none">
+                                        <label class="form-label fw-bold">Duración</label>
+                                        <p class="card-text ">{{ user.calendarInterval }}</p>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <h6 class="row gap-2 align-items-center m-0 pt-4 pb-2">Actualizar contraseña</h6>
+                            <hr>
+                            <div>
+                                {{ form_start(form) }}
+                                <div class="">
+                                    <div class="row">
+
+                                        <div class="col-sm-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ field_label(form.password.first) }} <span
+                                                            class="text-danger">*</span> </label>
+                                                <input class="form-control" type="password"
+                                                       placeholder="{{ field_label(form.password.first) }}"
+                                                       name="{{ field_name(form.password.first) }}"
+                                                       value="{{ field_value(form.password.first) }}"
+                                                       required>
+                                                {% for error in field_errors(form.password.first) %}
+                                                    <span class="text-danger">{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ field_label(form.password.second) }} <span
+                                                            class="text-danger">*</span> </label>
+                                                <input class="form-control" type="password"
+                                                       placeholder="{{ field_label(form.password.second) }}"
+                                                       name="{{ field_name(form.password.second) }}"
+                                                       value="{{ field_value(form.password.second) }}"
+                                                       required>
+                                                {% for error in field_errors(form.password.second) %}
+                                                    <span class="text-danger">{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <input type="hidden" name="_token" value="{{ csrf_token('chage-password' ~ user.id) }}">
+                                    <button class="btn btn-primary" type="submit">Actualizar</button>
+                                </div>
+                                {{ form_end(form) }}
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /User Card Ends-->
+    <!-- User Card & Plan Ends -->
+
+
+{% endblock %}
+
+{% block action_buttons %}
+    <div class="d-flex align-content-center">
+
+        <li class="level-menu outside">
+            <a class="nav-link cursor-pointer" href="#" onclick="window.history.back()">
+                <i class="ficon" data-feather="chevron-left"></i>
+            </a>
+        </li>
+        <h3 class="d-inline-block ms-3">Perfil</h3>
+    </div>
+
+{% endblock %}
+
+
+{% block stylesheets %}
+    <style>
+        .scrolled-div {
+            max-height: 500px;
+            overflow-y: scroll;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(function () {
+            $('.select2').select2();
+            $('.select2-selection__arrow').remove();
+
+        });
+    </script>
+{% endblock %}

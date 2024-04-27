@@ -1,0 +1,176 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}
+{#    {{ ('List ' ~ configuration.user_nomenclature ~ 's')|trans }}#}
+    Lista de Centros
+{% endblock %}
+
+{% block body %}
+
+    <!-- users list start -->
+    <div class="container-fluid">
+        <!-- list section start -->
+        <div class="card">
+            <div class="card-datatable overflow-inherit table-responsive card-body">
+                <div class="overflow-auto">
+                    <table class="user-list-table table table-list mb-3">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="p-0"></th>
+                                <th>
+                                    <span style="letter-spacing: 1px; color: var(--theme-deafult)">
+                                        Logo
+                                    </span>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("name", filterService.getInversedOrder("name")) }}">
+                                        Nombre {% if filterService.isOrdered("name") %}<i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("address", filterService.getInversedOrder("address")) }}">
+                                        Dirección {% if filterService.isOrdered("address") %}<i data-feather="{{ filterService.getOrder("address").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("area", filterService.getInversedOrder("area")) }}">
+                                        Área {% if filterService.isOrdered("area") %}<i data-feather="{{ filterService.getOrder("area").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("phone", filterService.getInversedOrder("phone")) }}">
+                                        Teléfono {% if filterService.isOrdered("phone") %}<i data-feather="{{ filterService.getOrder("phone").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("opening_time", filterService.getInversedOrder("opening_time")) }}">
+                                        Hora de Apertura {% if filterService.isOrdered("opening_time") %}<i data-feather="{{ filterService.getOrder("opening_time").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("closing_time", filterService.getInversedOrder("closing_time")) }}">
+                                        Hora de Cierre {% if filterService.isOrdered("closing_time") %}<i data-feather="{{ filterService.getOrder("closing_time").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a>
+                                        {{ 'Actions'|trans }}
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for center in centers %}
+                            <tr>
+                                <td class="p-0"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style="color: {{ center.color }}" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                        <circle cx="8" cy="8" r="8"/>
+                                    </svg></td>
+                                <td><img data-bs-toggle="tooltip" data-html="true" data-placement="bottom" title='' src="{% if center.logo != null %}{{ documentImage.DocumentImage(center.logo) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" class="" style="width: 90px !important;"  alt=""></td>
+                                <td>{{ center.name }}</td>
+                                <td style="width: 30%">{{ center.address }}</td>
+                                <td>{{ center.area.name }}</td>
+                                <td>{{ center.phone }}</td>
+                                <td><span class="badge badge-light-primary badge-pill">{{ center.openingTime|UTCDateTimeFormat('H:i') }}</span></td>
+                                <td><span class="badge badge-light-secondary badge-pill">{{ center.closingTime|UTCDateTimeFormat('H:i') }}</span></td>
+                                <td class="text-nowrap">
+                                    <div class="d-inline-flex gap-1">
+                                        {% if userPermission.can('show', 'centers') %}
+                                            <a href="{{ path('center_show', {'center': center.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
+                                        {% endif %}
+                                        {% if userPermission.can('edit', 'centers') %}
+                                            <a href="{{ path('center_edit', {'center': center.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
+                                        {% endif %}
+                                        {% if userPermission.can('delete', 'centers') %}
+                                            <div class="dropdown-divider"></div>
+                                            <a href="#" onclick="$('#deleteForm_center_{{ center.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar"><i class="align-middle" data-feather='trash-2'></i><span class="align-middle"></span></a>
+                                            <form method="post" id="deleteForm_center_{{ center.id }}" class="deleteForm d-none" action="{{ path('center_delete', {'center': center.id}) }}" >
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ center.id) }}">
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="d-none">
+                                    <div class="dropdown-basic">
+                                        <div class="dropdown">
+                                            <button class="dropbtn bg-transparent text-dark p-0 m-0"
+                                                    type="button"
+                                                    data-bs-original-title="" title="">
+                                                <i data-feather='align-justify'></i>
+                                            </button>
+                                            <div class="dropdown-content " style="top: 20px">
+                                                {% if userPermission.can('show', 'centers') %}
+                                                    <a href="{{ path('center_show', {'center': center.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
+                                                {% endif %}
+{#                                                {% if userPermission.can('edit', 'centers') %}#}
+                                                    <a href="{{ path('center_edit', {'center': center.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
+{#                                                {% endif %}#}
+                                                {% if userPermission.can('delete', 'centers') %}
+                                                    <div class="dropdown-divider"></div>
+                                                    <a href="#" onclick="$('#deleteForm_center_{{ center.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar"><i class="align-middle" data-feather='trash-2'></i><span class="align-middle"></span></a>
+                                                    <form method="post" id="deleteForm_center_{{ center.id }}" class="deleteForm d-none" action="{{ path('center_delete', {'center': center.id}) }}" >
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ center.id) }}">
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        {% else %}
+                            <tr>
+                                <td colspan="8">{{ 'No results found'|trans }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'extra/filter_limit.html.twig' %}
+                <div class="d-flex justify-content-end mr-4 mt-2">
+                    {% include 'extra/pagination.html.twig' with {
+                        filterService: filterService,
+                        currentPage: filterService.page,
+                        paginationPath: 'user_index',
+                        lastPage: lastPage,
+                        showAlwaysFirstAndLast: true
+                    } only %}
+                </div>
+
+            </div>
+
+        </div>
+        <!-- list section end -->
+    </div>
+
+{% endblock %}
+
+{% block action_buttons %}
+
+    <li class="level-menu outside d-flex align-items-center">
+{#        {% if userPermission.can('create', 'center') %}#}
+            <a class="nav-link" href="{{ path('center_new') }}" style="background-color: #003A4A">
+                <i data-feather="plus-circle"></i>
+            </a>
+{#        {% endif %}#}
+
+        <a class="nav-link cursor-pointer mr-1" href="#" onclick="toggleFilter()"  style="background-color: #003A4A">
+            <i data-feather="filter"></i>
+        </a>
+        <div class="d-none d-md-block"><h3 class="mb-0 ms-3">Lista de Centros</h3></div>
+        <div class="d-block d-md-none"><h5 class="mb-0 ms-3">Centros</h5></div>
+    </li>
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+{% endblock %}
+
+
+
+{% block sidebar %}
+    {% include 'extra/filters/service_filter.html.twig' %}
+{% endblock %}

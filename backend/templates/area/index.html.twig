@@ -1,0 +1,119 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}
+{#    {{ ('List ' ~ configuration.user_nomenclature ~ 's')|trans }}#}
+    Lista de Áreas
+{% endblock %}
+
+{% block body %}
+
+    <!-- users list start -->
+    <div class="container-fluid">
+        <!-- list section start -->
+        <div class="card">
+            <div class="card-datatable overflow-inherit table-responsive card-body">
+                <div class="overflow-auto">
+                    <table class="user-list-table table table-list mb-3">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="p-0"></th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("name", filterService.getInversedOrder("name")) }}">
+                                        Nombre {% if filterService.isOrdered("name") %}<i data-feather="{{ filterService.getOrder("name").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ filterService.orderBy("city", filterService.getInversedOrder("city")) }}">
+                                        Ciudad {% if filterService.isOrdered("city") %}<i data-feather="{{ filterService.getOrder("city").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a>
+                                        {{ 'Actions'|trans }}
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for area in areas %}
+                            <tr>
+                                <td class="p-0"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style="color: {{ area.color }}" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                        <circle cx="8" cy="8" r="8"/>
+                                    </svg></td>
+                                <td>{{ area.name }}</td>
+                                <td>{{ area.city }}</td>
+                                <td class="text-nowrap">
+                                    <div class="d-inline-flex gap-1">
+                                        {% if userPermission.can('show', 'areas') %}
+                                            <a href="{{ path('area_show', {'area': area.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mostrar"><i class="align-middle" data-feather='eye'></i> <span class="ms-1 align-middle"></span></a>
+                                        {% endif %}
+                                        {% if userPermission.can('edit', 'areas') %}
+                                            <a href="{{ path('area_edit', {'area': area.id}) }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Editar"><i class="align-middle" data-feather='edit'></i><span class="align-middle"></span></a>
+                                        {% endif %}
+                                        {% if userPermission.can('delete', 'areas') %}
+                                            <div class="dropdown-divider"></div>
+                                            <a href="#" onclick="$('#deleteForm_area_{{ area.id }}').submit()" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Eliminar"><i class="align-middle" data-feather='trash-2'></i><span class="align-middle"></span></a>
+                                            <form method="post" id="deleteForm_area_{{ area.id }}" class="deleteForm d-none" action="{{ path('area_delete', {'area': area.id}) }}" >
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ area.id) }}">
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+
+                        {% else %}
+                            <tr>
+                                <td colspan="4">{{ 'No results found'|trans }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'extra/filter_limit.html.twig' %}
+                <div class="d-flex justify-content-end mr-4 mt-2">
+                    {% include 'extra/pagination.html.twig' with {
+                        filterService: filterService,
+                        currentPage: filterService.page,
+                        paginationPath: 'area_index',
+                        lastPage: lastPage,
+                        showAlwaysFirstAndLast: true
+                    } only %}
+                </div>
+
+            </div>
+
+        </div>
+        <!-- list section end -->
+    </div>
+
+{% endblock %}
+
+{% block action_buttons %}
+
+    <li class="level-menu outside d-flex align-items-center">
+{#        {% if userPermission.can('create', 'center') %}#}
+            <a class="nav-link" href="{{ path('area_create') }}" style="background-color: #003A4A">
+                <i data-feather="plus-circle"></i>
+            </a>
+{#        {% endif %}#}
+
+        <a class="nav-link cursor-pointer mr-1" href="#" onclick="toggleFilter()"  style="background-color: #003A4A">
+            <i data-feather="filter"></i>
+        </a>
+        <div class="d-none d-md-block"><h3 class="mb-0 ms-3">Lista de Áreas</h3></div>
+        <div class="d-block d-md-none"><h5 class="mb-0 ms-3">Áreas</h5></div>
+    </li>
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+{% endblock %}
+
+
+
+{% block sidebar %}
+    {% include 'extra/filters/service_filter.html.twig' %}
+{% endblock %}

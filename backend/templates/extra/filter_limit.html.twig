@@ -1,0 +1,27 @@
+<div class="w-100 mt-1 ml-2 mb-1 mr-2 p-2 row">
+    <div class="col-sm-6 col-md-9 d-flex align-items-end">
+        <span class="font-medium-2">{{ 'Results'|trans }}: <b>{{ totalResults }}</b></span>
+    </div>
+
+    <div class="col-sm-6 col-md-3 text-end font-medium-2 font-w">
+        <label for="entries_limit">{{ 'Show'|trans }}:</label>
+        <select name="number_selector" class="select2-container p-1" id="entries_limit" onchange="test(this)" >
+            {% set limitOptions = [2, 10, 25, 50, 75, 100] %}
+            {% for limitOption in limitOptions %}
+                <option value="{{ limitOption }}" data-url="{{ filterService.limitBy(limitOption) }}"
+                        {% if filterService.limit == limitOption %} selected {% endif %}>
+                    {{ limitOption }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+{% block javascripts %}
+<script>
+    function test(element) {
+        let option = element.options[element.selectedIndex];
+        window.location.href = option.getAttribute('data-url');
+    }
+</script>
+{% endblock %}

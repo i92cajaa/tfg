@@ -1,0 +1,62 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Habitación - {{ room.number }}, planta {{ room.floor }}{% endblock %}
+
+{% block page_title %}
+    Habitación
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <!-- User Card & Plan Starts -->
+        <div class="row">
+            <!-- User Card starts-->
+            <div class="col-xl-12 col-lg-12 col-md-12">
+                <div class="card user-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 mt-2 mt-xl-0">
+                                <div class="user-info-wrapper row mr-2 ml-2">
+                                    <div class="d-flex flex-wrap col-md-12 row gap-3">
+                                        <div class="mb-3 d-flex">
+                                            <div class="col-md-3">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Centro: <strong><a {% if userPermission.can('show', 'centers') %}href="{{ path('center_show', {'center': room.center.id}) }}" {% else %}href="#"{% endif %}>{{ room.center.name }}</a></strong></span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Planta: <strong>{{ room.floor }}</strong></span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Número: <strong>{{ room.number }}</strong></span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Capacidad: <strong>{{ room.capacity }}</strong></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(function() {
+            $('.select2').select2();
+        });
+    </script>
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside d-flex align-items-center gap-3">
+
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'rooms') ? path('room_index') : '#' }}"  >
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+        <h3 class="mb-0">Clase {{ room.number }} de planta {{ room.floor }}</h3>
+    </li>
+{% endblock %}

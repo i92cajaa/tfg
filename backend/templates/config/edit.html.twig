@@ -1,0 +1,28 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'Edit Config'|trans }}{% endblock %}
+
+{% block page_title %}
+   {{ 'Edit Config'|trans }}
+{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid">
+
+    <div class="card">
+        <div class="card-body">
+            <div class="tab-content">
+                {{ include('config/_form.html.twig', {'button_label': 'Actualizar'}) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+
+    </script>
+{% endblock %}

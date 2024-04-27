@@ -1,0 +1,173 @@
+<form name="user" enctype="multipart/form-data" method="post" autocomplete="off">
+    <div class="w-100 row">
+        {% if not app.user.isTeacher %}
+            <div class="col-md-4 col-sm-6 mt-3">
+                <label class="form-label" for="teacher">{{ field_label(form.teacher) }} <span class="text-danger">*</span></label>
+                <select class="form-control select2" id="teacher" name="{{ field_name(form.teacher) }}" required>
+                    <option selected disabled value="">{{ field_label(form.teacher) }}</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}" {% if field_value(form.teacher) == user.id %}selected{% endif %}>{{ user.name }} {{ user.surnames }}</option>
+                    {% endfor %}
+                </select>
+                {% for error in field_errors(form.teacher) %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            <input type="hidden" id="{{ field_name(form.teacher) }}" name="{{ field_name(form.teacher) }}" value="{{ app.user.id }}">
+        {% endif %}
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="lesson">{{ field_label(form.lesson) }} <span class="text-danger">*</span></label>
+            <select class="form-control select2" id="lesson" name="{{ field_name(form.lesson) }}" required>
+                {% if edit %}
+                    {% for lesson in lessons %}
+                        <option value="{{ lesson.id }}" {% if lesson.id == field_value(form.lesson) %}selected{% endif %}>{{ lesson.name }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+            {% for error in field_errors(form.lesson) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="room">{{ field_label(form.room) }} <span class="text-danger">*</span></label>
+            <select class="form-control select2" id="room" name="{{ field_name(form.room) }}" required>
+                {% if edit %}
+                    {% for room in rooms %}
+                        <option value="{{ room.id }}" {% if room.id == field_value(form.room) %}selected{% endif %}>Planta {{ room.floor }}, habitación {{ room.number }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+            {% for error in field_errors(form.room) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="day">Día<span class="text-danger">*</span></label>
+            <input class="form-control flatpickr" type="text" placeholder="Día de la reserva" id="day" name="schedule[day]" {% if edit %}value="{{ schedule.getDateFrom|UTCDateTimeFormat('d/m/Y') }}"{% endif %} required>
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="room">{{ field_label(form.range) }} <span class="text-danger">*</span></label>
+            <select class="form-control select2" id="range" name="{{ field_name(form.range) }}" {% if not edit %}required{% endif %}>
+
+            </select>
+            {% for error in field_errors(form.range) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        {{ form_row(form._token) }}
+
+    </div>
+
+    <input id="deleteImgInput" type="hidden" name="user[deleteImg]">
+    <div class="row d-flex justify-content-end mt-2">
+        <div class="mr-2 text-end">
+            <button class="btn btn-primary text-white waves-effect waves-float waves-light">{{ button_label }}</button>
+        </div>
+    </div>
+</form>
+
+<script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        function changeLessonsAndRooms(userId){
+            $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('lesson_get_by_user') }}",
+                data: {
+                    user: userId,
+                    _token: '{{ csrf_token('get-lessons-by-user') }}'
+                },
+                success: function(data){
+
+                    $('#lesson option').remove();
+                    data['lessons'].forEach(lesson => {
+
+                        $('#lesson').append('<option value="'+lesson['id']+'">'+lesson['name']+'</option>').trigger('change');
+
+                    });
+                }
+            });
+
+            $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('room_get_by_user') }}",
+                data: {
+                    user: userId,
+                    _token: '{{ csrf_token('get-rooms-by-user') }}'
+                },
+                success: function(data){
+
+                    $('#room option').remove();
+                    data['rooms'].forEach(room => {
+
+                        $('#room').append('<option value="'+room['id']+'">Planta '+room['floor']+', habitación '+room['number']+'</option>').trigger('change');
+
+                    });
+                }
+            });
+        }
+
+        function getAvailableDates(date, room, lesson) {
+            $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('schedule_get_available_times') }}",
+                data: {
+                    date: date,
+                    room: room,
+                    lesson: lesson,
+                    _token: '{{ csrf_token('get-date-available-times') }}'
+                },
+                success: function(data){
+
+                    $('#range option').remove();
+                    $('#range').append('<option value="" selected disabled>Seleccione un rango de fechas</option>').trigger('change');
+                    data['ranges'].forEach(range => {
+
+                        $('#range').append('<option value="'+range['start']+' - '+range['end']+'">'+range['start']+' - '+range['end']+'</option>').trigger('change');
+
+                    });
+                }
+            });
+        }
+
+        {% if app.user.isTeacher %}
+            changeLessonsAndRooms({{ app.user.id }});
+        {% else %}
+            $("#teacher").on("change", function () {
+                changeLessonsAndRooms($(this).val());
+
+                $('#day').val();
+            });
+        {% endif %}
+
+        $('#room').on('change', function () {
+            if ($('#day').val() != '') {
+                getAvailableDates($('#day').val(), $(this).val(), $('#lesson').val());
+            }
+        });
+
+        $('#lesson').on('change', function () {
+            if ($('#day').val() != '') {
+                getAvailableDates($('#day').val(), $('#room').val(), $(this).val());
+            }
+        });
+
+        $('#day').on('change', function () {
+            if ($('#room').val() != null || $('#lesson').val() != null) {
+                getAvailableDates($(this).val(), $('#room').val(), $('#lesson').val());
+            }
+        });
+    });
+</script>

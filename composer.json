@@ -1,0 +1,5 @@
+{
+    "require": {
+        "symfony/amazon-mailer": "^6.3"
+    }
+}

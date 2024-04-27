@@ -1,0 +1,74 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'Edit'|trans }}{% endblock %}
+
+{% block page_title %}
+    {{ 'Edit Client'|trans }}
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- Account Tab starts -->
+                <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
+                    <!-- users edit account form start -->
+                    {{ include('client/_form.html.twig', {'button_label': 'Update'|trans}) }}
+
+
+                    <!-- users edit account form ends -->
+                    <br>
+
+                    <div class="row d-flex justify-content-end">
+                        <div class="mr-2 text-end d-flex justify-content-end gap-3">
+                            {{ include('client/_delete_form.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+                <!-- Account Tab ends -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(function() {
+
+            $('#deleteImg').on('click', function (){
+                $('#user_delete_image').val('true');
+            })
+        });
+    </script>
+{% endblock %}
+
+
+{% block action_buttons %}
+
+    <li class="level-menu outside d-flex">
+        <a class="nav-link cursor-pointer" href="#" onclick="window.history.back(); return false;">
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+
+
+        <button id="submit-and-same" class="btn btn-primary ms-2 d-none d-md-block"
+                type="submit" name="{{ field_name(form.same_page) }}"
+                value="true" form="form" href="{{ userPermission.can('edit', 'clients') ? path('client_edit', {'client': client.id}) : '#' }}"  >
+            Guardar
+        </button>
+        <button id="submit-and-same" class="ms-2 d-block d-md-none nav-link"
+                type="submit" name="{{ field_name(form.same_page) }}"
+                value="true" form="form" href="{{ userPermission.can('edit', 'clients') ? path('client_edit', {'client': client.id}) : '#' }}"  >
+            <i class="ficon" data-feather="save"></i>
+        </button>
+        <button id="submit-and-goback" class="btn btn-default ms-2 d-none d-md-block"
+                type="submit" form="form" href="{{ userPermission.can('edit', 'clients') ? path('client_edit', {'client': client.id}) : '#' }}"  >
+            Guardar y volver
+        </button>
+    </li>
+
+{% endblock %}
+

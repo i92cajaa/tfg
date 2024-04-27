@@ -1,0 +1,85 @@
+<form name="user" enctype="multipart/form-data" method="post" autocomplete="off">
+    <div class="w-100 row">
+
+        <input type="hidden" id="user_delete_image" name="user[delete_image]" autocomplete="off">
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.logo) }}">{{ field_label(form.logo) }} <span class="text-danger">*</span></label>
+            <input type="file" class="form-control"
+                   placeholder="{{ field_label(form.logo) }}" id="{{ field_name(form.logo) }}" name="{{ field_name(form.logo) }}"
+                   value="{{ field_value(form.logo) }}" accept="image/*" >
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.name) }}">{{ field_label(form.name) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.name) }}" id="{{ field_name(form.name) }}" name="{{ field_name(form.name) }}" value="{{ field_value(form.name) }}" required>
+            {% for error in field_errors(form.name) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.address) }}">{{ field_label(form.address) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.address) }}" id="{{ field_name(form.address) }}"
+                   name="{{ field_name(form.address) }}" value="{{ field_value(form.address) }}" required>
+            {% for error in field_errors(form.address) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.area) }}">{{ field_label(form.area) }} <span class="text-danger">*</span></label>
+            <select class="form-control select2" type="text" id="{{ field_name(form.area) }}"
+                   name="{{ field_name(form.area) }}" required>
+                {% for area in areas %}
+                    <option value="{{ area.id }}" {% if field_value(form.area) == area.id %}selected{% endif %}>{{ area.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="country">{{ field_label(form.phone) }} <span class="text-danger">*</span></label>
+            <input id="country" type="tel" class="form-control"
+                   placeholder="{{ field_label(form.phone) }}" name="{{ field_name(form.phone) }}"
+                   value="{%if field_value(form.phone) matches '/\\+34/' %}{{ field_value(form.phone) }}{% else %}+34{{ field_value(form.phone) }}{% endif %}" required>
+            <span id="valid-msg" class="invisible hide"></span>
+            <span id="error-msg" class="hide text-danger"></span>
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.color) }}">{{ field_label(form.color) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="color" placeholder="{{ field_label(form.color) }}" id="{{ field_name(form.color) }}" name="{{ field_name(form.color) }}" value="{{ field_value(form.color) }}" required>
+            {% for error in field_errors(form.color) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.opening_time) }}">{{ field_label(form.opening_time) }} <span class="text-danger">*</span></label>
+            <input class="form-control timepickr" type="text" placeholder="{{ field_label(form.opening_time) }}" id="{{ field_name(form.opening_time) }}" name="{{ field_name(form.opening_time) }}" value="{{ field_value(form.opening_time)['time']['hour'] }}:{{ field_value(form.opening_time)['time']['minute'] }}" required>
+            {% for error in field_errors(form.opening_time) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.closing_time) }}">{{ field_label(form.closing_time) }} <span class="text-danger">*</span></label>
+            <input class="form-control timepickr" type="text" placeholder="{{ field_label(form.closing_time) }}" id="{{ field_name(form.closing_time) }}" name="{{ field_name(form.closing_time) }}" value="{{ field_value(form.closing_time)['time']['hour'] }}:{{ field_value(form.closing_time)['time']['minute'] }}" required>
+            {% for error in field_errors(form.closing_time) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        {{ form_row(form._token) }}
+
+    </div>
+
+    <input id="deleteImgInput" type="hidden" name="user[deleteImg]">
+    <div class="row d-flex justify-content-end mt-2">
+        <div class="mr-2 text-end">
+            <button class="btn btn-primary text-white waves-effect waves-float waves-light">{{ button_label }}</button>
+        </div>
+    </div>
+</form>
+
+<script>
+</script>

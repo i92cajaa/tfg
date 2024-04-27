@@ -1,0 +1,198 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Mostrar Horario{% endblock %}
+
+{% block page_title %}Mostrar Horario{% endblock %}
+
+{% block body %}
+    {% set appointmentService = '' %}
+
+    <div class="container-fluid">
+        <ul class="nav nav-pills pl-2" role="tablist">
+            <li class="nav-item d-flex">
+                <a class="nav-link d-flex align-items-center active" id="info-tab" data-bs-toggle="tab"
+                   href="#info" aria-controls="account" role="tab" aria-selected="true">
+                    <i data-feather="user"></i>{{ 'Info'|trans }}
+                </a>
+            </li>
+        </ul>
+
+
+        <div class="tab-content">
+            <div class="tab-pane active row" id="info" aria-labelledby="info-tab" role="tabpanel">
+
+                <div class="col-12">
+                    <div class="row invoice-preview">
+                        <!-- Info -->
+                        <div class="col-xl-12 col-md-12 col-12">
+                            <div class="card invoice-preview-card">
+                                <div class="card-body invoice-padding pb-0">
+                                    <!-- Header starts -->
+                                    <div class="d-flex row invoice-spacing mt-0">
+                                        <div class="card-title d-flex align-items-center col-12">
+                                            {% if schedule.status != null %}
+                                                <span class = "badge text-capitalize" style="background-color: {{ schedule.status.color }} !important;"> {{ schedule.status.name|trans }} </span> 
+                                                <span class = "ms-2 me-2 fw-bold d-flex align-items-center">( <i data-feather="calendar" class="mx-1 d-none d-md-block" style="width: 15px"></i>{{ schedule.dateFrom ? schedule.dateFrom|UTCDateTimeFormat('d-m-Y') : '' }} |  <i data-feather="clock" class="mx-1 d-none d-md-block" style="width: 15px"></i>{{ schedule.dateFrom ? schedule.dateFrom|UTCDateTimeFormat('H:i') }} - {{ schedule.dateTo ? schedule.dateTo|UTCDateTimeFormat('H:i') }})</span>
+                                                <span class = "ms-2 me-2 fw-bold d-flex align-items-center">Planta {% if schedule.room.floor == 0 %}Baja{% else %}{{ schedule.room.floor }}ª{% endif %} | Habitación #{{ schedule.room.number }} | Capacidad:  <i data-feather="user-plus" class="mx-1 d-none d-md-block" style="width: 15px"></i>{{ schedule.room.capacity }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <h5 class="pb-1">Datos del Profesor</h5>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-12 col-md-5 mb-1"><span class="fw-bold">Nombre: </span> {% if userPermission.can('show', 'users') %} <a href="{{ path('user_show', {'user': schedule.teacher.id}) }}">{{ schedule.teacher.name }} {{ schedule.teacher.surnames }}</a> {% else %} {{ schedule.teacher.name }} {{ schedule.teacher.surnames }} {% endif %}</div>
+                                                <div class="col-12 col-md-5 mb-1"><span class="fw-bold">Correo Electrónico: </span>{{ schedule.teacher.email }}</div>
+                                                <br>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-5">
+                                            <h5 class="pb-1">Datos de los clientes</h5>
+                                            <hr>
+                                            <div class="row">
+                                                {% for booking in schedule.bookings %}
+                                                    <div class="col-6 mb-2"><span class="fw-bold">Cliente: </span><a href="{#{{ path('client_show', {'client':booking.client.id}) }}#}">{{ booking.client.name }} {{ booking.client.surnames }}</a></div>
+                                                    <div class="col-6 mb-2"><span class="fw-bold">Teléfono: </span><a href="{#{{ path('client_show', {'client':booking.client.id}) }}#}">{{ booking.client.phone }}</a></div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Header ends -->
+                                </div>
+
+                                
+
+                                <!-- Invoice Note starts -->
+                                <div class="card-body invoice-padding pt-0 text-end border-top-0">
+                                    {% if userPermission.can('delete', 'schedules') %}
+                                        <a class="btn btn-outline-danger" onclick="$('#deleteForm_schedule_{{ schedule.id }}').submit()">{{ 'Delete'|trans }}</a>
+                                        <form method="post" id="deleteForm_schedule_{{ schedule.id }}" action="{{ path('schedule_delete', {'schedule': schedule.id}) }}" class="deleteForm d-none">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
+                                            <input type="hidden" name="route" value="{{ path('schedule_index') }}">
+                                        </form>
+                                    {% endif %}
+                                </div>
+                                <!-- Invoice Note ends -->
+                            </div>
+                        </div>
+                        <!-- /Info -->
+                        <!-- Report -->
+                    <div class="card invoice-preview-card">
+                        <div id="reportContent"></div>
+                    </div>
+
+                        <!-- /Report -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+
+    {% if userPermission.can('edit', 'schedules') %}
+        async function openStatusModal()
+        {
+
+            const { value: formValues } = await Swal.fire({
+                title: '{{ 'Change Status'|trans }}',
+                html: '{{ 'Select the status to which you want to change the appointment'|trans }}' +
+                    '<div class="form-group">' +
+                    '<label class="form-control-label" for="swal-input-select">{{ 'Status'|trans }}</label>' +
+                    '<select class="form-control" id="swal-input-select" name="status">' +
+                        {% for status in statuses %}
+                    '<option value="{{ status.id }}" {% if status.id == schedule.status.id %}selected{% endif %}>{{ status.name|trans }}</option>' +
+                        {% endfor %}
+                    '</select>' +
+                    '</div>'
+                ,
+                showCancelButton: true,
+                confirmButtonText: '{{ 'Next'|trans }}',
+                cancelButtonText: '{{ 'Cancel'|trans }}',
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading(),
+                didOpen: function () {
+                    $('#swal-input-select').select2({});
+
+                },
+                preConfirm: () => {
+
+                    return {
+                        'status': $('#swal-input-select').val()
+                    };
+                }
+            })
+
+            if(formValues) {
+
+                let form = document.createElement('form');
+
+                form.setAttribute('method', "post");
+                form.setAttribute('action', "{{ path('change_status_schedule', {'schedule': schedule.id}) }}");
+
+                let statusInput = document.createElement('input')
+                statusInput.type = 'hidden';
+                statusInput.name = 'status';
+                statusInput.value = formValues.status;
+
+
+                let tokenInput = document.createElement('input')
+                tokenInput.type = 'hidden';
+                tokenInput.name = '_token';
+                tokenInput.value = '{{ csrf_token('change-status') }}';
+
+                form.appendChild(statusInput);
+                form.appendChild(tokenInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+        }
+    {% endif %}
+
+    flatpickr('#created_at', {
+        locale: locale,
+        enableTime: true,
+        dateFormat: "d-m-Y H:i",
+        allowInput: true
+    })
+</script>
+{% endblock %}
+
+
+{% block action_buttons %}
+
+    <li class="level-menu outside">
+
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'schedules') ? path('schedule_index') : '#' }}"  >
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+    </li>
+
+    {% if userPermission.can('edit', 'schedules') %}
+        {% if schedule.status.id != 4 %}
+            <li class="level-menu outside ms-2">
+                <div class="d-none d-md-block">
+                    <a href="{{ path('schedule_edit', {'schedule': schedule.id}) }}" class="btn btn-primary">{{ 'Edit'|trans }}</a>
+                </div>
+                <div class="d-block d-md-none">
+                    <a href="{{ path('schedule_edit', {'schedule': schedule.id}) }}" class="nav-link"><i data-feather="edit" style="width: 16px"></i></a>
+                </div>
+            </li>
+        {% endif %}
+
+        <li {% if schedule.status.id == 4 %}class="level-menu outside ms-2"{% endif %}>
+            <div class="d-none d-md-block">
+            <a class="mr-1" onclick="openStatusModal()"><button class="btn btn-primary">{{ 'Change Status'|trans }}</button></a>
+            </div>
+            <div class="d-block d-md-none">
+                <a onclick="openStatusModal()"  class="nav-link"><i data-feather="save" style="width: 16px"></i></a>
+            </div>
+        </li>
+    {% endif %}
+
+{% endblock %}

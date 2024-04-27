@@ -1,0 +1,83 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Centro - {{ center.name }}{% endblock %}
+
+{% block page_title %}
+    Centro
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <!-- User Card & Plan Starts -->
+        <div class="row">
+            <!-- User Card starts-->
+            <div class="col-xl-12 col-lg-12 col-md-12">
+                <div class="card user-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 mt-2 mt-xl-0">
+                                <div class="user-info-wrapper row mr-2 ml-2">
+                                    <div class="d-flex flex-wrap col-md-12 row gap-3">
+                                        <div class="mb-5 d-flex">
+                                            <div class="col-md-2">
+                                                <img  class="rounded-pill" data-bs-toggle="tooltip"
+                                                      data-html="true"
+                                                      data-placement="bottom"
+                                                      title=''
+                                                      src="{% if center.logo != null %}{{ documentImage.DocumentImage(center.logo) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" style="width: 90px !important;"  alt="">
+                                            </div>
+                                            <div class="col-md-10">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Nombre: <strong>{{ center.name }}</strong></span>
+                                            </div>
+
+                                        </div>
+                                        <div class="mb-3 d-flex">
+                                            <div class="col-md-2">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Teléfono: <strong>{{ center.phone }}</strong></span>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Dirección: <strong>{{ center.address }}</strong></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Área: <strong>{{ center.area.name }}</strong></span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <div class="col-md-2">
+                                                <i class="ficon m-r-5" data-feather="clock"></i>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Hora de Apertura: <strong>{{ center.openingTime|UTCDateTimeFormat('H:i') }}</strong></span>
+                                            </div>
+                                            <div class="col-md-5 align-items-center">
+                                                <span class="card-text user-info-title font-weight-bold mb-0 ">Hora de Cierre: <strong>{{ center.closingTime|UTCDateTimeFormat('H:i') }}</strong></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(function() {
+            $('.select2').select2();
+        });
+    </script>
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside d-flex align-items-center gap-3">
+
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'centers') ? path('center_index') : '#' }}"  >
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+        <h3 class="mb-0">{{ center.name }}</h3>
+    </li>
+{% endblock %}

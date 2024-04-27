@@ -1,0 +1,531 @@
+Sign in to account: Sign in to account
+Enter your email & password to login: Enter your email & password to login
+Email Address: Email Address
+ModifyPass: Accept
+Follow this link to reset your user account password in: Follow this link to reset the password for your user account at
+If you did not request a new password you can safely delete this email: If you didn't request a new password, you can safely delete this email.
+Reset your password: Reset your password
+Enter a new password (Remember it must be at least 8 characters long, contain a punctuation mark, and an uppercase letter): Enter a new password (Remember it must be at least 8 characters long, contain a punctuation mark, and an uppercase letter).
+Password: Password 
+RepeatPassword: Repeat password
+Remember password: Remember password
+Recover password: Recover password
+Sign in: Sign in
+Actions: Actions
+Notifications: Notifications
+My profile: My profile
+Logout: Logout
+Click here to see it: Click here to see it
+Administration: Administration
+Dashboards & configuration: Dashboards & configuration
+Dashboard: Dashboard
+Configuration: Configuration
+File: File
+Text: Text
+Short Text: Short Text
+Number: Number
+Confirmation: Confirmation
+Selector: Selector
+Name: Name
+Previous: Previous
+Next: Next
+Hour: Hour
+Weekday: Weekday
+Delete: Delete
+From: From
+Available Time Slots: Available Time Slots
+Phone: Phone
+Email: Email
+Surnames: Surnames
+Info: Info
+I have read and accept the: I have read and accept the
+Data Protection and Legal Consent: Data Protection and Legal Consent
+Add time slot: Add time slot
+Send: Send
+New Appointment Created: New Appointment Created
+Dear : Dear
+you have an appointment with us: you have an appointment with us
+Access platform: Access platform
+these are your login credentials: these are your login credentials
+Username: Username
+List Appointments: List Appointments
+Modules: Modules
+Appointments, Tasks & More: Appointments, Tasks & More
+Appointments: Appointments
+Invoices: Invoices
+professionals: Professionals
+New: New
+Edit: Edit
+List: List
+Results: Results
+Show: Show
+Filters: Filters
+Filter: Filter
+Object: Object
+Description: Description
+Active: Active
+Inactive: Inactive
+Type: Type
+Options: Options
+Lines: Lines
+Clients: Clients
+patient Phone: Patient Phone
+patient Address: Patient Address
+ID: ID
+Phones: Phones
+Address: Address
+Payment Preference: Payment Preference
+Comments: Comments
+Client: Client
+Patient: Patient
+Tasks: Tasks
+Full Name: Full Name
+Start: Start
+End: End
+Yes: Yes
+No: No
+See More: See More
+Export: Export
+Date: Date
+Dates: Dates
+Task Updated: Task Updated
+Select The Templates To Be Exported: Select The Templates To Be Exported
+Task Status Updated Successfully: Task Status Updated Successfully
+Select The Template You Want To Create: Select The Template You Want To Create
+Add Time: Add Time
+Add Option: Add Option
+Add New: Add New
+Add Services: Add Services
+Add Service: Add Service
+Estimated Start Date: Estimated Start Date
+Start Date: Start Date
+End Date: End Date
+Start Time: Start Time
+End Time: End Time
+Estimated Time: Estimated Time
+No Client assigned: No Client assigned
+No Patient assigned: No Patient assigned
+Title: Title
+Close: Close
+Change Timezone: Change Timezone
+Change Status: Change Status
+Cancel: Cancel
+Continue: Continue
+Pending: Pending
+Ongoing: Ongoing
+Released: Released
+Done: Done
+Ended: Ended
+You need to select an option: You need to select an option
+Select the status to which you want to change the task: Select the status to which you want to change the task
+Task status has been changed successfully: Task status has been changed successfully
+Time has been recorded for the selected task: Time has been recorded for the selected task
+Appointment Assigned: Appointment Assigned
+Client Assigned: Client Assigned
+Patient Assigned: Patient Assigned
+Client Email: Client Email
+Patient Email: Patient Email
+Time Recorded: Time Recorded
+Are You Sure?: Are You Sure?
+The Task Will Be Deleted: The Task Will Be Deleted
+Planner: Planner
+All: All
+An error occurred while retrieving tasks: An error occurred while retrieving tasks
+An error occurred while retrieving appointments: An error occurred while retrieving appointments
+Copy Appointments: Copy Appointments
+A server error has occurred: A server error has occurred
+Tasks More: Tasks More
+Schedules More: Schedules More
+Listing: Listing
+More: More
+Nothing: Nothing,
+Years: Years
+Year: Year
+Months: Months
+Month: Month
+Weeks: Weeks
+Week: Week
+Days: Days
+Day: Day
+Hours: Hours
+Minutes: Minutes
+Minute: Minute
+Seconds: Seconds
+Second: Second
+Apply Filter: Apply Filter
+Superadmin: Superadmin
+Admin: Admin
+Manage Schedules: Manage Schedules
+Manage Divisions: Manage Divisions
+Manage Payments: Manage Payments
+Manage Services: Manage Services
+Assign Tasks: Assign Tasks
+Modify Hour: Modify Hour
+Delete Previous: Delete Previous
+Delete Next: Delete Next
+Absences: Absences
+Absence: Absence
+Payment Methods: Payment Methods
+Services: Services
+Template Types: Template Types
+Template Type: Template Type
+Template: Template
+Additional Appointment Field Types: Additional Appointment Field Types
+Additional Appointment Fields: Additional Appointment Fields
+User Info: User Info
+Professional Info: Professional Info
+Range of Days: Range of Days
+Select a Range of Days: Select a Range of Days
+Task Form: Task Form
+Invalid Token: Invalid Token
+Task Not Found: Task Not Found
+Task Updated Successfully: Task Updated Successfully
+No valid entity provided: No valid entity provided
+The Task Status Has Been Updated Successfully: The Task Status Has Been Updated Successfully
+Error when changing Task status: Error when changing Task status
+Time has been recorded to the Task correctly: Time has been recorded to the Task correctly
+Error when recording time in the Task: Error when recording time in the Task
+You have been assigned a new Task, to check your tasks click on the following link: You have been assigned a new Task, to check your tasks click on the following link
+The payment method already exists: The payment method already exists
+The template type already exists: The template type already exists
+User with this email already exists: User with this email already exists
+Service: Service
+Division: Division
+Divisions: Divisions
+Color: Color
+VAT: VAT
+Price: Price
+Duration: Duration
+VAT Applied?: VAT Applied?
+Schedule: Schedule
+Schedules: Schedules
+Monday: Monday
+Tuesday: Tuesday
+Wednesday: Wednesday
+Thursday: Thursday
+Friday: Friday
+Saturday: Saturday
+Sunday: Sunday
+Paid: Paid
+Unpaid: Unpaid
+Liberated: Liberated
+Liberate: Liberate
+Copy: Copy
+Amount: Amount
+Payment Date: Payment Date
+Copy schedules to the following days: Copy schedules to the following days
+Flexible appointment interval (minutes): Flexible appointment interval (minutes)
+Restrict to a single fixed appointment: Restrict to a single fixed appointment
+Do you want to add the fixed schedule restriction?: Do you want to add the fixed schedule restriction?
+Do you want to remove the fixed schedule restriction?: Do you want to remove the fixed schedule restriction?
+You can reverse this process at any time: You can reverse this process at any time
+Confirm: Confirm
+You are about to delete this agenda: You are about to delete this agenda
+This Element Will Be Deleted: This Element Will Be Deleted
+To: To
+Payment Method: Payment Method
+Requests: Requests
+Request: Request
+Appointment Form: Appointment Form
+Copied: Copied
+You have copied the source code to insert the public link to the quotation form: You have copied the source code to insert the public link to the quotation form
+Extra Appointment Fields: Extra Appointment Fields
+Extra Appointment Field: Extra Appointment Field
+Apply Filters: Apply Filters
+Header: Header
+Footer: Footer
+Validate: Validate
+Select User: Select User
+Select Professional: Select Professional
+To validate the request, you must select a User to whom this Client will be assigned: To validate the request, you must select a User to whom this Client will be assigned
+To validate the request, you must select a Professional to whom this Client will be assigned: To validate the request, you must select a Professional to whom this Client will be assigned
+To validate the request, you must select a User to whom this Patient will be assigned: To validate the request, you must select a User to whom this Patient will be assigned
+To validate the request, you must select a Professional to whom this Patient will be assigned: To validate the request, you must select a Professional to whom this Patient will be assigned
+No value: No value
+Value: Value
+Selected Appointment: Selected Appointment
+Total price of selected appointments: Total price of selected appointments
+Total price: Total price
+Print Appointment: Print Appointment
+Generate Invoice: Generate Invoice
+Send Notification: Send Notification
+Complete: Complete
+Notify: Notify
+Export Appointments: Export Appointments
+Export Templates: Export Templates
+Select the format you want to export the file to: Select the format you want to export the file to
+You need to select at least one option!: You need to select at least one option!
+Generating documents!: Generating documents!
+This process may take a few minutes depending on the number of invoices selected: This process may take a few minutes depending on the number of invoices selected
+Documents have been generated successfully: Documents have been generated successfully
+Invoices are being generated, this action may take a moment...: Invoices are being generated, this action may take a moment...
+Generated: Generated
+Invoices have been generated for the selected appointments: Invoices have been generated for the selected appointments
+The invoice for the selected appointment has been generated: The invoice for the selected appointment has been generated
+Sent: Sent
+Clients have been notified of appointments: Clients have been notified of appointments
+Patients have been notified of appointments: Patients have been notified of appointments
+Selected appointments have been copied: Selected appointments have been copied
+Calendar: Calendar
+Create Extra Appointment Fields: Create Extra Appointment Fields
+Services Selected: Services Selected
+Select an option: Select an option
+Periodicity of the appointment?: Periodicity of the appointment?
+Interval of weeks: Interval of weeks
+Error: Error
+Not all fields have been filled in. Please double check the data you have entered: Not all fields have been filled in. Please double check the data you have entered
+Add: Add
+Action Done: Action Done
+User Assigned: User Assigned
+Professional Assigned: Professional Assigned
+No one: No one
+Actual Schedule: Actual Schedule
+Could not create the appointment for the date because the stretch is complete: Could not create the appointment for the date because the stretch is complete
+It has not been possible to create the appointment for the date because that time slot does not exist for that professional: It has not been possible to create the appointment for the date because that time slot does not exist for that professional
+An Appointment has been edited that you had assigned, to consult your appointment click on the following link: An Appointment has been edited that you had assigned, to consult your appointment click on the following link
+Cannot edit an appointment already made: Cannot edit an appointment already made
+You have been assigned a new Appointment, to consult your appointment click on the following link: You have been assigned a new Appointment, to consult your appointment click on the following link
+The appointment has been confirmed: The appointment has been confirmed
+The appointment has been successfully created: The appointment has been successfully created
+Appointment reminder: Appointment reminder
+This is an informative email to remind you that you have an appointment with us, the data are reflected below: This is an informative email to remind you that you have an appointment with us, the data are reflected below
+The email is not valid: The email is not valid
+The phone is not valid: The phone is not valid
+We remind you that you have an appointment with the following date: We remind you that you have an appointment with the following date
+Appointment Report: Appointment Report
+Could not be created, the agenda is complete: Could not be created, the agenda is complete
+Could not create, no valid agenda for the selected day: Could not create, no valid agenda for the selected day
+Date Range: Date Range
+Reset Filters: Reset Filters
+Order: Order
+Go: Go
+Fill in the data to load the schedule creation page: Fill in the data to load the schedule creation page
+Enter the date on which you want to copy the appointments: Enter the date on which you want to copy the appointments
+The appointment will be deleted, this cannot be undone: The appointment will be deleted, this cannot be undone
+Change history: Change history
+Warning: Warning
+Modification of the schedule for this appointment could cause an overlap in the hours of other appointments: Modification of the schedule for this appointment could cause an overlap in the hours of other appointments
+Select the status to which you want to change the appointment: Select the status to which you want to change the appointment
+Select the template types to be exported: Select the template types to be exported
+Select the template you want to create: Select the template you want to create
+A payment has been made for this appointment: A payment has been made for this appointment
+A template of the following type has been created: A template of the following type has been created
+Templates have been created successfully: Templates have been created successfully
+New Template: New Template
+Payments: Payments
+Position: Position
+Request Confirmed: Request Confirmed
+This appointment has been modified: This appointment has been modified
+The current status has changed to: The current status has changed to
+Hour changed: Hour changed
+There are appointments for this User that share time: There are appointments for this User that share time
+There are appointments for this Professional that share time: There are appointments for this Professional that share time
+Schedule successfully modified: Schedule successfully modified
+The appointment time has had a modification, this change being as follows: The appointment time has had a modification, this change being as follows
+The invoice has been successfully edited: The invoice has been successfully edited
+Could not be edited, invoice number already exists: Could not be edited, invoice number already exists
+The invoice has been removed: The invoice has been removed
+No Client found to assign payment to: No Client found to assign payment to
+No Patient found to assign payment to: No Patient found to assign payment to
+Payment has been successfully edited: Payment has been successfully edited
+Payment has been successfully created: Payment has been successfully created
+Task deleted successfully: Task deleted successfully
+The template has been edited successfully: The template has been edited successfully
+Delete Appointments: Delete Appointments
+Template Report: Template Report
+New Payment: New Payment
+Invoice Date: Invoice Date
+Company Name: Company Name
+Company Address: Company Address
+Invoice Address: Invoice Address
+FIC: FIC
+Company Phone: Company Phone
+Client ID: Client ID
+Patient ID: Patient ID
+User ID: User ID
+Professional ID: Professional ID
+Client Phone: Client Phone
+Patient Phone: Patient Phone
+User Phone: User Phone
+Professional Phone: Professional Phone
+Client Address: Client Address
+Patient Address: Patient Address
+User Address: User Address
+Professional Address: Professional Address
+Price Without VAT: Price Without VAT
+Price With VAT: Price With VAT
+Total Without VAT: Total Without VAT
+Total With VAT: Total With VAT
+Generating documents: Generating documents
+No User assigned: No User assigned
+No Professional assigned: No Professional assigned
+User nomenclature: User nomenclature
+Professional nomenclature: Professional nomenclature
+Client nomenclature: Client nomenclature
+Patient nomenclature: Patient nomenclature
+You: You
+Professionals: Professionals
+User Serie: User Serie
+Fixed: Fixed
+Flexible: Flexible
+Other: Other
+Autonomous: Autonomous
+Appointment Percentage: Appointment Percentage
+Percentage: Percentage
+FIN: FIN
+Invoiced: Invoiced
+Invoice Number: Invoice Number
+Net Price: Net Price
+Taxable income: Taxable income
+Cost: Cost
+Net: Net
+Invoice: Invoice
+Meeting Module: Meeting Module
+Microsoft Azure Client ID: Microsoft Azure Client ID
+Microsoft Azure Client Secret ID: Microsoft Azure Client Secret ID
+Microsoft Azure Tenant ID: Microsoft Azure Tenant ID
+Microsoft Azure Service User ID: Microsoft Azure Service User ID
+Attached Meeting?: Attached Meeting?
+Breakdown: Breakdown
+Generate User Multiple Invoice: Generate User Multiple Invoice
+Generate Professional Multiple Invoice: Generate Professional Multiple Invoice
+Go to the Meeting: Go to the Meeting
+Go to payment site: Go to payment site
+Developed By: Developed By
+Stripe: Stripe
+Price/Hour: Price/Hour
+Dear Sir / Madam, you have an appointment with us: Dear Sir / Madam, you have an appointment with us
+Meeting: Meeting
+Successfully edit configuration: Successfully edit configuration
+This is an informative email to remind you that you need to make the payment to complete the appointment.: This is an informative email to remind you that you need to make the payment to complete the appointment.
+Application Name: Application Name
+Application Short Name: Application Short Name
+Large Logo: Large Logo
+Small Logo: Small Logo
+Primary Color: Primary Color
+Secondary Color: Secondary Color
+Favicon: Favicon
+Days to Notify: Days to Notify
+Invoice Module: Invoice Module
+Calendar Interval: Calendar Interval
+Complete on Pay: Complete on Pay
+Payment Module: Payment Module
+List Clients: List Clients
+List Patients: List Patients
+List patients:  List Patients
+List Requests: List Requests
+List Configs: List Configs
+List Divisions: List Divisions
+List Extra Appointment Fields: List Extra Appointment Fields
+List Absences: List Absences
+List Payment Methods: List Payment Methods
+List Payments: List Payments
+List Schedules: List Schedules
+List Services: List Services
+List Tasks: List Tasks
+List Templates: List Templates
+List Template Types: List Template Types
+List Users: List Users
+List Professionals: List Professionals
+List Invoices: List Invoices
+List professionals: List professionals
+Create Client: Create Client
+Create Patient: Create Patient
+Create Request: Create Request
+Create Config: Create Config
+Create Division: Create Division
+Create Extra Appointment Field: Create Extra Appointment Field
+Create Absence: Create Absence
+Create Payment Method: Create Payment Method
+Create Payment: Create Payment
+Create Schedule: Create Schedule
+Create Service: Create Service
+Create Template: Create Template
+Create Template Type: Create Template Type
+Create User: Create User
+Create Professional: Create Professional
+Create Invoice: Create Invoice
+Edit Appointment: Edit Appointment
+Edit Client: Edit Client
+Edit Lesson: Edit Class
+Edit Request: Edit Request
+Edit Config: Edit Config
+Edit Division: Edit Division
+Edit Extra Appointment Field: Edit Extra Appointment Field
+Edit Absence: Edit Absence
+Edit Payment Method: Edit Payment Method
+Edit Payment: Edit Payment
+Edit Schedule: Edit Schedule
+Edit Service: Edit Service
+Edit Task: Edit Task
+Edit Template: Edit Template
+Edit Template Type: Edit Template Type
+Edit User: Edit User
+Edit Professional: Edit Professional
+Edit Invoice: Edit Invoice
+Show Appointment: Show Appointment
+Show Client: Show Client
+Show Patient: Show Patient
+Show patient: Show patient
+Show Request: Show Request
+Show Config: Show Config
+Show Division: Show Division
+Show Extra Appointment Field: Show Extra Appointment Field
+Show Absence: Show Absence
+Show Payment Method: Show Payment Method
+Show Payment: Show Payment
+Show Schedule: Show Schedule
+Show Service: Show Service
+Show Task: Show Task
+Show Template: Show Template
+Show Template Type: Show Template Type
+Show User: Show User
+Show Professional: Show Professional
+Show Invoice: Show Invoice
+Show Client Invoice: Show Client Invoice
+Show Patient Invoice: Show Patient Invoice
+Show User Invoice: Show User Invoice
+Show Professional Invoice: Show Professional Invoice
+Delete Appointment: Delete Appointment
+Delete Client: Delete Client
+Delete Request: Delete Request
+Delete Config: Delete Config
+Delete Division: Delete Division
+Delete Extra Appointment Field: Delete Extra Appointment Field
+Delete Absence: Delete Absence
+Delete Payment Method: Delete Payment Method
+Delete Payment: Delete Payment
+Delete Schedule: Delete Schedule
+Delete Service: Delete Service
+Delete Task: Delete Task
+Delete Template: Delete Template
+Delete Template Type: Delete Template Type
+Delete User: Delete User
+Delete Professional: Delete Professional
+Delete Invoice: Delete Invoice
+Users: Users
+User: User
+Professional: Professional
+Delete image: Delete image
+Image: Image
+Appointment Color: Appointment Color
+Appointment: Appointment
+Task Color: Task Color
+Permissions: Permissions
+Update: Update
+Create: Create
+Time interval in the calendar: Time interval in the calendar
+Roles: Roles
+Status: Status
+Creation Date: Creation Date
+No results found: No results found
+Clinical History: Clinical History
+Your payment has been successfully completed. A professional will contact you shortly.: Your payment has been successfully completed. A professional will contact you shortly.
+Best regards. The Fluxua team: Best regards. The Fluxua team
+The consultation fee will be deducted at the first appointment.: The consultation fee will be deducted at the first appointment.
+Print invoice: Print invoice
+Mentoring: Mentoring
+Lessons: Lessons
+Bookings: Bookings
+Centers: Centers
+Rooms: Rooms

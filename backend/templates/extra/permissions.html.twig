@@ -1,0 +1,41 @@
+
+{% for permissionGroup in permissions %}
+    <div class="{{ col }} mb-3">
+
+        <table class="w-100 table rounded bg-light table-borderless">
+            <thead>
+                <tr>
+                    <th colspan="2" class="text-dark">
+                        {{ permissionGroup.label|trans }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for permission in permissionGroup.permissions %}
+
+                <tr >
+                    <td class="text-dark">
+                        {{ permission.label|trans }}
+                    </td>
+                    <td class="text-dark text-end">
+                        <span class="d-inline-block">
+                            <input type="checkbox" class="form-check" name="user[permissions][]"
+                               value="{{ permission.id }}" id="permission-{{ permission.id }}"
+                                {% if userPermission.userHasPermissionId(user, permission.id) %}
+                                    checked
+                                {% endif %}
+                                {% if disabled is defined and disabled %}
+                                    disabled="disabled"
+                                {% endif %}
+                            />
+                        </span>
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+{% endfor %}

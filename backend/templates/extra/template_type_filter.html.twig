@@ -1,0 +1,35 @@
+ <form id="filter_form" name="form-filter-clients w-100">
+        <fieldset class="">
+            <div class="d-flex justify-content-around align-items-center mx-50 row pt-0 pb-2">
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                    <label for="Nombre">{{ 'Name'|trans }}</label>
+                    <input type="text" class="form-control" placeholder="{{ 'Name'|trans }}" name="{{ filterService.filterField('name') }}" value="{{ filterService.getFilterValue("name") }}" form="filter_form">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                    <label for="status">{{ 'Object'|trans }}</label>
+                    <br>
+                    <select name="{{ filterService.filterField('entity') }}" class="select2 form-control" id="status">
+                        <option value="" selected>{{ 'All'|trans }}</option>
+                        {% for label, entity in entities %}
+                            <option value="1" {% if filterService.getFilterValue('entity') == entity %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                {{ filterService.filterFormField() | raw }}
+
+                <div class="form-group-feedback form-group-feedback-right text-end col-12">
+                    <button type="submit" class="btn add-new text-white btn-primary mt-2">{{ 'Apply Filter'|trans }}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+

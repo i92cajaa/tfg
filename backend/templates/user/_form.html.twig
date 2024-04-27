@@ -1,0 +1,150 @@
+{#<form name="user" enctype="multipart/form-data" method="post" autocomplete="off">#}
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+    <div class="w-100 row">
+
+        <input type="hidden" id="user_delete_image" name="user[delete_image]" autocomplete="off">
+        <h2>Info de Contacto</h2>
+        <hr>
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.name) }}">{{ field_label(form.name) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.name) }}" id="{{ field_name(form.name) }}" name="{{ field_name(form.name) }}" value="{{ field_value(form.name) }}" required>
+            {% for error in field_errors(form.name) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.surnames) }}">{{ field_label(form.surnames) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.surnames) }}" id="{{ field_name(form.surnames) }}" name="{{ field_name(form.surnames) }}" value="{{ field_value(form.surnames) }}">
+            {% for error in field_errors(form.surnames) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.phone) }}">{{ field_label(form.phone) }} </label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.phone) }}" id="{{ field_name(form.phone) }}" name="{{ field_name(form.phone) }}" value="{{ field_value(form.phone) }}">
+            {% for error in field_errors(form.phone) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.email) }}">{{ field_label(form.email) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.email) }}" id="{{ field_name(form.email) }}" name="{{ field_name(form.email) }}" value="{{ field_value(form.email) }}" required>
+            {% for error in field_errors(form.email) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-2 col-sm-6 mb-3">
+                <label class="form-label" >{{ field_label(form.password.first) }} {% if not edit %}<span class="text-danger">*</span>{% endif %} </label>
+                <input class="form-control" type="password"
+                       placeholder="{{ field_label(form.password.first) }}" id="{{ field_name(form.password.first) }}"
+                       name="{{ field_name(form.password.first) }}"
+                       value="{{ field_value(form.password.first) }}"
+                       {% if not edit %}required{% endif %}>
+                {% for error in field_errors(form.password.first) %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+        </div>
+
+        <div class="col-md-2 col-sm-6 mb-3">
+                <label class="form-label" for="{{ field_name(form.password.second) }}">{{ field_label(form.password.second) }} {% if not edit %}<span class="text-danger">*</span>{% endif %} </label>
+                <input class="form-control" type="password"
+                       placeholder="{{ field_label(form.password.second) }}" id="{{ field_name(form.password.second) }}"
+                       name="{{ field_name(form.password.second) }}"
+                       value="{{ field_value(form.password.second) }}"
+                       {% if not edit %}required{% endif %}>
+                {% for error in field_errors(form.password.second) %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.img_profile) }}">Imagen de perfil </label>
+            <input type="file" class="form-control"
+                   placeholder="{{ field_label(form.img_profile) }}" id="{{ field_name(form.img_profile) }}" name="{{ field_name(form.img_profile) }}"
+                   value="{{ field_value(form.img_profile) }}" accept="image/*">
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3">
+            <label class="form-label" for="{{ field_name(form.role) }}">Rol <span class="text-danger">*</span></label>
+            <select class="form-control select2" onchange="rolSelectChange()" id="{{ field_name(form.role) }}" name="{{ field_name(form.role) }}" required>
+                <option disabled selected value="">Selecciona una opción</option>
+                {% for rol in roles %}
+                    <option {% if user.roles[0] is defined and rol.name == user.roles[0] %}selected{% endif %} value="{{ rol.id }}">{{ rol.name }}</option>
+                {% endfor %}
+
+                {% for error in field_errors(form.role) %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4 col-sm-6 mb-3 {% if user.isSuperAdmin %}d-none{% endif %}" id="user_center">
+            <label class="form-label" for="{{ field_name(form.center) }}">Centro Asociado <span class="text-danger">*</span></label>
+            <select class="form-select" type="text" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" required>
+                <option disabled {% if field_value(form.center)|length < 1 %}selected{% endif %} value="{{ null }}">Selecciona una opción</option>
+                {% for center in centers %}
+                    <option {% if center.id == field_value(form.center) %}selected{% endif %} value="{{ center.id }}">{{ center.name }}</option>
+                {% endfor %}
+
+            {% for error in field_errors(form.center) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+            </select>
+        </div>
+
+
+        <div class="col-md-4 col-sm-6 d-none">
+            <label class="form-label" for="{{ field_name(form.calendar_interval) }}">Horario <span class="text-danger">*</span></label>
+            <input class="form-control" type="time" placeholder="{{ field_label(form.calendar_interval) }}" id="{{ field_name(form.calendar_interval) }}" name="{{ field_name(form.calendar_interval) }}" value="{{ user.calendarInterval|default('01:00') }}" required>
+            {% for error in field_errors(form.calendar_interval) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+
+        </div>
+        {{ form_row(form._token) }}
+
+    </div>
+
+    {% if edit and app.user.isSuperAdmin %}
+        <hr>
+        <h6 class="py-1 mx-1 mt-2 mb-0 font-medium-2">
+            <span class="align-middle">{{ 'Permissions'|trans }}</span>
+        </h6>
+        <div class="table-responsive border rounded mt-1 mb-2">
+
+            <div class="card-body w-100 row">
+                {% include 'extra/permissions.html.twig' with {'disabled':false, 'col': 'col-md-3'} %}
+            </div>
+        </div>
+    {% endif %}
+
+    <input id="deleteImgInput" type="hidden" name="user[deleteImg]">
+{{ form_end(form) }}
+
+<script>
+    function rolSelectChange(){
+        try {
+            let selectElement = document.getElementById("{{ field_name(form.role) }}");
+            let selectedOption = selectElement.options[selectElement.selectedIndex].value;
+            console.log( selectedOption);
+
+            // Jefe de estudios
+            if(selectedOption === "1") {
+                document.getElementById("user_center").classList.add("d-none");
+                document.getElementById("{{ field_name(form.center) }}").removeAttribute("required");
+            } else {
+                document.getElementById("user_center").classList.remove("d-none");
+                document.getElementById("{{ field_name(form.center) }}").setAttribute("required", 'required');
+            }
+
+        }catch (error){}
+
+    }
+    rolSelectChange();
+</script>
+
+
+

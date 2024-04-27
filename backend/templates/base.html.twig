@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{{ configuration.favicon ? path('document_render', {'document':  configuration.favicon})}}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ configuration.favicon ? path('document_render', {'document':  configuration.favicon})}}" type="image/x-icon">
+    <title>{% block title %}{% endblock %} - {{ configuration.app_name }}</title>
+
+    <!-- Google font-->
+    <link href="https://fonts.googleapis.com/css?family=Rubik:400,400i,500,500i,700,700i&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome.css') }}">
+    <!-- ico-font-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/icofont.css') }}">
+    <!-- Themify icon-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/themify.css') }}">
+    <!-- Flag icon-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/flag-icon.css') }}">
+    <!-- Feather icon-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/feather-icon.css') }}">
+    <!-- Plugins css start-->
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/bootstrap.css') }}">
+    <!-- App css-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
+    <link id="color" rel="stylesheet" href="{{ asset('assets/css/color-1.css') }}" media="screen">
+    <!-- Responsive css-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
+
+    <style>
+        :root{
+        {% if configuration.primary_color is not null %}
+            --primary: {{ configuration.primary_color }} !important;
+            --theme-deafult: var(--primary);
+            --bs-primary: var(--primary);
+        {% endif %}
+        {% if configuration.secondary_color is not null %}
+            --secondary: {{ configuration.secondary_color }} !important;
+            --theme-secondary: var(--secondary);
+            --bs-secondary: var(--secondary);
+        {% endif %}
+        }
+
+    </style>
+
+    {% block stylesheets %}
+    {% endblock %}
+
+</head>
+<body>
+<!-- login page start-->
+    <div class="container-fluid p-0">
+        <div class="row m-0">
+            {% block body %}{% endblock %}
+
+            <!-- latest jquery-->
+            <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
+            <!-- Bootstrap js-->
+            <script src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
+            <!-- feather icon js-->
+            <script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
+            <script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
+            <!-- scrollbar js-->
+            <!-- Sidebar jquery-->
+            <script src="{{ asset('assets/js/config.js') }}"></script>
+            <!-- Plugins JS start-->
+            <!-- Plugins JS Ends-->
+            <!-- Theme js-->
+            <script src="{{ asset('assets/js/script.js') }}"></script>
+            <!-- login js-->
+            <!-- Plugin used-->
+            <!-- BEGIN: Custom JS-->
+            {% block javascripts %}
+            {% endblock %}
+            <!-- END: Custom JS-->
+
+            <script>
+                $(window).on('load', function() {
+                    if (feather) {
+                        feather.replace({
+                            width: 14,
+                            height: 14
+                        });
+                    }
+
+                    if (getCookie('timezone') !== Intl.DateTimeFormat().resolvedOptions().timeZone) {
+                        document.cookie = 'timezone='+ Intl.DateTimeFormat().resolvedOptions().timeZone +'; Path=/; Expires=Thu, 01 Jan 2999 00:00:01 GMT; SameSite=Lax';
+
+                    }
+
+                });
+
+                function getCookie(cookieName) {
+                    let cookie = [];
+                    document.cookie.split(';').forEach(function(el) {
+                        let [key,value] = el.split('=');
+                        cookie[key.trim()] = value;
+                    })
+                    return cookie[cookieName];
+                }
+
+
+                {% if app.session.flashbag.peekAll|length > 0  %}
+                Swal.fire({
+                    icon: 'info',
+                    title: '{{ 'Info'|trans }}',
+                    html:`
+                            <ul>
+                            {% for type, messages in app.session.flashbag.all %}
+                                {% for message in messages %}
+                                    <li class="{{ type ? type : '' }}">{{ message }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            </ul>
+                `
+                });
+                {% endif %}
+            </script>
+        </div>
+    </div>
+</body>
+</html>

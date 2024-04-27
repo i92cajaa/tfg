@@ -1,0 +1,51 @@
+version: '3.3'
+services:
+  backend:
+    container_name: tfg_backend
+    build:
+      context: ./services/php/symfony6
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./../backend:/var/www/html
+    networks:
+      - tfg-backend
+
+  mysql:
+    container_name: tfg_mysql
+    image: mysql:8
+    env_file: ./.env
+    command:
+      - --max_allowed_packet=500M
+      - --sql-mode=
+      - --innodb-buffer-pool-size=5G
+      - --innodb-flush-log-at-trx-commit=0
+      - --innodb-log-file-size=2G
+      - --innodb_flush_method=O_DIRECT
+    volumes:
+      - tfg-mysql:/var/lib/mysql
+      - ./sql:/root/
+    networks:
+      - tfg-backend
+
+  phpmyadmin:
+    container_name: tfg_phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+    - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      UPLOAD_LIMIT: 300M
+    networks:
+      - tfg-backend
+
+
+networks:
+  tfg-backend:
+    driver: bridge
+
+
+volumes:
+  tfg-mysql:
+    driver: local

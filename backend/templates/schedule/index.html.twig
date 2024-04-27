@@ -1,0 +1,394 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'Calendar'|trans }}{% endblock %}
+
+{% block page_title %}{{ 'Calendar'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="app-calendar overflow-hidden border">
+            <div class="row no-gutters">
+                <!-- Calendar -->
+                <div class="col position-relative">
+                    <div class="card shadow-none border-0 mb-0 rounded-0">
+                        <div class="card-body pb-0">
+                            <div id="calendar"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Calendar -->
+                <div class="body-content-overlay"></div>
+            </div>
+        </div>
+
+    </div>
+    <form class="d-none" id="selectForm">
+
+    </form>
+
+    {% if userPermission.can('create', 'schedules') %}
+    <div class="modal fade" id="redirectToCreateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">{{ 'Create Schedule'|trans }}</h4>
+                    <button type="button" class="close btn btn-transparent" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body flex-grow-1 pb-sm-0 pb-3">
+                        <form class="event-form needs-validation" id="redirectToCreateForm" onsubmit="updateDates()" action="{{ path('schedule_create') }}" method="GET">
+                            <input type="hidden" id="referer" name="referer" value="{{ app.request.getUri() }}">
+                            <input type="hidden" id="scheduleDateModal" name="schedule_date">
+                            <h4>{{ 'Fill in the data to load the schedule creation page'|trans }}</h4>
+
+                            <div class="form-group position-relative col-md-12 m-t-10">
+                                <label for="userCreateModal">{{ 'User'|trans }}</label>
+                                <select class="select2 select-guests" name="user" onchange="changeUserCreateModal()" id="userCreateModal">
+                                    {% if app.user.isTeacher() %}
+                                        <option value="{{ app.user.getId() }}" selected >{{ app.user.fullName }}</option>
+                                    {% else %}
+                                        <option value="" selected disabled>{{ 'Select an option'|trans }}</option>
+                                        {% for user in users %}
+                                            {% if user.isTeacher %}
+                                                <option value="{{ user.id }}">{{ user.fullName }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <div class="form-group position-relative col-md-12 m-t-10">
+                                <label for="lessonModal">{{ 'Lessons'|trans }}</label>
+                                <select class="select2 select-guests" name="lesson" id="lessonModal">
+
+                                </select>
+                            </div>
+
+                            <div class="form-group position-relative col-md-12 m-t-10">
+                                <label for="roomModal">{{ 'Rooms'|trans }}</label>
+                                <select class="select2 select-guests" name="room" id="roomModal">
+
+                                </select>
+                            </div>
+
+                            <div class="form-group d-flex flex-column flex-md-row mt-3 gap-2 ">
+                                <div class="col-md-6 text-start">
+                                    <button type="submit" class="btn btn-primary add-event-btn mr-1">{{ 'Go'|trans }}</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-cancel" data-bs-dismiss="modal">
+                                        {{ 'Cancel'|trans }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <!-- Full calendar end -->
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside d-flex flex-row" >
+        {% if userPermission.can('create', 'schedules') %}
+            <a class="nav-link d-flex flex-row" href="{{ path('schedule_create') }}?referer={{ app.request.getUri() }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Crear horario">
+                <i class="ficon" data-feather="plus-circle"></i><div class="d-none d-md-block">Horario</div>
+            </a>
+        {% endif %}
+
+    </li>
+{% endblock %}
+
+{% block stylesheets %}
+
+    <link rel="stylesheet" type="text/css"
+          href="{{ asset('assets/css/vendors/calendar/fullcalendar2.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/calendar/app-calendar.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/jquery.contextMenu.min.css') }}">
+    <style>
+        .fc-more-popover {
+            max-height: 65%;
+            overflow-y: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/js/calendar/fullcalendar2.min.js') }}"></script>
+    <script src="{{ asset('assets/js/calendar/locales-all.min.js') }}"></script>
+    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.contextMenu.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery-ui/jquery.ui.position.min.js') }}"></script>
+    <script src="{{ asset('assets/js/lockr/lockr.js') }}"></script>
+
+    <script>
+        let calendar = null;
+        let calendarDate = null;
+
+        const filterForm = document.getElementById('filter_form');
+
+        const EVENT_CALENDAR_KEY_DATES = "{{ configuration.app_name|replace({' ': "_" }) }}_calendar_dates";
+        const EVENT_CALENDAR_VIEW = "{{ configuration.app_name|replace({' ': "_" }) }}_calendar_view";
+
+        function focusSpecificDate(date){
+            calendar.gotoDate(date);
+        }
+
+        function changeOrder(eventOrder){
+            if(!eventOrder){
+                eventOrder = 'start';
+            }
+            calendar.setOption('eventOrder', eventOrder);
+        }
+
+        function updateDates()
+        {
+            if(calendar){
+                let dateFrom = calendar.getDate();
+                setCalendarSavedDates(
+                    moment(dateFrom).startOf('month').format('DD-MM-YYYY'),
+                    moment(dateFrom).clone().endOf('month').format('DD-MM-YYYY')
+                );
+            }
+        }
+
+        const getCalendarSavedDates = () => {
+            let selectedDates = Lockr.get(EVENT_CALENDAR_KEY_DATES);
+            let dateFrom = moment().clone().startOf('month').format('DD-MM-YYYY');
+            let dateTo = moment().clone().endOf('month').format('DD-MM-YYYY');
+            let expire = moment().clone().endOf('year').toString();
+            document.cookie = "{{ configuration.app_name|replace({' ': "_" }) }}_date_from=" + dateFrom + "; expires="+expire;
+            document.cookie = "{{ configuration.app_name|replace({' ': "_" }) }}_date_to=" + dateTo + "; expires="+expire;
+            if(typeof selectedDates !== "undefined") {
+                return selectedDates;
+            } else {
+                Lockr.set(EVENT_CALENDAR_KEY_DATES, {
+                    dateFrom: moment().clone().startOf('month').format('DD-MM-YYYY'),
+                    dateTo: moment().clone().endOf('month').format('DD-MM-YYYY'),
+                });
+                return Lockr.get(EVENT_CALENDAR_KEY_DATES);
+            }
+        }
+
+
+        const setCalendarSavedDates = (dateFrom, dateTo) => {
+            $('#date_from').val(dateFrom);
+            $('#date_to').val(dateTo);
+            Lockr.set(EVENT_CALENDAR_KEY_DATES, {
+                dateFrom,
+                dateTo
+            });
+        }
+
+        const setCalendarView = (view) => {
+            Lockr.set(EVENT_CALENDAR_VIEW, view);
+        }
+
+        const getCalendarView = () => {
+            let calendarView = Lockr.get(EVENT_CALENDAR_VIEW);
+            if(typeof  calendarView !== 'undefined')
+                return calendarView;
+            else
+                return 'dayGridMonth';
+        }
+
+
+        const getEventsFromFilter = (info, successCallback, failureCallback) => {
+            if(typeof info !== "undefined") {
+                setCalendarSavedDates(
+                    moment(info.start).format('DD-MM-YYYY'),
+                    moment(info.end).format('DD-MM-YYYY')
+                );
+            }
+            let formData = $(filterForm).serialize();
+            getEvents(formData).then(schedules => {
+                if(typeof successCallback !== "undefined") {
+                    successCallback([...schedules]);
+                }
+            });
+        }
+
+        const getEvents = (formData) => {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: '{{ path('schedule_get_json') }}',
+                    type: 'get',
+                    data: formData,
+                    success: (response) => {
+                        if(response.success) {
+                            resolve(response.data);
+                        } else {
+
+                        }
+                    },
+                    error: (err) => {
+
+                    }
+                });
+            });
+        }
+
+        const detectCalendarChangedDate = () => {
+
+            let date = calendar.getDate();
+            let dateFrom = moment(date).clone().startOf('month').format('DD-MM-YYYY');
+            let dateTo = moment(date).clone().endOf('month').format('DD-MM-YYYY');
+            setCalendarSavedDates(dateFrom, dateTo);
+        }
+
+        // detect change on any field for submit filter form
+        $(function () {
+
+            $('.select2').select2();
+            $('.select2').on('change.select2', function () {
+                calendar.refetchEvents()
+            });
+            $('#resetFilters').on('click', function () {
+                window.location.href = "{{ path('schedule_index') }}";
+            })
+            $('.type-filter').change(function () {
+                calendar.refetchEvents()
+            });
+            $('.title-filter').change(function () {
+                calendar.refetchEvents()
+            });
+
+        });
+
+        $(document).on('click', '.fc-sidebarToggle-button', function (e) {
+            $('.app-calendar-sidebar, .body-content-overlay').addClass('show');
+
+        });
+
+        $(document).on('click', '.body-content-overlay', function (e) {
+            $('.app-calendar-sidebar, .body-content-overlay').removeClass('show');
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let calendarEl = document.getElementById('calendar'),
+                toggleSidebarBtn = $('.btn-toggle-sidebar')
+            ;
+
+            // Event click function
+            function eventClick(info) {
+                let eventToUpdate = info.event;
+                let scheduleId = eventToUpdate.extendedProps.id;
+
+                window.location.href = "{{ path('schedule_show') }}/" + scheduleId;
+            }
+
+            // Modify sidebar toggler
+            function modifyToggler() {
+                $('.fc-sidebarToggle-button')
+                    .empty()
+                    // .append(feather.icons['filter'].toSvg({class: 'ficon'}));
+            }
+
+            // Calendar plugins
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: getCalendarView(),
+                schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+                buttonText: {
+                    'day': '{{ 'Day'|trans }}',
+                    'month': '{{ 'Month'|trans }}',
+                    'list': '{{ 'Listing'|trans }}',
+                    'week': '{{ 'Week'|trans }}'
+                },
+                //displayEventTime : false
+                editable: false,
+                locale: locale,
+                locales:locale,
+                slotDuration: '{% if app.user.calendarInterval %}{{ app.user.calendarInterval|date('H:i:s') }}{% elseif configuration.calendar_interval %}{{ configuration.calendar_interval|date('H:i:s') }}{% else %}00:15:00{% endif %}',
+                timeZone: 'local',
+                firstDay: 1,
+                eventResizableFromStart: true,
+                eventColor: 'white',
+                customButtons: {
+                    sidebarToggle: {
+                        text: 'Sidebar'
+                    }
+                },
+                headerToolbar: {
+                    start: 'sidebarToggle, prev,next, title',
+                    end: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                },
+                initialDate: moment().format('YYYY-MM-DD'),
+                eventTimeFormat: { // like '14:30:00'
+                    hour: '2-digit',
+                    minute: '2-digit'
+                },
+                views: {
+                    dayGridMonth: {
+                        dayMaxEventRows: 5,
+                        moreLinkContent: function (object) {
+                            const {num} = object;
+                            return num+" {{ 'Schedules More'|trans }}";
+
+
+                        },
+                    }
+                },
+                navLinks: true, // can click day/week names to navigate views
+                events: getEventsFromFilter,
+                eventDidMount: function(event) { //Run when events are rendered
+                    event.el.className = event.el.className + " context-menu-one";
+                    event.el.setAttribute('data-id', event.event._def.extendedProps.id);
+                    event.el.style.borderColor = event.event._def.extendedProps.borderColor;
+                    event.el.style.backgroundColor = event.event._def.extendedProps.backgroundColor;
+                },
+                eventClassNames: function ({event: calendarEvent}) {
+                    //const colorName = calendarsColor[calendarEvent._def.extendedProps.calendar];
+
+                    return [
+                        'eventCalendar'
+                    ]
+                },
+                eventClick: function (info) {
+                    eventClick(info);
+
+                },
+                datesSet: function () {
+                    modifyToggler();
+                },
+                viewClassNames: function (e) {
+                    setCalendarView(e.view.type);
+                },
+                viewDidMount: (view) => {
+                    modifyToggler();
+                    detectCalendarChangedDate();
+                    getEventsFromFilter();
+                    // Cuando se pulsa en el botón de anterior,
+                    $('.fc-prev-button').off('click');
+                    $('.fc-prev-button').click(function(){
+                        detectCalendarChangedDate();
+                        getEventsFromFilter();
+                    });
+
+                    $('.fc-next-button').off('click');
+                    $('.fc-next-button').click(function(){
+                        detectCalendarChangedDate();
+                        getEventsFromFilter();
+                    });
+
+
+                }
+            });
+            // Render calendar
+            calendar.render();
+            // Modify sidebar toggler
+            modifyToggler();
+
+            // Sidebar Toggle Btn
+            if (toggleSidebarBtn.length) {
+                toggleSidebarBtn.on('click', function () {
+                    cancelBtn.removeClass('d-none');
+                });
+            }
+
+        });
+    </script>
+
+{% endblock %}

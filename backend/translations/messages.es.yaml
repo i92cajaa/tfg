@@ -1,0 +1,478 @@
+Sign in to account: Iniciar sesión en tu cuenta
+Enter your email & password to login: Introduzca su correo electrónico y contraseña para iniciar sesión
+Email Address: Correo Electrónico
+ModifyPass: Aceptar
+Reset your password: Restablecer tu contraseña
+Follow this link to reset your user account password in: Sigue este enlace para restablecer la contraseña de tu cuenta de usuario en
+If you did not request a new password you can safely delete this email: Si no solicitaste una nueva contraseña puedes borrar este correo electrónico de manera segura.
+Enter a new password (Remember it must be at least 8 characters long, contain a punctuation mark, and an uppercase letter): Introduzca una nueva contraseña (Recuerde que debe tener 8 caracteres mínimo, un signo de puntuación y una mayúscula).
+Password: Contraseña
+RepeatPassword: Repetir contraseña
+Remember password: Recordar contraseña
+Recover password: Recuperar contraseña
+Sign in: Iniciar sesión
+Actions: Acciones
+Notifications: Notificaciones
+My profile: Mi perfil
+Logout: Cerrar sesión
+Click here to see it: Haz click aquí para verlo
+Administration: Administración
+Dashboards & configuration: Panel de control y configuración
+Dashboard: Panel de control
+Configuration: Configuración
+Application Name: Nombre de la Aplicación
+Application Short Name: Nombre Corto de la Aplicación
+Large Logo: Logotipo Grande
+Small Logo: Logotipo Pequeño
+Primary Color: Color Principal
+Secondary Color: Color Secundario
+Favicon: Favicon
+Days to Notify: Días para Notificar
+Invoice Module: Módulo de Facturación
+Calendar Interval: Intervalo en el Calendario
+Complete on Pay: Completar al pagar
+Payment Module: Módulo de Pagos
+New: Nuevo
+Edit: Editar
+List: Listar
+Delete: Eliminar
+List Clients: Listar Clientes
+List Configs: Listar Configuraciones
+List Schedules: Listar Horarios
+List Users: Listar Usuarios
+List Areas: Listar Áreas
+List Centers: Listar Centros
+List Lessons: Listar Clases
+List Rooms: Listar Habitaciones
+Create Client: Crear Cliente
+Create Config: Crear Configuración
+Create Schedule: Crear Horario
+Create User: Crear Usuario
+Create Area: Crear Área
+Create Center: Crear Centro
+Create Lesson: Crear Clase
+Create Room: Crear Habitación
+Edit Client: Editar Cliente
+Edit Lesson: Editar Clase
+Edit Config: Editar Configuración
+Edit Schedule: Editar Horario
+Edit User: Editar Usuario
+Edit Area: Editar Área
+Edit Center: Editar Centro
+Edit Room: Editar Habitación
+Show Client: Ver Cliente
+Show Config: Ver Configuración
+Show Schedule: Ver Horario
+Show User: Ver Usuario
+Show Area: Ver Área
+Show Center: Ver Centro
+Show Lesson: Ver Clase
+Show Room: Ver Habitación
+Delete Client: Eliminar Cliente
+Delete Config: Eliminar Configuración
+Delete Schedule: Eliminar Horario
+Delete User: Eliminar Usuario
+Users: Usuarios
+User: Usuario
+Delete image: Eliminar imagen
+Image: Imagen
+Name: Nombre
+Surnames: Apellidos
+Email: Correo Electrónico
+Permissions: Permisos
+Update: Actualizar
+Create: Crear
+Time interval in the calendar: Intervalo de tiempo en el calendario
+Roles: Roles
+Status: Estado
+Creation Date: Fecha de Creación
+No results found: No se han encontrado resultados
+Previous: Anterior
+Next: Siguiente
+Results: Resultados
+Show: Mostrar
+Filters: Filtros
+Filter: Filtros
+Info: Información
+Templates: Fichas
+Object: Objeto
+Description: Descripción
+Active: Activo/a
+Inactive: Inactivo/a
+Type: Tipo
+Options: Opciones
+Lines: Líneas
+Clients: Clientes
+Patients: Pacientes
+patients: Pacientes
+patient: Paciente
+professional: Profesional
+ID: DNI
+Phones: Teléfonos
+Phone: Teléfono
+Address: Dirección
+Payment Preference: Preferencia de Pago
+Comments: Comentarios
+Client: Cliente
+Full Name: Nombre Completo
+Start: Inicio
+End: Fin
+Yes: Si
+No: No
+See More: Ver más
+Export: Exportar
+Date: Fecha
+Dates: Fechas
+Task Updated: Tarea actualizada
+Select The Templates To Be Exported: Seleccione las ficha que desea exportar
+Task Status Updated Successfully: Se ha cambiado el estado de la tarea correctamente
+Select The Template You Want To Create: Seleccione la ficha que desea crear
+Add Time: Añadir Tiempo
+Add Option: Añadir Opción
+Add New: Añadir Nueva
+Add Services: Añadir Servicios
+Add Service: Añadir Servicio
+Estimated Start Date: Fecha de Inicio Estimada
+Start Date: Fecha de Inicio
+End Date: Fecha de Fin
+Start Time: Hora de Inicio
+End Time: Hora de Fin
+Estimated Time: Tiempo Estimado
+No Client assigned: Sin Cliente asignado
+No Patient assigned: Sin Paciente asignado
+Title: Título
+Close: Cerrar
+Change Timezone: Cambiar Franja Horaria
+Change Status: Cambiar Estado
+Cancel: Cancelar
+Continue: Continuar
+Pending: Pendiente
+Ongoing: En Curso
+Released: Liberada
+Done: Realizada
+Ended: Finalizada
+You need to select an option: Necesitas seleccionar una opción
+Select the status to which you want to change the task: Seleccione el estado al que desea cambiar la tarea
+Task status has been changed successfully: Se ha cambiado el estado de la tarea correctamente
+Time has been recorded for the selected task: Se ha registrado tiempo en la tarea seleccionada
+Appointment Assigned: Cita asignada
+Client Assigned: Cliente asignada
+Patient Assigned: Paciente asignada
+Client Email: Email de Cliente
+Patient Email: Email de Paciente
+Time Recorded: Tiempo registrado
+Are You Sure?: ¿Estás Seguro/a?
+The Task Will Be Deleted: Se eliminará la tarea
+Planner: Planificador
+All: Todos
+An error occurred while retrieving tasks: Ha ocurrido un error al recuperar las tareas
+An error occurred while retrieving appointments: Ha ocurrido un error al recuperar las citas
+Copy Appointments: Copiar citas
+A server error has occurred: Ha ocurrido un error en el servidor
+Tasks More: Tareas más
+Schedules More: Horarios más
+Listing: Lista
+More: Más
+Nothing: Nada,
+Years: Años
+Year: Año
+Months: Meses
+Month: Mes
+Weeks: Semanas
+Week: Semana
+Days: Días
+Day: Día
+Hours: Horas
+Hour: Hora
+Minutes: Minutos
+Minute: Minuto
+Seconds: Segundos
+Second: Segundo
+Apply Filter: Aplicar Filtros
+Superadmin: Superadministrador
+Admin: Administrador
+Manage Schedules: Administrar Horarios
+Manage Divisions: Administrar Divisiones
+Manage Payments: Administrar Pagos
+Manage Services: Administrar Servicios
+Assign Tasks: Asignar Tareas
+Modify Hour: Modificar Hora
+Delete Previous: Eliminar Anteriores
+Delete Next: Eliminar Posteriores
+Absences: Ausencias
+Absence: Ausencia
+Payment Methods: Métodos de Pago
+Services: Servicios
+Invoices: Facturas
+Appointments: Mentorias
+Template Types: Tipos de Fichas
+Template Type: Tipo de Ficha
+Template: Ficha
+Additional Appointment Field Types: Tipos de Campos de Cita Adicionales
+Additional Appointment Fields: Campos de Cita Adicionales
+User Info: Información del Usuario
+Professional Info: Información del Profesional
+Range of Days: Rango de Días
+Select a Range of Days: Selecciones un rango de días
+Task Form: Formulario de Tarea
+Invalid Token: El token no es válido
+Task Not Found: La tarea no se ha encontrado
+Task Updated Successfully: Tarea actualizada correctamente
+No valid entity provided: No se ha proporcionado una entidad válida
+The Task Status Has Been Updated Successfully: Se ha cambiado el estado de la Tarea correctamente
+Error when changing Task status: Error al cambiar el estado de la Tarea
+Time has been recorded to the Task correctly: Se ha registrado tiempo a la Tarea correctamente
+Error when recording time in the Task: Error al registrar tiempo en la Tarea
+You have been assigned a new Task, to check your tasks click on the following link: Te han asignado una nueva Tarea, para consultar tus tareas haz click en el siguiente enlace
+The payment method already exists: El Método de Pago ya existe
+The template type already exists: El Tipo de Ficha ya existe
+User with this email already exists: Ya existe un usuario con el correo electrónico proporcionado
+Service: Servicio
+Division: División
+Divisions: Divisiones
+Color: Color
+VAT: IVA
+Price: Precio
+Duration: Duración
+VAT Applied?: ¿IVA Aplicado?
+Weekday: Día de la semana
+Schedule: Horario
+Schedules: Horarios
+Monday: Lunes
+Tuesday: Martes
+Wednesday: Miércoles
+Thursday: Jueves
+Friday: Viernes
+Saturday: Sábado
+Sunday: Domingo
+Paid: Pagado
+Unpaid: No Pagado
+Liberated: Liberada
+Liberate: Liberar
+Copy: Copiar
+Amount: Cantidad
+Payment Date: Fecha de Pago
+Copy schedules to the following days: Copiar horarios a los siguientes días
+Flexible appointment interval (minutes): Intervalo de cita flexible (minutos)
+Restrict to a single fixed appointment: Restringir a una única cita fija
+Do you want to add the fixed schedule restriction?: ¿Desea añadir la restricción de horario fijo?
+Do you want to remove the fixed schedule restriction?: ¿Desea eliminar la restricción de horario fijo?
+You can reverse this process at any time: En cualquier momento podrá revertir este proceso
+Confirm: Confirmar
+You are about to delete this agenda: Estás a punto de eliminar esta agenda
+File: Archivo
+Text: Texto
+Short Text: Texto Corto
+Number: Número
+Confirmation: Confirmación
+Selector: Selector
+This Element Will Be Deleted: Este elemento será eliminado
+Available Time Slots: Franjas Horarias Disponibles
+From: Desde
+To: Hasta
+Add time slot: Añadir franja horaria
+Payment Method: Método de Pago
+Requests: Solicitudes
+Request: Solicitud
+Appointment Form: Formulario de Cita
+Copied: Copiado
+You have copied the source code to insert the public link to the quotation form: Has copiado el código fuente para insertar el enlace público hacia el formulario de la cita
+Extra Appointment Fields: Campos adicionales
+Extra Appointment Field: Campo adicional
+Apply Filters: Aplicar Filtros
+Header: Encabezado
+Footer: Pie de página
+Validate: Validar
+Select User: Seleccionar usuario
+Select Professional: Seleccionar profesional
+To validate the request, you must select a User to whom this Client will be assigned: Para validar la solicitud, debe seleccionar un usuario al que se le asignará este cliente
+To validate the request, you must select a Professional to whom this Client will be assigned: Para validar la solicitud, debe seleccionar un profesional al que se le asignará este cliente
+To validate the request, you must select a User to whom this Patient will be assigned: Para validar la solicitud, debe seleccionar un usuario al que se le asignará este paciente
+To validate the request, you must select a Professional to whom this Patient will be assigned: Para validar la solicitud, debe seleccionar un profesional al que se le asignará este paciente
+No value: Sin valor
+Value: Valor
+Selected Appointment: Citas seleccionadas
+Total price of selected appointments: Precio total de citas seleccionadas
+Total price: Precio total
+Print Appointment: Imprimir Citas
+Generate Invoice: Generar Factura
+Send Notification: Enviar notificación
+Complete: Completar
+Notify: Notificar
+Export Appointments: Exportar citas
+Export Templates: Exportar fichas
+Select the format you want to export the file to: Seleccione el formato al que desea exportar el fichero
+You need to select at least one option!: ¡Necesitas seleccionar al menos una opción!
+Generating documents!: ¡Generando documentos!
+This process may take a few minutes depending on the number of invoices selected: Este proceso podría tardar unos minutos dependiendo de la cantidad de facturas seleccionadas
+Documents have been generated successfully: Los documentos se han generado con éxito
+Invoices are being generated, this action may take a moment...: Se están generando las facturas, esta acción puede llevar un momento...
+Generated: Generado
+Invoices have been generated for the selected appointments: Se han generado las facturas de las citas seleccionadas
+The invoice for the selected appointment has been generated: Se ha generado la facturas de la cita seleccionada
+Sent: Enviado
+Clients have been notified of appointments: Se han notificado las citas a los Clientes
+Patients have been notified of appointments: Se han notificado las citas a los Pacientes
+Selected appointments have been copied: Se han copiado las citas seleccionadas
+Calendar: Calendario
+Services Selected: Servicios Seleccionados
+Select an option: Selecciona una opción
+Periodicity of the appointment?: ¿Periodicidad de la cita?
+Interval of weeks: Intervalo de semanas
+Error: Error
+Not all fields have been filled in. Please double check the data you have entered: No se han rellenado todos los campos. Por favor, comprueba de nuevo los datos introducidos
+Add: Añadir
+Action Done: Acción Realizada
+User Assigned: Usuario Asignado
+Professional Assigned: Profesional Asignado
+No one: Ninguno
+Actual Schedule: Horario actual
+Could not create the appointment for the date because the stretch is complete: No se ha podido crear la cita para la fecha porque el tramo está completo
+It has not been possible to create the appointment for the date because that time slot does not exist for that professional: No se ha podido crear la cita para la fecha porque ese tramo horario no existe para ese profesional
+An Appointment has been edited that you had assigned, to consult your appointment click on the following link: Se ha editado una Cita que tenías asignada, para consultar su cita haz click en el siguiente enlace
+Cannot edit an appointment already made: No se puede editar una cita ya realizada
+You have been assigned a new Appointment, to consult your appointment click on the following link: Te han asignado una nueva Cita, para consultar su cita haz click en el siguiente enlace
+The appointment has been confirmed: La cita ha sido confirmada
+The appointment has been successfully created: Se ha creado la cita satisfactoriamente
+Appointment reminder: Recordatorio de cita
+This is an informative email to remind you that you have an appointment with us, the data are reflected below: Este es un email informativo para recordarle que usted tiene una cita con nosotros, los datos aparecen reflejados en la parte de abajo.
+This is an informative email to remind you that you need to make the payment to complete the first step.: Este es un email informativo para recordarle que tiene que realizar el pago para completar el primer paso.
+The email is not valid: El email no es válido
+The phone is not valid: El teléfono no es válido
+We remind you that you have an appointment with the following date: Le recordamos que tiene una cita con la siguiente fecha
+Appointment Report: Informe de citas
+Could not be created, the agenda is complete: No se ha podido crear, la agenda se encuentra completa
+Could not create, no valid agenda for the selected day: Could not create, no valid agenda for the selected day
+Date Range: Rango de días
+Reset Filters: Reestablecer filtros
+Order: Orden
+Go: Ir
+Fill in the data to load the schedule creation page: Rellene los datos para cargar la página de creación de horario
+Enter the date on which you want to copy the appointments: Introduce la fecha en la que quieres copiar las citas
+The appointment will be deleted, this cannot be undone: Se eliminará la cita, esto no podrá deshacerse
+Change history: Histórico de cambios
+Warning: Advertencia
+Modification of the schedule for this appointment could cause an overlap in the hours of other appointments: La modificación del horario de esta cita, podría causar una superposición de horas en otras citas
+Select the status to which you want to change the appointment: Seleccione el estado al que desee cambiar la cita
+Select the template types to be exported: Seleccione los tipos de fichas que desea exportar
+Select the template you want to create: Seleccione la plantilla que desea crear
+A payment has been made for this appointment: Se ha realizado un pago para esta cita
+A template of the following type has been created: Se ha creado una plantilla del siguiente tipo
+Templates have been created successfully: Se han creado las fichas satisfactoriamente
+New Template: Nueva Ficha
+Payments: Pagos
+Position: Posición
+Request Confirmed: Solicitud Confirmada
+This appointment has been modified: Esta cita ha sido modificada
+The current status has changed to: El estado actual ha sido modificado a
+Hour changed: Hora modificada
+There are appointments for this User that share time: Hay citas para este usuario que comparten hora
+There are appointments for this Professional that share time: Hay citas para este profesional que comparten hora
+Schedule successfully modified: Horario modificado satisfactoriamente
+The appointment time has had a modification, this change being as follows: La hora de la cita ha tenido una modificación, siendo este cambio el siguiente
+The invoice has been successfully edited: La factura se ha editado correctamente
+Could not be edited, invoice number already exists: No se ha podido editar, el numero de factura ya existe
+The invoice has been removed: Se ha eliminado la factura
+No Client found to assign payment to: No se ha encontrado cliente al que asignar el pago
+No Patient found to assign payment to: No se ha encontrado paciente al que asignar el pago
+Payment has been successfully edited: Se ha editado el pago satisfactoriamente
+Payment has been successfully created: Se ha creado el pago satisfactoriamente
+Task deleted successfully: Tarea eliminada satisfactoriamente
+The template has been edited successfully: Se ha editado la ficha satisfactoriamente
+Delete Appointments: Eliminar Citas
+Template Report: Informe de Fichas
+New Payment: Nuevo Pago
+Invoice Date: Fecha de Factura
+Company Name: Razón Social
+Company Address: Dirección de Empresa
+Invoice Address: Dirección de facturación
+FIC: CIF
+Company Phone: Teléfono de empresa
+Client ID: DNI de Cliente
+Patient ID: DNI de Paciente
+User ID: DNI de Usuario
+Professional ID: DNI de Profesional
+Client Phone: Teléfono de Cliente
+Patient Phone: Teléfono de Paciente
+User Phone: Teléfono de Usuario
+Professional Phone: Teléfono de Profesional
+Client Address: Dirección de Cliente
+Patient Address: Dirección de Paciente
+User Address: Dirección de Usuario
+Professional Address: Dirección de Profesional
+Price Without VAT: Precio sin IVA
+Price With VAT: Precio con IVA
+Total Without VAT: Total sin IVA
+Total With VAT: Total con IVA
+Generating documents: Generando documentos
+No User assigned: Usuario no asignado
+No Professional assigned: Profesional no asignado
+User nomenclature: Nomenclatura de Usuario
+Professional nomenclature: Nomenclatura de Profesional
+Client nomenclature: Nomenclatura de Cliente
+Patient nomenclature: Nomenclatura de Paciente
+You: Tú
+Professionals: Profesionales
+User Serie: Serie para Autónomos
+Fixed: Fijo
+Flexible: Flexible
+Other: Otro
+Autonomous: Autónomo
+Appointment Percentage: Porcentaje de Citas
+Percentage: Porcentaje
+FIN: NIF
+Invoiced: Facturado
+Invoice Number: Número de Factura
+Net Price: Precio Neto
+Taxable income: Base Imponible
+Cost: Importe
+Net: Neto
+Invoice: Factura
+Meeting Module: Módulo de Videollamadas
+Microsoft Azure Client ID: ID Cliente de Microsoft Azure
+Microsoft Azure Client Secret ID: ID Secreto de Cliente de Microsoft Azure
+Microsoft Azure Tenant ID: ID Inquilino de Microsoft Azure
+Microsoft Azure Service User ID: ID Usuario de Servicio de Microsoft Azure
+Attached Meeting?: ¿Incluye Videollamada?
+Breakdown: Desglose
+Generate User Multiple Invoice: Generar Factura Múltiple de Usuario
+Generate Professional Multiple Invoice: Generar Factura Múltiple de Profesional
+Go to the Meeting: Ir a la Videollamada
+Go to payment site: Ir al sitio de pago
+Developed By: Desarrollado por
+Stripe: Stripe
+Price/Hour: Precio/Hora
+Dear Sir / Madam, you have an appointment with us: Estimado señor/a, tiene una cita con nosotros
+New Appointment Created: Nueva Cita Creada
+Meeting: Videollamada
+Successfully edit configuration: Configuración actualizada correctamente
+Treatment Initiation Questionnaire: Cuestionario inicio de tratamiento
+Welcome to Fluxua!: Bienvenido a Fluxua!
+The following questionnaire has as its main function to ensure the most optimal start for your therapeutic process. In this way, the questionnaire will be read by the clinical director and he/she will look for the therapist profile that best fits the emotional situation explained. If you can´t find the words to describe what you need, don´t worry, you can put "I don´t know", "I prefer to talk about it when the time comes", "I wouldn´t know how to define it"... This questionnaire is confidential and only the clinical director and the therapist assigned to you for the process will have access to it. At the end of the questionnaire you will find the information you need to fill in to register and start the process.: El siguiente cuestionario tiene como función principal asegurar el inicio más óptimo para tu proceso terapéutico. De este modo, el cuestionario será leído por el director clínico y buscará el perfil de terapeuta que mejor encaje con la situación emocional explicada. Si no encuentras palabras para describir lo que necesitas, no te preocupes, puedes poner “no lo sé”, “prefiero hablarlo llegado el momento”, “no sabría definirlo”... Este cuestionario tiene un carácter confidencial y solo tendrá acceso al mismo el director clínico y el terapeuta que se te asigne para el proceso. Al final del cuestionario encontrarás los datos que hay que rellenar para darse de alta y comenzar con el proceso.
+How would you define what made you ask for help?: ¿Cómo definirías aquello que te ha hecho pedir ayuda?
+What do you think the problems you describe above are due to?: ¿A que crees que se deben los problemas que describes antes?
+Since you have been like this, what things have you tried to feel better?: Desde que te encuentras de este modo, ¿Qué cosas has intentado para sentirte mejor?
+Which ones have worked? Even if only for a limited time.: ¿Cuáles han funcionado? Aunque sea por un tiempo limitado.
+Have you gone through any therapy process before?: ¿Has realizado algún proceso de terapia antes?
+Do you think there is anything we should be aware of that we haven´t asked?: ¿Crees que hay algo que debamos tener en cuenta que no hemos preguntado?
+Contact Fluxua: Contactar con Fluxua
+I have read and accept the:  He leido y acepto la
+Data Protection and Legal Consent: Proteccion de Datos y el Consentimiento Legal
+Send: Enviar
+Dear : Estimad@
+Access platform: Plataforma de acceso
+these are your login credentials: estas son sus credenciales de acceso
+Username: Usuario
+This is an informative email to remind you that you need to make the payment to complete the appointment.: Se trata de un correo electrónico informativo para recordarle que debe efectuar el pago para completar la cita.
+you have an appointment with us: tiene una cita con nosotros
+Clinical History: Historial Clínico
+Create Extra Appointment Fields: Crear campos de cita adicionales
+Your payment has been successfully completed. A professional will contact you shortly.:  Su pago se ha realizado correctamente. En breves un profesional se pondrá en contacto contigo.
+Best regards. The Fluxua team: Un saludo. El equipo de Fluxua
+The consultation fee will be deducted at the first appointment.: Se le descontara el importe de la consulta en la primera cita.
+Print invoice: Imprimir factura
+Mentoring: Mentorías
+Lessons: Clases
+Bookings: Reservas
+Centers: Centros
+Rooms: Habitaciones

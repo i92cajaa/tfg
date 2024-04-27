@@ -1,0 +1,88 @@
+<form name="user" enctype="multipart/form-data" method="post" autocomplete="off">
+    <div class="w-100 row">
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.image) }}">{{ field_label(form.image) }}<span class="text-danger">*</span></label>
+            <input class="form-control" type="file" accept="image/*" placeholder="{{ field_label(form.image) }}" id="{{ field_name(form.image) }}" name="{{ field_name(form.image) }}" value="{{ field_value(form.image) }}" >
+            {% for error in field_errors(form.image) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.name) }}">{{ field_label(form.name) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="text" placeholder="{{ field_label(form.name) }}" id="{{ field_name(form.name) }}" name="{{ field_name(form.name) }}" value="{{ field_value(form.name) }}" required>
+            {% for error in field_errors(form.name) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.duration) }}">{{ field_label(form.duration) }} <span class="text-danger">*</span></label>
+            <select class="form-control select2" id="{{ field_name(form.duration) }}" name="{{ field_name(form.duration) }}" required>
+                <option value="" {% if field_value(form.duration) == null %}selected{% endif %} disabled>{{ field_label(form.duration) }}</option>
+                <option value="1" {% if field_value(form.duration) == '1,0' %}selected{% endif %}>1h</option>
+                <option value="1.5" {% if field_value(form.duration) == '1,5' %}selected{% endif %}>1.5h</option>
+                <option value="2" {% if field_value(form.duration) == '2,0' %}selected{% endif %}>2h</option>
+            </select>
+            {% for error in field_errors(form.duration) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.center) }}">{{ field_label(form.center) }} <span class="text-danger">*</span></label>
+            <select class="form-control select2" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" required>
+                {% for center in centers %}
+                    <option value="{{ center.id }}" {% if field_value(form.center) == center.id %}selected{% endif %}>{{ center.name }}</option>
+                {% endfor %}
+            </select>
+            {% for error in field_errors(form.name) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.users) }}">{{ field_label(form.users) }} <span class="text-danger">*</span></label>
+            <select class="form-control select2" id="{{ field_name(form.users) }}" name="{{ field_name(form.users) }}" required multiple>
+                {% for user in users %}
+                    <option value="{{ user.id }}" {% for userHasLesson in lesson.users %}{% if userHasLesson.user.id == user.id %}selected{% endif %}{% endfor %}>{{ user.name }} {{ user.surnames }}</option>
+                {% endfor %}
+            </select>
+            {% for error in field_errors(form.name) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.description) }}">{{ field_label(form.description) }}</label>
+            <textarea class="form-control" placeholder="{{ field_label(form.description) }}" id="{{ field_name(form.description) }}"
+                      name="{{ field_name(form.description) }}" >{{ field_value(form.description) }}</textarea>
+            {% for error in field_errors(form.description) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        {#<div class="col-md-4 col-sm-6 mt-3">
+            <label class="form-label" for="{{ field_name(form.color) }}">{{ field_label(form.color) }} <span class="text-danger">*</span></label>
+            <input class="form-control" type="color" id="{{ field_name(form.color) }}" name="{{ field_name(form.color) }}" value="{{ field_value(form.color) }}" required>
+            {% for error in field_errors(form.color) %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>#}
+
+        {{ form_row(form._token) }}
+
+    </div>
+
+    <input id="deleteImgInput" type="hidden" name="user[deleteImg]">
+    <div class="row d-flex justify-content-end mt-2">
+        <div class="mr-2 text-end">
+            <button class="btn btn-primary text-white waves-effect waves-float waves-light">{{ button_label }}</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    function triggerAutonomous(){
+
+        if(document.getElementById("user_autonomous").checked === false){
+            document.getElementById("user_appointment_percentage_div").classList.add("d-none");
+        }else{
+            document.getElementById("user_appointment_percentage_div").classList.remove("d-none");
+        }
+    }
+</script>

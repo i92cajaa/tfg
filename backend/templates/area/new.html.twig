@@ -1,0 +1,42 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'Create Area'|trans }}{% endblock %}
+
+{% block page_title %}
+    Crear Área{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+
+    <div class="card">
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- Account Tab starts -->
+                <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
+                    {{ include('area/_form.html.twig', {'button_label': 'Create'|trans}) }}
+                </div>
+                <!-- Account Tab ends -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(function() {
+
+
+        });
+    </script>
+{% endblock %}
+
+
+{% block action_buttons %}
+    <li class="level-menu outside">
+
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'areas') ? path('area_index') : '#' }}"  >
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+    </li>
+{% endblock %}

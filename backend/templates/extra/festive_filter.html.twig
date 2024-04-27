@@ -1,0 +1,37 @@
+ <form id="filter_form" name="form-filter-users w-100">
+        <fieldset class="">
+            <div class="d-flex justify-content-end align-items-center mx-50 row pt-0 pb-2">
+                <input type="hidden" class="form-control" name="{{ filterService.filterField('verification_ids') }}" value="" form="filter_form">
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                    <label for="Nombre">{{ (configuration.user_nomenclature ~' Info')|trans }}</label>
+                    <input type="text" class="form-control" placeholder="{{ 'Name'|trans }}, {{ 'Surnames'|trans }}, {{ 'Email'|trans }}..." name="{{ filterService.filterField('user') }}" value="{{ filterService.getFilterValue("user") }}" form="filter_form">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                    <label for="Nombre">{{ 'Name'|trans }}</label>
+                    <input type="text" class="form-control" placeholder="{{ 'Name'|trans }}" name="{{ filterService.filterField('name') }}" value="{{ filterService.getFilterValue("name") }}" form="filter_form">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                    <label for="week_day">{{ 'Range of Days'|trans }}</label>
+                    <br>
+                    <input type="text" class="form-control" id="dateRangeFilter" placeholder="{{ 'Select a Range of Days'|trans }}" name="{{ filterService.filterField('dateRange') }}" value="{{ filterService.getFilterValue("dateRange") }}" form="filter_form">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                {{ filterService.filterFormField() | raw }}
+
+                <div class="form-group-feedback form-group-feedback-right text-end col-6">
+                    <button type="submit" class="btn add-new text-white btn-primary mt-2">{{ 'Apply Filters'|trans }}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+

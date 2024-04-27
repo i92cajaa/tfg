@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{'Sign in'|trans }}
+{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+
+	<div class="col-12 p-0">
+		<div class="login-card">
+			<div>
+				<div>
+					<a class="logo"><img class="img-fluid for-light" width="250px" src="{{ configuration.logo_big ? path('document_render', {'document': configuration.logo_big}) : asset('assets/images/logo/login.png') }}" alt="loginpage"><img width="250px" class="img-fluid for-dark" src="{{ configuration.logo_big ? path('document_render', {'document': configuration.logo_big}) : asset('assets/images/logo/logo.png') }}" alt="looginpage"></a>
+				</div>
+				<div class="login-main">
+					<form class="theme-form" method="POST">
+						{#                        <h4>{{ 'Sign in to account'|trans }}</h4>#}
+						{#                        <p>{{ 'Enter your email & password to login'|trans }}</p>#}
+							{% if error %}
+								<div class="text-danger"> {{ error.messageKey|trans(error.messageData, 'security') }}</div>
+						{% endif %}
+						<div class="form-group">
+							<label class="col-form-label">{{ 'Email Address'|trans }}</label>
+							<input class="form-control" type="email" required="" value="{{ last_email }}" name="email">
+						</div>
+						<div class="form-group">
+							<label class="col-form-label">{{ 'Password'|trans }}</label>
+							<div class="form-input position-relative">
+								<input class="form-control" name="password" id="password" type="password" required="" placeholder="">
+								<div class="show-hide">
+									<span class="show" id="show-password">
+										<i data-feather="eye"></i>
+									</span>
+									<span class="hide" id="hide-password" style="display:none;">
+										<i data-feather="eye-off"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+						<div class="form-group mb-0">
+							{#                            <div class="checkbox p-0">#}
+							{#                                <input id="checkbox1" type="checkbox">#}
+							{#                                <label class="text-muted" for="checkbox1">{{ 'Remember password'|trans }}</label>#}
+							{#                            </div>#}
+							{#
+																					                            <a class="link" href="forget-password.html">Forgot password?</a>
+																					                            #}
+								<div class="text-end mt-4"> <button class="btn btn-primary btn-block w-100" type="submit">{{ 'Sign in'|trans }}</button>
+							</div>
+
+							
+						</div>
+					</form>
+                    <div class="text-center mt-4">
+                    <a class="" href="{{ path('remember_password')}}"><i class="align-middle" ></i><span class="ms-1 align-middle">{{ 'Recover password'|trans }}</span></a>
+								
+							</div>
+				</div>
+				<div class="mt-5 d-flex justify-content-center d-none d-md-block"><img src="{{ asset('assets/images/footer_AOF.png') }}" alt=""></div>
+				<div class="mt-5 d-flex justify-content-center d-block d-md-none"><img src="{{ asset('assets/images/footer_AOF-1.png') }}" alt=""></div>
+				<div class="mt-5 d-flex justify-content-center d-block d-md-none"><img src="{{ asset('assets/images/footer_AOF-2.png') }}" alt=""></div>
+			</div>
+
+		</div>
+	</div>
+</div>{% endblock %}{% block javascripts %}
+<script>
+	const showPassword = document.getElementById('show-password');
+const hidePassword = document.getElementById('hide-password');
+const passwordInput = document.getElementById('password');
+
+showPassword.addEventListener('click', function () {
+passwordInput.type = 'text';
+showPassword.style.display = 'none';
+hidePassword.style.display = 'inline';
+});
+
+hidePassword.addEventListener('click', function () {
+passwordInput.type = 'password';
+showPassword.style.display = 'inline';
+hidePassword.style.display = 'none';
+});
+</script>{% endblock %}

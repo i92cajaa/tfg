@@ -1,0 +1,98 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}{{ 'Edit'|trans }}{% endblock %}
+
+{% block page_title %}
+    {{ 'Edit'|trans }}
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- Account Tab starts -->
+                <div class="tab-pane active" id="account" aria-labelledby="account-tab" role="tabpanel">
+                    <!-- users edit media object start -->
+                    <div class="media mb-2">
+                        <img id="profileImg" src="{% if user.imgProfile != null %}{{ documentImage.DocumentImage(user.imgProfile) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" alt="users avatar" class="user-avatar users-avatar-shadow rounded mr-2 my-25 cursor-pointer" height="90" width="90">
+                        <div class="media-body p-l-20">
+                            <h4>{{ user.name }} {{ user.surnames }}</h4>
+                        </div>
+                    </div>
+                    <!-- users edit media object ends -->
+                    <!-- users edit account form start -->
+                    {{ include('user/_form.html.twig', {'button_label': 'Update'|trans}) }}
+
+
+                    <!-- users edit account form ends -->
+                    <br>
+
+                    <div class="row d-flex justify-content-end">
+                        <div class="mr-2 text-end d-flex justify-content-end gap-3">
+                            {{ include('user/_delete_form.html.twig') }}
+
+                            <button id="submit-and-same" class="btn btn-primary"
+                                    type="submit" name="{{ field_name(form.same_page) }}"
+                                    value="true" form="form" href="{{ userPermission.can('edit', 'users') ? path('user_edit', {'user': user.id}) : '#' }}"  >
+                                Guardar
+                            </button>
+                            <button id="submit-and-goback" class="btn btn-default" style="border: 1px solid var(--primary)"
+                                    type="submit" form="form" href="{{ userPermission.can('edit', 'users') ? path('user_edit', {'user': user.id}) : '#' }}"  >
+                                Guardar y volver
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Account Tab ends -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(function() {
+
+            $('#deleteImg').on('click', function (){
+                $('#user_delete_image').val('true');
+            })
+        });
+    </script>
+{% endblock %}
+
+
+{% block action_buttons %}
+
+    <li class="level-menu outside d-flex">
+        <a class="nav-link cursor-pointer" href="#" onclick="window.history.back(); return false;">
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+
+
+        <button id="submit-and-same" class="btn btn-primary ms-2 d-none d-md-block"
+                type="submit" name="{{ field_name(form.same_page) }}"
+                value="true" form="form" href="{{ userPermission.can('edit', 'users') ? path('user_edit', {'user': user.id}) : '#' }}"  >
+            Guardar
+        </button>
+        <button id="submit-and-same" class="ms-2 d-block d-md-none nav-link"
+                type="submit" name="{{ field_name(form.same_page) }}"
+                value="true" form="form" href="{{ userPermission.can('edit', 'users') ? path('user_edit', {'user': user.id}) : '#' }}"  >
+            <i class="ficon" data-feather="save"></i>
+        </button>
+        <button id="submit-and-goback" class="btn btn-default ms-2 d-none d-md-block"
+                type="submit" form="form" href="{{ userPermission.can('edit', 'users') ? path('user_edit', {'user': user.id}) : '#' }}"  >
+            Guardar y volver
+        </button>
+    </li>
+
+
+
+
+
+
+
+{% endblock %}
+
