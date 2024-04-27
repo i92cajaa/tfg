@@ -72,7 +72,12 @@
             <select class="form-control select2" onchange="rolSelectChange()" id="{{ field_name(form.role) }}" name="{{ field_name(form.role) }}" required>
                 <option disabled selected value="">Selecciona una opción</option>
                 {% for rol in roles %}
-                    <option {% if user.roles[0] is defined and rol.name == user.roles[0] %}selected{% endif %} value="{{ rol.id }}">{{ rol.name }}</option>
+                    {% if not app.user.isSuperAdmin and rol.id != 1 %}
+                        <option {% if user.roles[0] is defined and rol.name == user.roles[0] %}selected{% endif %} value="{{ rol.id }}">{{ rol.name }}</option>
+                    {% endif %}
+                    {% if app.user.isSuperAdmin %}
+                        <option {% if user.roles[0] is defined and rol.name == user.roles[0] %}selected{% endif %} value="{{ rol.id }}">{{ rol.name }}</option>
+                    {% endif %}
                 {% endfor %}
 
                 {% for error in field_errors(form.role) %}
@@ -81,20 +86,23 @@
             </select>
         </div>
 
-        <div class="col-md-4 col-sm-6 mb-3 {% if user.isSuperAdmin %}d-none{% endif %}" id="user_center">
-            <label class="form-label" for="{{ field_name(form.center) }}">Centro Asociado <span class="text-danger">*</span></label>
-            <select class="form-select" type="text" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" required>
-                <option disabled {% if field_value(form.center)|length < 1 %}selected{% endif %} value="{{ null }}">Selecciona una opción</option>
-                {% for center in centers %}
-                    <option {% if center.id == field_value(form.center) %}selected{% endif %} value="{{ center.id }}">{{ center.name }}</option>
+        {% if app.user.isSuperAdmin %}
+            <div class="col-md-4 col-sm-6 mb-3 {% if user.isSuperAdmin %}d-none{% endif %}" id="user_center">
+                <label class="form-label" for="{{ field_name(form.center) }}">Centro Asociado <span class="text-danger">*</span></label>
+                <select class="form-select" type="text" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" required>
+                    <option disabled {% if field_value(form.center)|length < 1 %}selected{% endif %} value="{{ null }}">Selecciona una opción</option>
+                    {% for center in centers %}
+                        <option {% if center.id == field_value(form.center) %}selected{% endif %} value="{{ center.id }}">{{ center.name }}</option>
+                    {% endfor %}
+
+                {% for error in field_errors(form.center) %}
+                    <span class="text-danger">{{ error }}</span>
                 {% endfor %}
-
-            {% for error in field_errors(form.center) %}
-                <span class="text-danger">{{ error }}</span>
-            {% endfor %}
-            </select>
-        </div>
-
+                </select>
+            </div>
+        {% else %}
+            <input type="hidden" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" value="{{ app.user.center.id }}">
+        {% endif %}
 
         <div class="col-md-4 col-sm-6 d-none">
             <label class="form-label" for="{{ field_name(form.calendar_interval) }}">Horario <span class="text-danger">*</span></label>

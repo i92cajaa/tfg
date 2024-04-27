@@ -92,6 +92,10 @@ class UserService extends AbstractService
     // ----------------------------------------------------------------
     public function index(): Response
     {
+        if ($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+        }
+
         $users = $this->userRepository->findUsers($this->filterService);
         $roles = $this->roleRepository->findAll();
 
