@@ -28,9 +28,10 @@
         </div>
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="{{ field_name(form.center) }}">{{ field_label(form.center) }} <span class="text-danger">*</span></label>
-            <select class="form-control select2" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" required>
+            <select class="form-control select2" id="center" name="{{ field_name(form.center) }}" required>
+                <option value="" selected disabled>Seleccione un centro</option>
                 {% for center in centers %}
-                    <option value="{{ center.id }}" {% if field_value(form.center) == center.id %}selected{% endif %}>{{ center.name }}</option>
+                    <option value="{{ center.id }}">{{ center.name }}</option>
                 {% endfor %}
             </select>
             {% for error in field_errors(form.name) %}
@@ -39,10 +40,8 @@
         </div>
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="{{ field_name(form.users) }}">{{ field_label(form.users) }} <span class="text-danger">*</span></label>
-            <select class="form-control select2" id="{{ field_name(form.users) }}" name="{{ field_name(form.users) }}" required multiple>
-                {% for user in users %}
-                    <option value="{{ user.id }}" {% for userHasLesson in lesson.users %}{% if userHasLesson.user.id == user.id %}selected{% endif %}{% endfor %}>{{ user.name }} {{ user.surnames }}</option>
-                {% endfor %}
+            <select class="form-control select2" id="users" name="{{ field_name(form.users) }}" required multiple>
+
             </select>
             {% for error in field_errors(form.name) %}
                 <span class="text-danger">{{ error }}</span>
@@ -76,13 +75,33 @@
     </div>
 </form>
 
+<script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
 <script>
-    function triggerAutonomous(){
+    $(document).ready(function() {
+        function getUsersByCenter(center) {
+            $.ajax({
+                type: 'post',
+                cache: "true",
+                dataType: 'json',
+                url: "{{ path('user_get_by_center') }}",
+                data: {
+                    center: center,
+                    _token: '{{ csrf_token('get-users-by-center') }}'
+                },
+                success: function (data) {
 
-        if(document.getElementById("user_autonomous").checked === false){
-            document.getElementById("user_appointment_percentage_div").classList.add("d-none");
-        }else{
-            document.getElementById("user_appointment_percentage_div").classList.remove("d-none");
+                    $('#users option').remove();
+                    data['users'].forEach(user => {
+
+                        $('#users').append('<option value="' + user['id'] + '">' + user['name'] + ' ' + user['surnames'] + '</option>').trigger('change');
+
+                    });
+                }
+            });
         }
-    }
+
+        $('#center').on('change', function () {
+            getUsersByCenter($(this).val());
+        });
+    });
 </script>

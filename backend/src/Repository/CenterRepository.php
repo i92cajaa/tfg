@@ -204,6 +204,12 @@ class CenterRepository extends ServiceEntityRepository
                 $query->andWhere('users.id = :user')
                     ->setParameter('user', $user);
             }
+
+            $center = $filterService->getFilterValue('center');
+            if ($center !== null) {
+                $query->andWhere('c.id = :center')
+                    ->setParameter('center', $center);
+            }
         }
     }
     // --------------------------------------------------------------

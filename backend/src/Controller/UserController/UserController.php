@@ -38,6 +38,22 @@ class UserController extends AbstractController
 
     // ----------------------------------------------------------------
     /**
+     * EN: ENDPOINT TO GET ALL TEACHERS BY THE CENTER
+     * ES: ENDPOINT PARA OBTENER LOS PROFESORES DE UN CENTRO
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/users_by_center', name: 'user_get_by_center', methods: ["GET", "POST"])]
+    #[Permission(group: 'users', action: "list")]
+    public function getByCenter(): Response
+    {
+        return $this->userService->getByCenter();
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
      * EN: ENDPOINT TO SHOW AN USER'S DATA
      * ES: ENDPOINT PARA MOSTRAR LOS DATOS DE UN USUARIO
      *

@@ -24,6 +24,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -103,6 +104,26 @@ class UserService extends AbstractService
             'filterService' => $this->filterService,
             'roles' => $roles
         ]);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO GET ALL TEACHERS BY THE CENTER
+     * ES: SERVICIO PARA OBTENER LOS PROFESORES DE UN CENTRO
+     *
+     * @return JsonResponse
+     */
+    // ----------------------------------------------------------------
+    public function getByCenter(): JsonResponse
+    {
+        $this->filterService->addFilter('center', $this->getRequestPostParam('center'));
+        $this->filterService->addFilter('roles', 3);
+        $this->filterService->addFilter('status', true);
+
+        $users = $this->userRepository->findUsers($this->filterService, true, true);
+
+        return new JsonResponse(['users' => $users['users'], 'status' => true]);
     }
     // ----------------------------------------------------------------
 
