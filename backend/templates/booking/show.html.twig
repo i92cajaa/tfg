@@ -1,0 +1,65 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Reserva - {{ booking.client.name }} - {{ booking.schedule.dateFrom|UTCDateTimeFormat('H:i') }}:{{ booking.schedule.dateTo|UTCDateTimeFormat('H:i') }}{% endblock %}
+
+{% block page_title %}
+    Reserva
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <!-- User Card & Plan Starts -->
+        <div class="row">
+            <!-- User Card starts-->
+            <div class="col-xl-12 col-lg-12 col-md-12">
+                <div class="card user-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 mt-2 mt-xl-0">
+                                <div class="user-info-wrapper row mr-2 ml-2">
+                                    <div class="d-flex flex-wrap col-md-12 row gap-3">
+                                        <div class="d-flex">
+                                            <div class="col-md-3">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Cliente: <strong>{{ booking.client.name }} {{ booking.client.surnames }}</strong></span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Clase: <a href="{% if userPermission.can('show', 'lessons') %}{{ path('lesson_show', {'lesson': booking.schedule.lesson.id}) }}{% else %}#{% endif %}"><strong>{{ booking.schedule.lesson.name }}</strong></a></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Día: <strong>{{ booking.schedule.dateFrom|UTCDateTimeFormat('d/m/Y') }}</strong></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Inicio: <strong>{{ booking.schedule.dateFrom|UTCDateTimeFormat('H:i') }}</strong></span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <span class="card-text user-info-title font-weight-bold mb-0">Fin: <strong>{{ booking.schedule.dateTo|UTCDateTimeFormat('H:i') }}</strong></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(function() {
+            $('.select2').select2();
+        });
+    </script>
+{% endblock %}
+
+{% block action_buttons %}
+    <li class="level-menu outside d-flex align-items-center gap-3">
+
+        <a class="nav-link cursor-pointer" href="{{ userPermission.can('list', 'bookings') ? path('booking_index') : '#' }}"  >
+            <i class="ficon" data-feather="chevron-left"></i>
+        </a>
+        <h3 class="mb-0">Reserva</h3>
+    </li>
+{% endblock %}

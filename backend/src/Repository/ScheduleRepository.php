@@ -225,12 +225,12 @@ class ScheduleRepository extends ServiceEntityRepository
                     ->setParameter('dateFrom', $dateFrom)
                     ->setParameter('dateTo', $dateTo);
             } elseif ($minDate !== null) {
-                $dateFrom = \DateTime::createFromFormat('d-m-Y', $minDate)->setTime(0,0);
+                $dateFrom = \DateTime::createFromFormat('d/m/Y', $minDate)->setTime(0,0);
 
                 $query->andWhere('sc.dateFrom >= :dateFrom')
                     ->setParameter('dateFrom', $dateFrom);
             } elseif ($maxDate !== null) {
-                $dateTo = \DateTime::createFromFormat('d-m-Y', $maxDate)->setTime(23, 59, 59);
+                $dateTo = \DateTime::createFromFormat('d/m/Y', $maxDate)->setTime(23, 59, 59);
 
                 $query->andWhere('sc.dateTo <= :dateTo')
                     ->setParameter('dateTo', $dateTo);
