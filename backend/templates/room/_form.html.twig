@@ -21,17 +21,22 @@
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
-        <div class="col-md-4 col-sm-6 mt-3">
-            <label class="form-label" for="{{ field_name(form.center) }}">{{ field_label(form.center) }} <span class="text-danger">*</span></label>
-            <select class="form-control select2" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" required>
-                {% for center in centers %}
-                    <option value="{{ center.id }}" {% if field_value(form.center) == center.id %}selected{% endif %}>{{ center.name }}</option>
+
+        {% if app.user.isSuperAdmin %}
+            <div class="col-md-4 col-sm-6 mt-3">
+                <label class="form-label" for="{{ field_name(form.center) }}">{{ field_label(form.center) }} <span class="text-danger">*</span></label>
+                <select class="form-control select2" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" required>
+                    {% for center in centers %}
+                        <option value="{{ center.id }}" {% if field_value(form.center) == center.id %}selected{% endif %}>{{ center.name }}</option>
+                    {% endfor %}
+                </select>
+                {% for error in field_errors(form.center) %}
+                    <span class="text-danger">{{ error }}</span>
                 {% endfor %}
-            </select>
-            {% for error in field_errors(form.center) %}
-                <span class="text-danger">{{ error }}</span>
-            {% endfor %}
-        </div>
+            </div>
+        {% else %}
+            <input type="hidden" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" value="{{ app.user.center.id }}">
+        {% endif %}
 
         {{ form_row(form._token) }}
 

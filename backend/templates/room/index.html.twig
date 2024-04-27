@@ -48,7 +48,9 @@
                         <tbody>
                         {% for room in rooms %}
                             <tr>
-                                <td>{{ room.center.name }}</td>
+                                {% if app.user.isSuperAdmin %}
+                                    <td>{{ room.center.name }}</td>
+                                {% endif %}
                                 <td>{% if room.floor == 0 %}Baja{% else %}{{ room.floor }}ª{% endif %}</td>
                                 <td class="align-items-center"><i data-feather="hash" class="mr-3"></i> {{ room.number }}</td>
                                 <td class="align-items-center"><i data-feather="user-plus" class="mr-3"></i> {{ room.capacity }}</td>
