@@ -172,6 +172,13 @@
                                         <span>Centros</span>
                                     </a>
                                 </li>
+                            {% elseif app.user.isAdmin %}
+                                <li class="sidebar-list">
+                                    <a href="{{ path('center_show', {'center': app.user.center.id}) }}" class="sidebar-link sidebar-title link-nav {% if app.request.attributes.get( '_route' ) starts with 'center_' %}nav-active{% endif %}" data-original-title="" title="">
+                                        <i data-feather="map-pin"></i>
+                                        <span>Mi Centro</span>
+                                    </a>
+                                </li>
                             {% endif %}
 
                             {% if userPermission.can('list', 'areas') %}
