@@ -182,6 +182,12 @@ class BookingRepository extends ServiceEntityRepository
                 $query->andWhere('lesson.id = :lesson')
                     ->setParameter('lesson', $lesson);
             }
+
+            $center = $filterService->getFilterValue('center');
+            if ($center !== null) {
+                $query->andWhere('lesson.center = :center')
+                    ->setParameter('center', $center);
+            }
         }
     }
     // --------------------------------------------------------------

@@ -13,6 +13,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -128,10 +129,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getOneOrNullResult();
     }
 
-   
-    public function findUsers(FilterService $filterService, $showAll = false): array
+    // ----------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO LIST ALL USERS
+     * ES: FUNCIÓN PARA LISTAR TODOS LOS USUARIOS
+     *
+     * @param FilterService $filterService
+     * @param bool $showAll
+     * @param bool $array
+     * @return array|null
+     */
+    // ----------------------------------------------------------------
+    public function findUsers(FilterService $filterService, bool $showAll = false, bool $array = false): ?array
     {
-
         $query = $this->createQueryBuilder('u')
             ->leftJoin('u.imgProfile', 'imgProfile')
             ->leftJoin('u.center', 'center')
@@ -156,31 +166,113 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->addSelect('document')
             ->addSelect('userHasLessons')
             ->addSelect('lesson')
-            ->addSelect('schedules');
+            ->addSelect('schedules')
+        ;
 
+        $this->setFilters($query, $filterService);
+        $this->setOrders($query, $filterService);
 
+        $query->setFirstResult($filterService->page > 1 ? (($filterService->page - 1)*$filterService->limit) : $filterService->page - 1);
 
-        if (count($filterService->getFilters()) > 0) {
-
-            if($filterService->getFilterValue('info') != ""){
-                $query->andWhere("CONCAT(u.name, ' ', COALESCE(u.surnames, ''), ' ', COALESCE(u.email, '')) LIKE :info")
-                    ->setParameter('info', "%" . $filterService->getFilterValue('info') . "%");
-            }
-            if($filterService->getFilterValue('roles') != null){
-                $query->andWhere('userHasRoles.role IN (:roles)')
-                    ->setParameter('roles', $filterService->getFilterValue('roles'));
-            }
-            if($filterService->getFilterValue('center') != null){
-                $query->andWhere('center.id LIKE :center')
-                    ->setParameter('center',"%" . $filterService->getFilterValue('center') . "%");
-            }
-
-            if ($filterService->getFilterValue('status') != null) {
-                $query->andWhere('u.status = :status')
-                    ->setParameter('status', $filterService->getFilterValue('status'));
-            }
+        if(!$showAll){
+            $query->setMaxResults($filterService->limit);
         }
 
+        // Pagination process
+        $paginator = new Paginator($query);
+        $paginator->getQuery()->setHydrationMode($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
+        $totalRegisters = $paginator->count();
+
+        $result = [];
+
+        foreach ($paginator as $verification) {
+            $result[] = $verification;
+        }
+
+        $lastPage = (integer)ceil($totalRegisters / $filterService->limit);
+
+        return [
+            'totalRegisters'    => $totalRegisters,
+            'users'             => $result,
+            'lastPage'          => $lastPage,
+            'filters'           => $filterService->getAll()
+        ];
+    }
+    // ----------------------------------------------------------------
+
+    // --------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO SET FILTERS
+     * ES: FUNCIÓN PARA ESTABLECER FILTROS
+     *
+     * @param QueryBuilder $query
+     * @param FilterService $filterService
+     * @return void
+     */
+    // --------------------------------------------------------------
+    public function setFilters(QueryBuilder $query, FilterService $filterService): void
+    {
+        if (count($filterService->getFilters()) > 0)
+        {
+            $search_array = $filterService->getFilterValue('search_array');
+            if ($search_array != null)
+            {
+                $array_values = explode(' ', $search_array);
+
+                $conditions = [];
+                $parameters = [];
+
+                foreach ($array_values as $index => $value)
+                {
+                    $param = 'search' . $index;
+                    $conditions[] = "CONCAT(u.name, ' ', COALESCE(u.surnames, ''), ' ', COALESCE(u.email, ''))" . $param;
+                    $parameters[$param] = '%' . $value . '%';
+                }
+
+                if (!empty($conditions))
+                {
+                    $query->andWhere(implode(' AND ', $conditions));
+
+                    foreach($parameters as $key => $value)
+                    {
+                        $query->setParameter($key, $value);
+                    }
+                }
+            }
+
+            $roles = $filterService->getFilterValue('roles');
+            if($roles != null){
+                $query->andWhere('userHasRoles.role IN (:roles)')
+                    ->setParameter('roles', $roles);
+            }
+
+            $center = $filterService->getFilterValue('center');
+            if ($center != null){
+                $query->andWhere('center.id LIKE :center')
+                    ->setParameter('center',"%" . $center . "%");
+            }
+
+            $status = $filterService->getFilterValue('status');
+            if ($status != null) {
+                $query->andWhere('u.status = :status')
+                    ->setParameter('status', $status);
+            }
+        }
+    }
+    // --------------------------------------------------------------
+
+    // --------------------------------------------------------------
+    /**
+     * EN: FUNCTION TO SET ORDER
+     * ES: FUNCIÓN PARA ESTABLECER ORDEN
+     *
+     * @param QueryBuilder $query
+     * @param FilterService $filterService
+     * @return void
+     */
+    // --------------------------------------------------------------
+    public function setOrders(QueryBuilder $query, FilterService $filterService): void
+    {
         if (count($filterService->getOrders()) > 0) {
             foreach ($filterService->getOrders() as $order) {
                 switch ($order['field']) {
@@ -213,63 +305,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         } else {
             $query->orderBy('u.id', 'DESC');
         }
-
-        if(!$showAll){
-            $query->setFirstResult($filterService->page > 1 ? (($filterService->page - 1) * $filterService->limit) : $filterService->page - 1);
-            $query->setMaxResults($filterService->limit);
-        }
-
-        // Pagination process
-        $paginator = new Paginator($query, $fetchJoinCollection = true);
-
-        $totalRegisters = $paginator->count();
-        $result         = [];
-        foreach ($paginator as $verification) {
-            $result[] = $verification;
-        }
-
-        $lastPage = (int)ceil($totalRegisters / $filterService->limit);
-        //$users = $query->getQuery()->getResult();
-
-        return [
-            'totalRegisters' => $totalRegisters,
-            'users'          => $result,
-            'lastPage'       => $lastPage
-        ];
     }
+    // --------------------------------------------------------------
 
-    public function findNonAdminUsers()
+    public function changeStatus(User $user, bool $status): void
     {
-        return $this->createQueryBuilder('u')
-            ->join('u.roles', 'userHasRole')
-            ->join('userHasRole.role', 'role')
-            ->join('u.services', 'service')
-            ->andWhere('role.admin = 0')
-            ->andWhere('u.status = 1')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function changeStatus(User $user, bool $status){
         $user->setStatus($status);
         $this->save($this->_em, $user);
     }
 
-    public function removeAllRoles(User $user)
+    public function removeAllRoles(User $user): void
     {
         foreach ($user->getRolesCollection() as $role) {
             $this->delete($this->_em, $role);
         }
     }
 
-    public function removeAllAreas(User $user)
-    {
-        foreach ($user->getAreas(false) as $area) {
-            $this->delete($this->_em, $area);
-        }
-    }
-
-    public function removeAllPermissions(User $user)
+    public function removeAllPermissions(User $user): void
     {
         foreach ($user->getPermissions() as $permission) {
             $this->delete($this->_em, $permission);

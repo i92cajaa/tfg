@@ -76,13 +76,11 @@ class ScheduleService extends AbstractService
     // ----------------------------------------------------------------
     public function index(): Response
     {
-        $users = [];
-
         if ($this->getUser()->isTeacher()) {
             $this->filterService->addFilter('users', [$this->getUser()->getId()]);
             $this->filterService->addFilter('status', true);
-        }else{
-            $users = $this->userRepository->findAll();
+        } elseif ($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
         }
 
         $from = (UTCDateTime::create())->modify('first day of this month')->format('d/m/Y');
@@ -95,7 +93,6 @@ class ScheduleService extends AbstractService
 
         return $this->render('schedule/index.html.twig', [
             'schedules' => $schedules,
-            'users' => $users,
             'filterService' => $this->filterService
         ]);
     }
@@ -147,11 +144,19 @@ class ScheduleService extends AbstractService
     // ----------------------------------------------------------------
     public function getScheduleTimes(): JsonResponse
     {
-        $this->filterService->addFilter('room', $this->getRequestPostParam('room'));
+        $this->filterService->addFilter('teacher', $this->getRequestPostParam('teacher'));
         $this->filterService->addFilter('min_date', $this->getRequestPostParam('date'));
         $this->filterService->addFilter('max_date', $this->getRequestPostParam('date'));
 
         $schedules = $this->scheduleRepository->findSchedules($this->filterService, true)['schedules'];
+
+        $this->filterService = $this->filterService->getNewFilter();
+
+        $this->filterService->addFilter('room', $this->getRequestPostParam('room'));
+        $this->filterService->addFilter('min_date', $this->getRequestPostParam('date'));
+        $this->filterService->addFilter('max_date', $this->getRequestPostParam('date'));
+
+        $schedules += $this->scheduleRepository->findSchedules($this->filterService, true)['schedules'];
 
         $lesson = $this->lessonRepository->findById($this->getRequestPostParam('lesson'), false);
         $duration = $lesson->getDuration();
@@ -316,6 +321,10 @@ class ScheduleService extends AbstractService
             return $this->redirectToRoute('schedule_index');
         }
 
+        if ($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+        }
+
         $this->filterService->addFilter('roles', 3);
         $this->filterService->addFilter('status', true);
         $users = $this->userRepository->findUsers($this->filterService, true)['users'];
@@ -361,6 +370,10 @@ class ScheduleService extends AbstractService
             $this->scheduleRepository->save($schedule, true);
 
             return $this->redirectToRoute('schedule_index');
+        }
+
+        if ($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
         }
 
         $this->filterService->addFilter('roles', 3);

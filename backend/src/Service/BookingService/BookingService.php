@@ -69,6 +69,10 @@ class BookingService extends AbstractService
     // ----------------------------------------------------------------
     public function index(): Response
     {
+        if ($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+        }
+
         $bookings = $this->bookingRepository->findBookings($this->filterService, true);
 
         return $this->render('booking/index.html.twig', [
@@ -130,6 +134,11 @@ class BookingService extends AbstractService
             return $this->redirectToRoute('booking_index');
         }
 
+        $this->filterService->addFilter('status', true);
+        if ($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+        }
+
         return $this->render('booking/new.html.twig', [
             'booking' => $booking,
             'clients' => $this->clientRepository->findClients($this->filterService, true)['clients'],
@@ -189,6 +198,9 @@ class BookingService extends AbstractService
         }
 
         $this->filterService->addFilter('status', true);
+        if ($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+        }
 
         return $this->render('booking/edit.html.twig', [
             'booking' => $booking,

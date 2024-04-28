@@ -69,6 +69,12 @@ class LessonService extends AbstractService
     // ----------------------------------------------------------------
     public function index(): Response
     {
+        if (($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin())) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+        } elseif ($this->getUser()->isTeacher()) {
+            $this->filterService->addFilter('teacher', $this->getUser()->getId());
+        }
+
         $lessons = $this->lessonRepository->findLessons($this->filterService, false);
 
         return $this->render('lesson/index.html.twig', [
@@ -189,15 +195,14 @@ class LessonService extends AbstractService
             return $this->redirectToRoute('lesson_index');
         }
 
+        if ($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+        }
         $centers = $this->centerRepository->findCenters($this->filterService, true);
-
-        $this->filterService->addFilter('roles', 3);
-        $users = $this->userRepository->findUsers($this->filterService, true);
 
         return $this->render('lesson/new.html.twig', [
             'lesson' => $lesson,
             'form' => $form->createView(),
-            'users' => $users['users'],
             'centers' => $centers['centers']
         ]);
 
@@ -245,15 +250,14 @@ class LessonService extends AbstractService
             return $this->redirectToRoute('lesson_index');
         }
 
+        if ($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+        }
         $centers = $this->centerRepository->findCenters($this->filterService, true);
-
-        $this->filterService->addFilter('roles', 3);
-        $users = $this->userRepository->findUsers($this->filterService, true);
 
         return $this->render('lesson/edit.html.twig', [
             'lesson' => $lesson,
             'form' => $form->createView(),
-            'users' => $users['users'],
             'centers' => $centers['centers']
         ]);
 

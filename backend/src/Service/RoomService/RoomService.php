@@ -60,6 +60,9 @@ class RoomService extends AbstractService
     // ----------------------------------------------------------------
     public function index(): Response
     {
+        if (($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) || $this->getUser()->isTeacher()) {
+            $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+        }
         $rooms = $this->roomRepository->findRooms($this->filterService, false);
 
         return $this->render('room/index.html.twig', [

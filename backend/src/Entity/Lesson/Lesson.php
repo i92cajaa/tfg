@@ -58,6 +58,9 @@ class Lesson
     #[ORM\Column(name:"status", type:"boolean", nullable:false)]
     private bool $status = true;
 
+    #[ORM\Column(name:"color", type:"string", length:255, nullable:false)]
+    private string $color;
+
     // ----------------------------------------------------------------
     // Magic Methods
     // ----------------------------------------------------------------
@@ -144,6 +147,14 @@ class Lesson
         return $this->status;
     }
 
+    /**
+     * @return string
+     */
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
     // ----------------------------------------------------------------
     // Setter Methods
     // ----------------------------------------------------------------
@@ -225,6 +236,16 @@ class Lesson
     public function setStatus(bool $status): Lesson
     {
         $this->status = $status;
+        return $this;
+    }
+
+    /**
+     * @param string $color
+     * @return $this
+     */
+    public function setColor(string $color): Lesson
+    {
+        $this->color = $color;
         return $this;
     }
 

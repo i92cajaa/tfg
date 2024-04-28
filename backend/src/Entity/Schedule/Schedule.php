@@ -295,7 +295,7 @@ class Schedule
             $userIds[] = $userHasLessons->getUser()->getId();
         }
 
-        $borderColor =  $this->getRoom()->getCenter()->getColor();
+        $borderColor = $isSuperAdmin ? $this->getRoom()->getCenter()->getColor() : $this->getLesson()->getColor();
 
         $title = $isSuperAdmin ? $this->getLesson()->getName() . ' - ' . $this->getRoom()->getCenter()->getName() : $this->getLesson()->getName();
 

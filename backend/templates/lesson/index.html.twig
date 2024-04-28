@@ -16,6 +16,7 @@
                     <table class="user-list-table table table-list mb-3">
                         <thead class="thead-light">
                             <tr>
+                                <th class="p-0"></th>
                                 <th>
                                     <span style="letter-spacing: 1px; color: var(--theme-deafult)">
                                         Imágen
@@ -56,6 +57,9 @@
                         <tbody>
                         {% for lesson in lessons %}
                             <tr>
+                                <td class="p-0"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style="color: {{ lesson.color }}" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                        <circle cx="8" cy="8" r="8"/>
+                                    </svg></td>
                                 <td><img data-bs-toggle="tooltip" data-html="true" data-placement="bottom" title='' src="{% if lesson.image != null %}{{ documentImage.DocumentImage(lesson.image) }}{% else %}{{ asset('assets/images/dashboard/profile.jpg') }}{% endif %}" class="" style="width: 90px !important;"  alt=""></td>
                                 <td>{{ lesson.name }}</td>
                                 <td>{{ lesson.center.name }}</td>
