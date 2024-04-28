@@ -196,12 +196,10 @@ final class Version20240409112509 extends AbstractMigration
                             (3,22),
                             (3,23),
                             (3,24),
-                            (3,25),
                             (3,26),
                             (3,27),
                             (3,28),
-                            (3,29),
-                            (3,30)
+                            (3,29)
         ");
 
         $this->addSql("INSERT INTO config_type (tag, name, type, description, module, module_dependant) 

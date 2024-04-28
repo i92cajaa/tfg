@@ -144,7 +144,7 @@
         }
 
         {% if app.user.isTeacher %}
-            changeLessonsAndRooms({{ app.user.id }});
+            changeLessonsAndRooms('{{ app.user.id }}');
         {% else %}
             $("#teacher").on("change", function () {
                 changeLessonsAndRooms($(this).val());

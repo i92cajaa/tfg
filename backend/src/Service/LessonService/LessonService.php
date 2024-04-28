@@ -69,8 +69,10 @@ class LessonService extends AbstractService
     // ----------------------------------------------------------------
     public function index(): Response
     {
-        if (($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin()) || $this->getUser()->isTeacher()) {
+        if (($this->getUser()->isAdmin() && !$this->getUser()->isSuperAdmin())) {
             $this->filterService->addFilter('center', $this->getUser()->getCenter()->getId());
+        } elseif ($this->getUser()->isTeacher()) {
+            $this->filterService->addFilter('teacher', $this->getUser()->getId());
         }
 
         $lessons = $this->lessonRepository->findLessons($this->filterService, false);

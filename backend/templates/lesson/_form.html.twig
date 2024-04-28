@@ -30,19 +30,24 @@
             {% endfor %}
         </div>
 
-        <div class="col-md-4 col-sm-6 mt-3">
-            <label class="form-label" for="{{ field_name(form.center) }}">{{ field_label(form.center) }} <span class="text-danger">*</span></label>
-            <select class="form-control select2" id="center" name="{{ field_name(form.center) }}" required>
-                <option value="" selected disabled>Seleccione un centro</option>
-                {% for center in centers %}
-                    <option value="{{ center.id }}">{{ center.name }}</option>
+        {% if app.user.isAdmin %}
+            <div class="col-md-4 col-sm-6 mt-3">
+                <label class="form-label" for="{{ field_name(form.center) }}">{{ field_label(form.center) }} <span class="text-danger">*</span></label>
+                <select class="form-control select2" id="center" name="{{ field_name(form.center) }}" required>
+                    <option value="" selected disabled>Seleccione un centro</option>
+                    {% for center in centers %}
+                        <option value="{{ center.id }}">{{ center.name }}</option>
+                    {% endfor %}
+                </select>
+                {% for error in field_errors(form.name) %}
+                    <span class="text-danger">{{ error }}</span>
                 {% endfor %}
-            </select>
-            {% for error in field_errors(form.name) %}
-                <span class="text-danger">{{ error }}</span>
-            {% endfor %}
-        </div>
+            </div>
+        {% else %}
+            <input type="hidden" id="{{ field_name(form.center) }}" name="{{ field_name(form.center) }}" value="{{ app.user.center.id }}">
+        {% endif %}
 
+        {% if app.user.isAdmin %}
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="{{ field_name(form.users) }}">{{ field_label(form.users) }} <span class="text-danger">*</span></label>
             <select class="form-control select2" id="users" name="{{ field_name(form.users) }}" required multiple>
@@ -52,6 +57,12 @@
                 <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
+        {% else %}
+            <select id="{{ field_name(form.users) }}" name="{{ field_name(form.users) }}" style="display: none;">
+                <option value="{{ app.user.id }}" selected></option>
+            </select>
+
+        {% endif %}
 
         <div class="col-md-4 col-sm-6 mt-3">
             <label class="form-label" for="{{ field_name(form.color) }}">{{ field_label(form.color) }} <span class="text-danger">*</span></label>
