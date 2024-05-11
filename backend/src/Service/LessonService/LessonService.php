@@ -84,6 +84,7 @@ class LessonService extends AbstractService
             'currentPage' => $lessons['filters']['page'],
             'lessons' => $lessons['lessons'],
             'filterService' => $this->filterService,
+            'centers' => $this->centerRepository->findAll()
         ]);
     }
     // ----------------------------------------------------------------

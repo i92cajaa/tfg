@@ -1,0 +1,61 @@
+ <form id="filter_form" name="form-filter-users w-100">
+        <fieldset class="">
+            <div class="d-flex justify-content-end align-items-center mx-50 row pt-0 pb-2">
+
+                {% if app.user.isSuperAdmin %}
+                    <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                        <label for="center">Centro</label>
+                        <select id="center" name="{{ filterService.filterField('center') }}" form="filter_form" class="select2 form-control">
+                            <option value="" {% if filterService.getFilterValue("center") == null %}selected{% endif %}>Todos los centros</option>
+                            {% for center in centers %}
+                                <option value="{{ center.id }}" {% if filterService.getFilterValue("center") == center.id %}selected{% endif %}>{{ center.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-control-feedback">
+
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                    <label for="name">Nombre</label>
+                    <input id="name" type="text" class="form-control" placeholder="Nombre a buscar..." name="{{ filterService.filterField('search_array') }}" value="{{ filterService.getFilterValue("search_array") }}" form="filter_form">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                    <label for="duration">Duración</label>
+                    <select id="duration" name="{{ filterService.filterField('duration') }}" form="filter_form" class="form-control select2">
+                        <option value="" {% if filterService.getFilterValue('duration') == '' %}selected{% endif %}>Todos</option>
+                        <option value="1" {% if filterService.getFilterValue('duration') == 1 %}selected{% endif %}>1 h</option>
+                        <option value="1.5" {% if filterService.getFilterValue('duration') == 1.5 %}selected{% endif %}>1.5 h</option>
+                        <option value="2" {% if filterService.getFilterValue('duration') == 2 %}selected{% endif %}>2 h</option>
+                    </select>
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                    <label for="status">Estado</label>
+                    <select id="status" name="{{ filterService.filterField('status') }}" form="filter_form" class="form-control select2">
+                        <option value="Todos" {% if filterService.getFilterValue('status') == 'Todos' %}selected{% endif %}>Todos</option>
+                        <option value="1" {% if filterService.getFilterValue('status') == 1 %}selected{% endif %}>Activas</option>
+                        <option value="0" {% if filterService.getFilterValue('status') is same as '0' %}selected{% endif %}>Inactivas</option>
+                    </select>
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                {{ filterService.filterFormField() | raw }}
+
+                <div class="form-group-feedback form-group-feedback-right text-end col-6">
+                    <button type="submit" class="btn add-new text-white btn-primary mt-2">{{ 'Apply Filter'|trans }}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+

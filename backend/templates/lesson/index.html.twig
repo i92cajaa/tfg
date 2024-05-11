@@ -94,7 +94,7 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="6">{{ 'No results found'|trans }}</td>
+                                <td colspan="{% if app.user.isSuperAdmin %}8{% else %}7{% endif %}">{{ 'No results found'|trans }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -145,5 +145,5 @@
 
 
 {% block sidebar %}
-    {% include 'extra/filters/service_filter.html.twig' %}
+    {% include 'extra/filters/lesson_filter.html.twig' %}
 {% endblock %}
