@@ -184,7 +184,7 @@ class AreaRepository  extends ServiceEntityRepository
                 foreach ($array_values as $index => $value)
                 {
                     $param = 'search' . $index;
-                    $conditions[] = 'a.name LIKE :' . $param . 'OR a.city LIKE :' . $param;
+                    $conditions[] = 'a.name LIKE :' . $param . ' OR a.city LIKE :' . $param;
                     $parameters[$param] = '%' . $value . '%';
                 }
 

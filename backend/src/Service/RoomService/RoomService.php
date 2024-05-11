@@ -72,6 +72,7 @@ class RoomService extends AbstractService
             'currentPage' => $rooms['filters']['page'],
             'rooms' => $rooms['rooms'],
             'filterService' => $this->filterService,
+            'centers' => $this->centerRepository->findAll()
         ]);
     }
     // ----------------------------------------------------------------

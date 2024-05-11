@@ -168,7 +168,7 @@ class CenterRepository extends ServiceEntityRepository
         if (count($filterService->getFilters()) > 0)
         {
             $area = $filterService->getFilterValue('area');
-            if ($area !== null) {
+            if ($area != null) {
                 $query->andWhere('c.area = :area')
                     ->setParameter('area', $area);
             }
@@ -184,7 +184,7 @@ class CenterRepository extends ServiceEntityRepository
                 foreach ($array_values as $index => $value)
                 {
                     $param = 'search' . $index;
-                    $conditions[] = 'c.name LIKE :' . $param . 'OR c.address LIKE :' . $param . 'OR c.phone LIKE :' . $param;
+                    $conditions[] = 'c.name LIKE :' . $param . ' OR c.address LIKE :' . $param . ' OR c.phone LIKE :' . $param;
                     $parameters[$param] = '%' . $value . '%';
                 }
 

@@ -73,6 +73,7 @@ class CenterService extends AbstractService
             'currentPage' => $this->filterService->page,
             'centers' => $centers['centers'],
             'filterService' => $this->filterService,
+            'areas' => $this->areaRepository->findAll()
         ]);
     }
     // ----------------------------------------------------------------

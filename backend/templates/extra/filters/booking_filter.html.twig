@@ -1,0 +1,50 @@
+ <form id="filter_form" name="form-filter-users w-100">
+        <fieldset class="">
+            <div class="d-flex justify-content-end align-items-center mx-50 row pt-0 pb-2">
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                    <label for="lesson">Clase</label>
+                    <select id="lesson" name="{{ filterService.filterField('lesson') }}" form="filter_form" class="select2 form-control">
+                        <option value="" {% if filterService.getFilterValue("lesson") == null %}selected{% endif %}>Todas las clases</option>
+                        {% for lesson in lessons %}
+                            <option value="{{ lesson.id }}" {% if filterService.getFilterValue("lesson") == lesson.id %}selected{% endif %}>{{ lesson.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
+                    <label for="name">Cliente</label>
+                    <input id="name" type="text" class="form-control" placeholder="Cliente a buscar..." name="{{ filterService.filterField('client') }}" value="{{ filterService.getFilterValue("client") }}" form="filter_form">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                    <label for="min_day">Día inicial</label>
+                    <input id="min_day" name="{{ filterService.filterField('min_day') }}" form="filter_form" class="form-control filterpickr" value="{{ filterService.getFilterValue('min_day') }}">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                    <label for="max_day">Día final</label>
+                    <input id="max_day" name="{{ filterService.filterField('max_day') }}" form="filter_form" class="form-control filterpickr" value="{{ filterService.getFilterValue('max_day') }}">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                {{ filterService.filterFormField() | raw }}
+
+                <div class="form-group-feedback form-group-feedback-right text-end col-6">
+                    <button type="submit" class="btn add-new text-white btn-primary mt-2">{{ 'Apply Filter'|trans }}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+

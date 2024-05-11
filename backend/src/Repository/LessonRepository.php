@@ -218,16 +218,21 @@ class LessonRepository extends ServiceEntityRepository
             }
 
             $center = $filterService->getFilterValue('center');
-            if ($center !== null) {
+            if ($center != null) {
                 $query->andWhere('l.center = :center')
                     ->setParameter('center', $center);
             }
 
             $status = $filterService->getFilterValue('status');
-            if ($status != null) {
-                $query->andWhere('l.status = 1');
-            } elseif ($status !== null) {
-                $query->andWhere('l.status = 0');
+            if ($status !== 'Todos' && $status !== null) {
+                $query->andWhere('l.status = :status')
+                    ->setParameter('status', $status);
+            }
+
+            $duration = $filterService->getFilterValue('duration');
+            if ($duration != null) {
+                $query->andWhere('l.duration = :duration')
+                    ->setParameter('duration', $duration);
             }
 
             $teacher = $filterService->getFilterValue('teacher');

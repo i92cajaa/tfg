@@ -180,33 +180,33 @@ class RoomRepository extends ServiceEntityRepository
         if (count($filterService->getFilters()) > 0)
         {
             $center = $filterService->getFilterValue('center');
-            if ($center !== null) {
+            if ($center != null) {
                 $query->andWhere('r.center = :center')
                     ->setParameter('center', $center);
             }
 
             $floor = $filterService->getFilterValue('floor');
-            if ($floor !== null) {
+            if ($floor !== null && $floor !== '') {
                 $query->andWhere('r.floor = :floor')
                     ->setParameter('floor', $floor);
             }
 
             $room = $filterService->getFilterValue('room');
-            if ($room !== null) {
-                $query->andWhere('r.room = :room')
+            if ($room != null) {
+                $query->andWhere('r.number = :room')
                     ->setParameter('room', $room);
             }
 
             $minCapacity = $filterService->getFilterValue('min_capacity');
             $maxCapacity = $filterService->getFilterValue('max_capacity');
-            if ($minCapacity !== null && $maxCapacity !== null) {
+            if ($minCapacity != null && $maxCapacity != null) {
                 $query->andWhere('r.capacity BETWEEN :minCapacity AND :maxCapacity')
                     ->setParameter('minCapacity', $minCapacity)
                     ->setParameter('maxCapacity', $maxCapacity);
-            } elseif ($minCapacity !== null) {
+            } elseif ($minCapacity != null) {
                 $query->andWhere('r.capacity >= :minCapacity')
                     ->setParameter('minCapacity', $minCapacity);
-            } elseif ($maxCapacity !== null) {
+            } elseif ($maxCapacity != null) {
                 $query->andWhere('r.capacity <= :maxCapacity')
                     ->setParameter('maxCapacity', $maxCapacity);
             }

@@ -156,7 +156,9 @@ class ScheduleService extends AbstractService
         $this->filterService->addFilter('min_date', $this->getRequestPostParam('date'));
         $this->filterService->addFilter('max_date', $this->getRequestPostParam('date'));
 
-        $schedules += $this->scheduleRepository->findSchedules($this->filterService, true)['schedules'];
+        foreach ($this->scheduleRepository->findSchedules($this->filterService, true)['schedules'] as $schedule) {
+            $schedules[] = $schedule;
+        }
 
         $lesson = $this->lessonRepository->findById($this->getRequestPostParam('lesson'), false);
         $duration = $lesson->getDuration();
@@ -235,7 +237,7 @@ class ScheduleService extends AbstractService
                 }
             }
 
-            if (!$inBetween) {
+            if (!$inBetween && $currentClosingTime <= $closingTime) {
                 $availableRanges[] = [
                     'start' => $currentOpeningTime->format('H:i'),
                     'end' => $currentClosingTime->format('H:i')

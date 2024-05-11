@@ -19,6 +19,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use function Symfony\Component\String\s;
 
 /**
  * @method Client|null find($id, $lockMode = null, $lockVersion = null)
@@ -202,7 +203,7 @@ class ClientRepository extends ServiceEntityRepository
                 foreach ($array_values as $index => $value)
                 {
                     $param = 'search' . $index;
-                    $conditions[] = 'c.name LIKE :' . $param . 'OR c.surnames LIKE :' . $param . 'OR CONCAT(c.name, c.surnames) LIKE :' . $param;
+                    $conditions[] = 'c.name LIKE :' . $param . ' OR c.surnames LIKE :' . $param . ' OR CONCAT(c.name, c.surnames) LIKE :' . $param . ' OR c.phone LIKE :' . $param;
                     $parameters[$param] = '%' . $value . '%';
                 }
 
@@ -218,10 +219,9 @@ class ClientRepository extends ServiceEntityRepository
             }
 
             $status = $filterService->getFilterValue('status');
-            if ($status != null) {
-                $query->andWhere('c.status = 1');
-            } elseif ($status !== null) {
-                $query->andWhere('c.status = 0');
+            if ($status !== null && $status !== 'Todos') {
+                $query->andWhere('c.status = :status')
+                    ->setParameter('status', $status);
             }
 
             $dni = $filterService->getFilterValue('dni');

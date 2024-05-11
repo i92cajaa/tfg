@@ -1,0 +1,60 @@
+ <form id="filter_form" name="form-filter-users w-100">
+        <fieldset class="">
+            <div class="d-flex justify-content-end align-items-center mx-50 row pt-0 pb-2">
+
+                {% if app.user.isSuperAdmin %}
+                    <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                        <label for="center">Centro</label>
+                        <select id="center" name="{{ filterService.filterField('center') }}" form="filter_form" class="select2 form-control">
+                            <option value="" {% if filterService.getFilterValue("center") == null %}selected{% endif %}>Todos los centros</option>
+                            {% for center in centers %}
+                                <option value="{{ center.id }}" {% if filterService.getFilterValue("center") == center.id %}selected{% endif %}>{{ center.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-control-feedback">
+
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                    <label for="floor">Planta</label>
+                    <input type="number" id="floor" name="{{ filterService.filterField('floor') }}" form="filter_form" class="form-control" value="{{ filterService.getFilterValue('floor') }}" min="0">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                    <label for="room">Número</label>
+                    <input type="number" id="room" name="{{ filterService.filterField('room') }}" form="filter_form" class="form-control" value="{{ filterService.getFilterValue('room') }}" min="1">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                    <label for="min_capacity">Capacidad Mínima</label>
+                    <input type="number" id="min_capacity" name="{{ filterService.filterField('min_capacity') }}" form="filter_form" class="form-control" value="{{ filterService.getFilterValue('min_capacity') }}" min="1">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                <div class="form-group-feedback form-group-feedback-right col-md-12 mb-3">
+                    <label for="max_capacity">Capacidad Máxima</label>
+                    <input type="number" id="max_capacity" name="{{ filterService.filterField('max_capacity') }}" form="filter_form" class="form-control" value="{{ filterService.getFilterValue('max_capacity') }}" min="1">
+                    <div class="form-control-feedback">
+
+                    </div>
+                </div>
+
+                {{ filterService.filterFormField() | raw }}
+
+                <div class="form-group-feedback form-group-feedback-right text-end col-6">
+                    <button type="submit" class="btn add-new text-white btn-primary mt-2">{{ 'Apply Filter'|trans }}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+
