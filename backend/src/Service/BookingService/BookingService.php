@@ -10,7 +10,6 @@ use App\Repository\ClientRepository;
 use App\Repository\LessonRepository;
 use App\Repository\ScheduleRepository;
 use App\Repository\StatusRepository;
-use App\Service\ScheduleService\ScheduleService;
 use App\Shared\Classes\AbstractService;
 use App\Shared\Classes\UTCDateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,7 +23,6 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
-use function Symfony\Component\Translation\t;
 
 class BookingService extends AbstractService
 {
@@ -74,6 +72,7 @@ class BookingService extends AbstractService
         }
 
         $bookings = $this->bookingRepository->findBookings($this->filterService, true);
+        $lessons = $this->lessonRepository->findLessons($this->filterService, true)['lessons'];
 
         return $this->render('booking/index.html.twig', [
             'booking' => $bookings,  // Asegúrate de que esta variable esté definida
@@ -82,6 +81,7 @@ class BookingService extends AbstractService
             'currentPage' => $bookings['filters']['page'],
             'bookings' => $bookings['bookings'],
             'filterService' => $this->filterService,
+            'lessons' => $lessons
         ]);
     }
     // ----------------------------------------------------------------

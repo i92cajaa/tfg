@@ -224,7 +224,7 @@ class LessonRepository extends ServiceEntityRepository
             }
 
             $status = $filterService->getFilterValue('status');
-            if ($status !== 'Todos') {
+            if ($status !== 'Todos' && $status !== null) {
                 $query->andWhere('l.status = :status')
                     ->setParameter('status', $status);
             }

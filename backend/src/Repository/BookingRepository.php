@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Client\Booking;
 use App\Service\FilterService;
+use App\Shared\Classes\UTCDateTime;
 use App\Shared\Traits\DoctrineStorableObject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\AbstractQuery;
@@ -166,9 +167,9 @@ class BookingRepository extends ServiceEntityRepository
         if (count($filterService->getFilters()) > 0)
         {
             $client = $filterService->getFilterValue('client');
-            if ($client !== null) {
-                $query->andWhere('client.id = :client')
-                    ->setParameter('client', $client);
+            if ($client != null) {
+                $query->andWhere('CONCAT(client.name, client.surnames) LIKE :client')
+                    ->setParameter('client', '%' . $client . '%');
             }
 
             $schedule = $filterService->getFilterValue('schedule');
@@ -178,7 +179,7 @@ class BookingRepository extends ServiceEntityRepository
             }
 
             $lesson = $filterService->getFilterValue('lesson');
-            if ($lesson !== null) {
+            if ($lesson != null) {
                 $query->andWhere('lesson.id = :lesson')
                     ->setParameter('lesson', $lesson);
             }
@@ -187,6 +188,27 @@ class BookingRepository extends ServiceEntityRepository
             if ($center !== null) {
                 $query->andWhere('lesson.center = :center')
                     ->setParameter('center', $center);
+            }
+
+            $minDay = $filterService->getFilterValue('min_day');
+            $maxDay = $filterService->getFilterValue('max_day');
+            if ($minDay != null && $maxDay != null) {
+                $dateFrom = UTCDateTime::create('d/m/Y', $minDay)->setTime(0, 0);
+                $dateTo = UTCDateTime::create('d/m/Y', $maxDay)->setTime(23, 59, 59);
+
+                $query->andWhere('schedule.dateFrom BETWEEN :dateFrom AND :dateTo')
+                    ->setParameter('dateFrom', $dateFrom)
+                    ->setParameter('dateTo', $dateTo);
+            } elseif ($minDay != null) {
+                $dateFrom = UTCDateTime::create('d/m/Y', $minDay)->setTime(0, 0);
+
+                $query->andWhere('schedule.dateFrom >= :dateFrom')
+                    ->setParameter('dateFrom', $dateFrom);
+            } elseif ($maxDay != null) {
+                $dateTo = UTCDateTime::create('d/m/Y', $maxDay)->setTime(23, 59, 59);
+
+                $query->andWhere('schedule.dateFrom <= :dateTo')
+                    ->setParameter('dateTo', $dateTo);
             }
         }
     }
