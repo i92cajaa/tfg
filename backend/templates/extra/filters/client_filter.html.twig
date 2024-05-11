@@ -4,30 +4,16 @@
 
                 <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
                     <label for="Nombre">Buscar</label>
-                    <input type="text" class="form-control" placeholder="{{ 'Name'|trans }}, {{ 'Surnames'|trans }}, {{ 'DNI'|trans }}..." name="{{ filterService.filterField('info') }}" value="{{ filterService.getFilterValue("info") }}" form="filter_form">
-
+                    <input type="text" class="form-control" placeholder="{{ 'Name'|trans }}, {{ 'Surnames'|trans }}, {{ 'DNI'|trans }}..." name="{{ filterService.filterField('search_array') }}" value="{{ filterService.getFilterValue("search_array") }}" form="filter_form">
                 </div>
-                {% if userPermission.can('list', 'centers') and centers is defined and centers|length >=2 %}
-                    <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
-                        <label for="center">Centro</label>
-                        <select name="{{ filterService.filterField('center') }}" class="select2 form-control" id="center">
-                            <option value="" selected>Seleccionar centro</option>
-                            {% for center in centers %}
-                                <option value="{{ center.id }}" {% if filterService.getFilterValue('center') == center.id %}selected{% endif %}>{{ center.name }}</option>
-
-                            {% endfor %}
-                        </select>
-                    </div>
-                {% endif %}
 
                 <div class="form-group-feedback form-group-feedback-right col-md-12 mb-1">
                     <label for="status">Estado</label>
                     <br>
-                    <select name="{{ filterService.filterField('status_or_alumni') }}" class="select2 form-control" id="status">
-                        <option value="" selected>Seleccionar estado</option>
-                        <option value="1" {% if filterService.getFilterValue('status_or_alumni') == "1" %}selected{% endif %}>{{ 'Active'|trans }}</option>
-                        <option value="2" {% if filterService.getFilterValue('status_or_alumni') == "2" %}selected{% endif %}>Alumni</option>
-                        <option value="0" {% if filterService.getFilterValue('status_or_alumni') == "0" %}selected{% endif %}>{{ 'Inactive'|trans }}</option>
+                    <select name="{{ filterService.filterField('status') }}" class="select2 form-control" id="status">
+                        <option value="Todos" {% if filterService.getFilterValue('status') == "Todos" %}selected{% endif %}>Todos</option>
+                        <option value="1" {% if filterService.getFilterValue('status') == "1" %}selected{% endif %}>{{ 'Active'|trans }}</option>
+                        <option value="0" {% if filterService.getFilterValue('status') is same as "0" %}selected{% endif %}>{{ 'Inactive'|trans }}</option>
                     </select>
                     <div class="form-control-feedback">
 
