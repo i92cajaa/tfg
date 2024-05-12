@@ -387,6 +387,7 @@ class UserService extends AbstractService
      * @param string $token
      * @param Request $request
      * @return Response
+     * @throws NonUniqueResultException
      */
     // ----------------------------------------------------------------
     public function changePassword(string $token, Request $request): Response

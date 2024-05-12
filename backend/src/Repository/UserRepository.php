@@ -2,17 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Role\Role;
 use App\Entity\User\User;
-use App\Entity\Token\PasswordResetToken;
 use App\Service\FilterService;
-use App\Shared\Classes\UTCDateTime;
 use App\Shared\Traits\DoctrineStorableObject;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
@@ -34,7 +29,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 {
 
     use DoctrineStorableObject;
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         ManagerRegistry $registry,
@@ -42,7 +37,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         EntityManagerInterface $entityManager
     ) {
         $this->entityManager = $entityManager;
-        parent::__construct($registry, User::class,PasswordResetToken::class);
+        parent::__construct($registry, User::class);
     }
 
 
@@ -91,6 +86,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
     // ----------------------------------------------------------------
 
+    /**
+     * @throws NonUniqueResultException
+     */
     public function findUserByEmail(string $email)
     {
        
@@ -102,7 +100,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             
     }
 
-    public function updateUserTokenById(string $id, string $token)
+    public function updateUserTokenById(string $id, string $token): void
     {
         $user = $this->entityManager->getRepository(User::class)->find($id);
 
@@ -120,6 +118,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->entityManager->flush();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
     public function findUserByToken(string $token)
     {
         return $this->createQueryBuilder('u')
@@ -296,9 +297,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                         break;
                     case "roles":
                         $query->orderBy('role.name', $order['order']);
-                        break;
-                    case "created_at":
-                        $query->orderBy('u.created_at', $order['order']);
                         break;
                 }
             }
