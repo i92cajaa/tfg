@@ -273,6 +273,9 @@ class LessonRepository extends ServiceEntityRepository
                     case "status":
                         $query->orderBy('l.status', $order['order']);
                         break;
+                    case "duration":
+                        $query->orderBy('l.duration', $order['order']);
+                        break;
                 }
             }
         }

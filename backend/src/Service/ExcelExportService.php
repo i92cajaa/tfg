@@ -1,9 +1,11 @@
 <?php
 namespace App\Service;
 
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\IWriter;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 class ExcelExportService
 {
@@ -11,22 +13,27 @@ class ExcelExportService
      * @var array $data
      */
     protected array $data;
+
     /**
      * @var string $name
      */
     protected string $name;
+
     /**
      * @var Spreadsheet
      */
     protected Spreadsheet $spreadsheet;
+
     /**
      * @var array $headers
      */
     protected array $headers;
+
     /**
-     * Indica si el archivo tiene cabeceras o no. Se seta automáticamente al llamar al método setheaders.
+     * Indica si el archivo tiene cabeceras o no. Se setea automáticamente al llamar al método setheaders.
      */
     protected bool $withHeaders;
+
     public function __construct()
     {
         $this->data = [];
@@ -34,25 +41,28 @@ class ExcelExportService
         $this->spreadsheet = new Spreadsheet(); // Iniciamos la hoja de cálculo
         $this->withHeaders = false;
     }
+
     /**
      * Setea el valor de los datos a exportar
      *
      * @param array $data
      */
-    public function setArrayData(array $data)
+    public function setArrayData(array $data): void
     {
         $this->data = $data;
     }
+
     /**
      * Setea el nombre del archivo.
      *
      * @param string $name
      *
      */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
+
     /**
      * @param $title
      * @param $subject
@@ -61,7 +71,7 @@ class ExcelExportService
      * @param $keywords
      * @param $category
      */
-    public function setMetadata($title, $subject, $creator, $description, $keywords, $category)
+    public function setMetadata($title, $subject, $creator, $description, $keywords, $category): void
     {
         // Set document properties
         $this->spreadsheet->getProperties()->setCreator($creator)
@@ -72,15 +82,17 @@ class ExcelExportService
             ->setKeywords($keywords)
             ->setCategory($category);
     }
+
     /**
      * Setea las cabeceras de la tabla en la hoja de cálculo
-     * @param array $array
+     * @param array $headers
      */
-    public function setHeaders(array $headers)
+    public function setHeaders(array $headers): void
     {
         $this->headers = $headers;
         $this->withHeaders = true;
     }
+
     /*
     private function isValid() {
         if($this->withHeaders and count($this->headers) != count($this->data)){
@@ -88,23 +100,26 @@ class ExcelExportService
         }
     }
     */
+
     /**
      * @param int $index Índice de la hoja a añadir la cabecera
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
      */
-    private function buildHeaders($index)
+    private function buildHeaders(int $index): void
     {
         foreach ($this->headers as $indexHeader => $value) {
             $this->spreadsheet->setActiveSheetIndex($index)->setCellValue($this->getNameFromNumber($indexHeader)."1", $value);
         }
     }
+
     /**
      * Pinta los datos en el archivo excel
      * @param int $since Indica desde que fila se empieza a escribir los datos
      * @param int $sheetIndex Indica el índice de la página en donde se va a escribir
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
      */
-    private function buildData($since, $sheetIndex = 0) {
+    private function buildData(int $since, int $sheetIndex = 0): void
+    {
         $currentLine = $since;
         $this->spreadsheet
             ->setActiveSheetIndex($sheetIndex);
@@ -122,11 +137,12 @@ class ExcelExportService
             $currentLine++;
         }
     }
+
     /**
      * Exporta un array preestablecido previamente con la funcion setArrayData
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
      */
-    public function exportArrayToExcel()
+    public function exportArrayToExcel(): bool|string
     {
         // Creamos el archivo excel a exportar
         // Create new Spreadsheet object
@@ -140,11 +156,13 @@ class ExcelExportService
         }
         return $this->generateResponse();
     }
+
     /**
      * Genera la respuesta para devolver un archivo en formato response.
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function generateResponse() {
+    public function generateResponse(): bool|string
+    {
         // Creamos el generador del archivo
         $writer = IOFactory::createWriter($this->spreadsheet, 'Xlsx');
         // Generamos el objeto de respuesta
@@ -153,11 +171,12 @@ class ExcelExportService
         unlink('documento.xlsx');
         return $contenido;
     }
+
     /** Función para obtener la letra de columna a partir de un índice de columna de un array. 0 == A, 1 == B
      * @param $num
      * @return string
      */
-    public function getNameFromNumber($num)
+    public function getNameFromNumber($num): string
     {
         $numeric = $num % 26;
         $letter = chr(65 + $numeric);
@@ -168,10 +187,13 @@ class ExcelExportService
             return $letter;
         }
     }
+
     /**
-     *
+     * @return IWriter
+     * @throws Exception
      */
-    public function returnFileWriter() {
+    public function returnFileWriter(): IWriter
+    {
         // Creamos el generador del archivo
         return IOFactory::createWriter($this->spreadsheet, 'Xlsx');
     }
