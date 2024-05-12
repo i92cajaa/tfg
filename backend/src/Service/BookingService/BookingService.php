@@ -124,7 +124,7 @@ class BookingService extends AbstractService
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (count($booking->getSchedule()->getBookings()) === ($booking->getSchedule()->getRoom()->getCapacity() - 1)) {
-                $booking->getSchedule()->setStatus($this->statusRepository->findById(Status::STATUS_COMPLETED, false));
+                $booking->getSchedule()->setStatus($this->statusRepository->findById(Status::STATUS_FULL, false));
 
                 $this->scheduleRepository->save($booking->getSchedule());
             }
@@ -186,7 +186,7 @@ class BookingService extends AbstractService
                 }
 
                 if (count($booking->getSchedule()->getBookings()) === ($booking->getSchedule()->getRoom()->getCapacity() - 1)) {
-                    $booking->getSchedule()->setStatus($this->statusRepository->findById(Status::STATUS_COMPLETED, false));
+                    $booking->getSchedule()->setStatus($this->statusRepository->findById(Status::STATUS_FULL, false));
 
                     $this->scheduleRepository->save($booking->getSchedule());
                 }
@@ -229,7 +229,7 @@ class BookingService extends AbstractService
             clientId: $clientId,
             array: false);
 
-        if ($booking->getSchedule()->getStatus()->getId() === Status::STATUS_COMPLETED) {
+        if ($booking->getSchedule()->getStatus()->getId() === Status::STATUS_FULL) {
             $booking->getSchedule()->setStatus($this->statusRepository->findById(Status::STATUS_AVAILABLE, false));
         }
 
