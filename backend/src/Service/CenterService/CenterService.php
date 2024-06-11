@@ -8,11 +8,13 @@ use App\Form\CenterType;
 use App\Repository\AreaRepository;
 use App\Repository\CenterRepository;
 use App\Service\DocumentService\DocumentService;
+use App\Service\FilterService;
 use App\Shared\Classes\AbstractService;
 use App\Shared\Classes\UTCDateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
@@ -201,6 +203,24 @@ class CenterService extends AbstractService
         $this->centerRepository->remove($center,true);
 
         return $this->redirectToRoute('center_index');
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO LIST CENTERS FOR THE APP
+     * ES: SERVICIO PARA LISTAR LOS CENTROS PARA LA APP
+     *
+     * @return JsonResponse
+     */
+    // ----------------------------------------------------------------
+    public function appGetCenters(): JsonResponse
+    {
+        return new JsonResponse(
+            data: $this->centerRepository->findCenters($this->filterService, true)['centers'],
+            status: 200,
+            json: true
+        );
     }
     // ----------------------------------------------------------------
 }

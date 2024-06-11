@@ -3,6 +3,7 @@
 namespace App\Controller\ClientController;
 
 use App\Annotation\Permission;
+use App\Service\CenterService\CenterService;
 use App\Service\ClientService\ClientService;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,7 +15,8 @@ class ClientController extends AbstractController
 {
 
     public function __construct(
-        private readonly ClientService $clientService
+        private readonly ClientService $clientService,
+        private readonly CenterService $centerService,
     ) {
     }
 
@@ -106,11 +108,12 @@ class ClientController extends AbstractController
 
     // ----------------------------------------------------------------
     /**
-     * EN: ENDPOINT TO DELETER A CLIENT
+     * EN: ENDPOINT TO DELETE A CLIENT
      * ES: ENDPOINT PARA BORRAR UN CLIENTE
      *
      * @param string $client
      * @return Response
+     * @throws NonUniqueResultException
      */
     // ----------------------------------------------------------------
     #[Route(path: '/delete/{client}', name: 'client_delete', methods: ["POST"])]
@@ -120,4 +123,18 @@ class ClientController extends AbstractController
         return $this->clientService->delete($client);
     }
     // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO LOGIN WITH A CLIENT
+     * ES: ENDPOINT PARA LOGUEAR CON UN CLIENTE
+     *
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/app-client-index', name: 'app_client_index')]
+    public function appClientIndex(): Response
+    {
+        return $this->centerService->appGetCenters();
+    }
 }

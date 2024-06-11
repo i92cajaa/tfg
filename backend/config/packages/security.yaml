@@ -28,7 +28,7 @@ security:
         client:
             lazy: true
             provider: app_client_provider
-            pattern: ^/clientUser
+            pattern: ^/client
             custom_authenticator: App\Security\LoginClientFormAuthenticator
             logout:
                 path: app_logout_client
@@ -54,7 +54,7 @@ security:
         - { path: ^/change-locale, roles: PUBLIC_ACCESS}
         - { path: ^/documents, roles: PUBLIC_ACCESS}
         - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/clientUser/login, roles: PUBLIC_ACCESS }
+        - { path: ^/client/login, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/public/change-password, roles: PUBLIC_ACCESS }
 

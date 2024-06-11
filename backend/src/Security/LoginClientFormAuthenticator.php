@@ -28,21 +28,21 @@ class LoginClientFormAuthenticator extends AbstractLoginFormAuthenticator
     public const LOGIN_ROUTE = 'app_login_client';
 
     public function __construct(
-        private UrlGeneratorInterface $urlGenerator,
-        private EntityManagerInterface $entityManager,
-        private RequestStack $requestStack
+        private readonly UrlGeneratorInterface  $urlGenerator,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly RequestStack $requestStack
     )
     {
     }
 
     public function authenticate(Request $request): Passport
     {
-        $email = $request->request->get('email', '');
+        $id = $request->request->get('dni', '');
 
-        $request->getSession()->set(Security::LAST_USERNAME, $email);
+        $request->getSession()->set(Security::LAST_USERNAME, $id);
 
         return new Passport(
-            new UserBadge($email),
+            new UserBadge($id),
             new PasswordCredentials($request->request->get('password', '')),
             [
                 new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
