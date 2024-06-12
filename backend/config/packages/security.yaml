@@ -54,6 +54,7 @@ security:
         - { path: ^/change-locale, roles: PUBLIC_ACCESS}
         - { path: ^/documents, roles: PUBLIC_ACCESS}
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/client/get-csrf-token, roles: PUBLIC_ACCESS }
         - { path: ^/client/login, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/public/change-password, roles: PUBLIC_ACCESS }

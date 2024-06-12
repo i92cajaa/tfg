@@ -216,11 +216,8 @@ class CenterService extends AbstractService
     // ----------------------------------------------------------------
     public function appGetCenters(): JsonResponse
     {
-        return new JsonResponse(
-            data: $this->centerRepository->findCenters($this->filterService, true)['centers'],
-            status: 200,
-            json: true
-        );
+        error_log(1);
+        return new JsonResponse(json_encode($this->centerRepository->findCenters($this->filterService, true, true)['centers']));
     }
     // ----------------------------------------------------------------
 }
