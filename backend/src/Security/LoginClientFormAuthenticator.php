@@ -72,7 +72,7 @@ class LoginClientFormAuthenticator extends AbstractLoginFormAuthenticator implem
 
         return new JsonResponse([
             'message' => 'Authentication failed',
-        ], JsonResponse::HTTP_UNAUTHORIZED);
+        ], Response::HTTP_UNAUTHORIZED);
     }
 
     public function start(Request $request, ?AuthenticationException $authException = null): Response

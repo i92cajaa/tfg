@@ -234,7 +234,7 @@ class CenterService extends AbstractService
             $filteredCenters[] = $result;
         }
 
-        return new JsonResponse(json_encode($filteredCenters));
+        return new JsonResponse($filteredCenters);
     }
     // ----------------------------------------------------------------
 }
