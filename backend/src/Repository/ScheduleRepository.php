@@ -247,6 +247,15 @@ class ScheduleRepository extends ServiceEntityRepository
                 $query->andWhere('teacher.id = :teacher')
                     ->setParameter('teacher', $teacher);
             }
+
+            $now = $filterService->getFilterValue('now');
+            if ($now) {
+                $dateFrom = UTCDateTime::create();
+
+                $query->andWhere('sc.dateFrom > :dateFrom')
+                    ->setParameter('dateFrom', $dateFrom);
+            }
+
         }
     }
     // --------------------------------------------------------------

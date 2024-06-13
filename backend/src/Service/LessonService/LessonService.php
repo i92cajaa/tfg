@@ -298,6 +298,7 @@ class LessonService extends AbstractService
 
         $this->filterService->addFilter('status', 1);
         $this->filterService->addFilter('schedule_available', 1);
+        $this->filterService->addFilter('center', $centerId);
         $lessons = $this->lessonRepository->findLessons($this->filterService, true)['lessons'];
 
         foreach ($lessons as $lesson) {

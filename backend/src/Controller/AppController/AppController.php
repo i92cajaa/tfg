@@ -2,9 +2,12 @@
 
 namespace App\Controller\AppController;
 
+use App\Service\BookingService\BookingService;
 use App\Service\CenterService\CenterService;
 use App\Service\LessonService\LessonService;
+use App\Service\ScheduleService\ScheduleService;
 use App\Service\SecurityService\SecurityService;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,6 +20,8 @@ class AppController extends AbstractController
         private readonly SecurityService $securityService,
         private readonly CenterService $centerService,
         private readonly LessonService $lessonService,
+        private readonly ScheduleService $scheduleService,
+        private readonly BookingService $bookingService
     )
     {
     }
@@ -53,8 +58,8 @@ class AppController extends AbstractController
 
     // ----------------------------------------------------------------
     /**
-     * EN: ENDPOINT TO OBTAIN ALL CENTERS' LESSONS
-     * ES: ENDPOINT PARA OBTENER TODA LAS CLASES DE LOS CENTROS
+     * EN: ENDPOINT TO OBTAIN A CENTER'S LESSONS
+     * ES: ENDPOINT PARA OBTENER TODAS LAS CLASES DE UN CENTRO
      *
      * @param string $center
      * @return Response
@@ -64,6 +69,40 @@ class AppController extends AbstractController
     public function getAllLessonsByCenterId(string $center): Response
     {
         return $this->lessonService->appGetLessonsByCenterId($center);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO OBTAIN A LESSON'S SCHEDULES
+     * ES: ENDPOINT PARA OBTENER TODOS LOS HORARIOS DE UNA CLASE
+     *
+     * @param string $lesson
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/schedules-by-lesson/{lesson}', name: 'app_schedules_by_lesson')]
+    public function getAllSchedulesByLessonId(string $lesson): Response
+    {
+        return $this->scheduleService->appGetSchedulesByLessonId($lesson);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT FOR A CLIENT TO BOOK A LESSON
+     * ES: ENDPOINT PARA QUE UN CLIENTE RESERVE UNA CLASE
+     *
+     * @param string $client
+     * @param string $schedule
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/book/{client}/{schedule}', name: 'app_book')]
+    public function book(string $client, string $schedule): Response
+    {
+        return $this->bookingService->book($client, $schedule);
     }
     // ----------------------------------------------------------------
 }
