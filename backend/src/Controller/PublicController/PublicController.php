@@ -4,6 +4,7 @@ namespace App\Controller\PublicController;
 
 use App\Service\MailService;
 use App\Service\UserService\UserService;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,9 @@ class PublicController extends AbstractController
         return $this->requestService->rememberPassword();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
     #[Route(path: '/change-password/{token}', name: 'change_password')]
     public function changePassword(string $token,Request $request): Response
     {

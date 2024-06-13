@@ -107,7 +107,7 @@ class CenterRepository extends ServiceEntityRepository
      * @return array|null
      */
     // ----------------------------------------------------------------
-    public function findCenters(FilterService $filterService, bool $showAll): ?array
+    public function findCenters(FilterService $filterService, bool $showAll, bool $array = false): ?array
     {
         $query = $this->createQueryBuilder('c')
             ->leftJoin('c.logo', 'logo')
@@ -133,7 +133,7 @@ class CenterRepository extends ServiceEntityRepository
 
         // Pagination process
         $paginator = new Paginator($query);
-        $paginator->getQuery()->setHydrationMode(AbstractQuery::HYDRATE_OBJECT);
+        $paginator->getQuery()->setHydrationMode($array ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT);
         $totalRegisters = $paginator->count();
 
         $result = [];

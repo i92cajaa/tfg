@@ -26,9 +26,11 @@ security:
             pattern: ^/public
             security: false
         client:
-            lazy: true
-            provider: app_client_provider
             pattern: ^/clientUser
+            provider: app_client_provider
+            stateless: true
+            jwt: ~
+            entry_point: App\Security\LoginClientFormAuthenticator
             custom_authenticator: App\Security\LoginClientFormAuthenticator
             logout:
                 path: app_logout_client
@@ -55,6 +57,7 @@ security:
         - { path: ^/documents, roles: PUBLIC_ACCESS}
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/clientUser/login, roles: PUBLIC_ACCESS }
+        - { path: ^/clientUser, roles: ROLE_CLIENT }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/public/change-password, roles: PUBLIC_ACCESS }
 

@@ -4,7 +4,7 @@ file_selected := -f infrastructure/docker-compose.$(env).yml
 environment := $(env)
 
 up:
-	@docker-compose $(file_selected) up -d
+	@docker-compose $(file_selected) up
 
 ps:
 	@docker-compose $(file_selected) ps
@@ -33,7 +33,7 @@ connect:
 connect_root:
 	@docker-compose $(file_selected) exec -u root $(c) bash
 
-install: copy_env_vars build_all up install_dependencies install_assets cache_clear update_database create_admin_user
+install: build_all up install_dependencies install_assets cache_clear update_database create_admin_user
 
 install_dependencies:
 	@docker-compose $(file_selected) exec -T backend composer install

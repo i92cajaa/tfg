@@ -11,6 +11,7 @@ use App\Repository\PaymentMethodRepository;
 use App\Repository\RoleRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
+use App\Security\LoginClientFormAuthenticator;
 use App\Shared\Classes\AbstractService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -42,6 +43,7 @@ class SecurityService extends AbstractService
 
     public function __construct(
         private readonly AuthenticationUtils $authenticationUtils,
+        private readonly LoginClientFormAuthenticator $loginClientFormAuthenticator,
 
         EntityManagerInterface $em,
 
@@ -86,6 +88,20 @@ class SecurityService extends AbstractService
         $error = $this->authenticationUtils->getLastAuthenticationError();
         $lastUsername = $this->authenticationUtils->getLastUsername();
         return $this->render('security/login.html.twig', ['last_email' => $lastUsername, 'error' => $error]);
+    }
+
+    public function clientLogin(bool $isClient = true): Response
+    {
+        //return $this->loginClientFormAuthenticator->authenticate($this->getCurrentRequest());
+        if ($isClient and $this->getUser()) {
+            //$this->getSession()->set('permissions',$this->getUser()->getPermissionsArray());
+            return $this->redirectToRoute('area_index');
+        }
+
+        // get the login error if there is one
+        $error = $this->authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $this->authenticationUtils->getLastUsername();
+        return $this->render('security/loginClient.html.twig', ['last_email' => $lastUsername, 'error' => $error]);
     }
 
    

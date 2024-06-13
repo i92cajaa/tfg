@@ -13,6 +13,7 @@ use App\Repository\UserRepository;
 
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,11 +27,11 @@ use Symfony\Component\Uid\Uuid;
 class CreateAdminCommand extends Command
 {
 
-    private UserRepository $userRepository;
+    private UserRepository|EntityRepository $userRepository;
 
-    private RoleRepository $roleRepository;
+    private RoleRepository|EntityRepository $roleRepository;
 
-    private PermissionRepository $permissionRepository;
+    private PermissionRepository|EntityRepository $permissionRepository;
 
 
     public function __construct(
@@ -46,7 +47,7 @@ class CreateAdminCommand extends Command
         parent::__construct($name);
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             // the short description shown while running "php bin/console list"
@@ -76,7 +77,7 @@ class CreateAdminCommand extends Command
         }
 
         $user = new User();
-        $user->setName("Admin");
+        $user->setName("Super");
         $user->setSurnames("Admin");
         $user->setEmail($email);
         $role = $this->roleRepository->find(Role::ROLE_SUPERADMIN);

@@ -328,6 +328,13 @@ class UserService extends AbstractService
                     }
                 } else {
                     $permissionsArray = @$form->getExtraData()['permissions'] ?: [];
+                    foreach ($user->getPermissions() as $permission) {
+                        $id = $permission->getPermission()->getId();
+                        $key = array_search($id, $permissionsArray);
+                        if ($key !== false) {
+                            unset($permissionsArray[$key]);
+                        }
+                    }
                     $permissions = $this->permissionService->generatePermissionsArray($user, $permissionsArray);
                     foreach ($permissions as $permission) {
                         $user->addPermission($permission);
@@ -380,6 +387,7 @@ class UserService extends AbstractService
      * @param string $token
      * @param Request $request
      * @return Response
+     * @throws NonUniqueResultException
      */
     // ----------------------------------------------------------------
     public function changePassword(string $token, Request $request): Response

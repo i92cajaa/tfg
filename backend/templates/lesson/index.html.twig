@@ -33,8 +33,8 @@
                                     </a>
                                 </th>
                                 <th>
-                                    <a>
-                                        {{ 'Duration'|trans }}
+                                    <a href="{{ filterService.orderBy("duration", filterService.getInversedOrder("duration")) }}">
+                                        {{ 'Duration'|trans }} {% if filterService.isOrdered("duration") %}<i data-feather="{{ filterService.getOrder("duration").order == 'asc' ? 'chevron-up' : 'chevron-down' }}"></i>{% endif %}
                                     </a>
                                 </th>
                                 <th>
