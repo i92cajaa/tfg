@@ -7,6 +7,7 @@ use App\Service\CenterService\CenterService;
 use App\Service\ClientService\ClientService;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -133,8 +134,9 @@ class ClientController extends AbstractController
      */
     // ----------------------------------------------------------------
     #[Route(path: '/app-client-index', name: 'app_client_index')]
-    public function appClientIndex(): Response
+    public function appClientIndex(Request $request): Response
     {
+        dd($request);
         return $this->centerService->appGetCenters();
     }
 }

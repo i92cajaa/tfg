@@ -15,8 +15,7 @@ class SecurityController extends AbstractController
 {
 
     public function __construct(
-        private readonly SecurityService $securityService,
-        private readonly CsrfTokenManagerInterface $csrfTokenManager
+        private readonly SecurityService $securityService
     )
     {
     }
@@ -45,13 +44,5 @@ class SecurityController extends AbstractController
         
         $this->securityService->logout();
     }
-
-    #[Route('/client/get-csrf-token', name: 'get_csrf_token')]
-    public function getCsrfToken(): JsonResponse
-    {
-        $csrfToken = $this->csrfTokenManager->getToken('authenticate')->getValue();
-        return new JsonResponse(['csrf_token' => $csrfToken]);
-    }
-   
 
 }

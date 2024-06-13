@@ -7,6 +7,7 @@ use App\Entity\User\User;
 use App\Shared\Classes\UTCDateTime;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -20,9 +21,11 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
-class LoginClientFormAuthenticator extends AbstractLoginFormAuthenticator
+class LoginClientFormAuthenticator extends AbstractLoginFormAuthenticator implements AuthenticationEntryPointInterface
 {
     use TargetPathTrait;
 
@@ -31,7 +34,8 @@ class LoginClientFormAuthenticator extends AbstractLoginFormAuthenticator
     public function __construct(
         private readonly UrlGeneratorInterface  $urlGenerator,
         private readonly EntityManagerInterface $entityManager,
-        private readonly RequestStack $requestStack
+        private readonly RequestStack $requestStack,
+        private readonly JWTTokenManagerInterface $jwtManager
     )
     {
     }
@@ -50,16 +54,28 @@ class LoginClientFormAuthenticator extends AbstractLoginFormAuthenticator
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): JsonResponse
     {
         /** @var Client $user */
         $client = $token->getUser();
 
         $this->entityManager->persist($client);
 
+        $jwtToken = $this->jwtManager->create($client);
+
         // For example:
-        return new Response('OK');
+        return new JsonResponse([
+            'token' => $jwtToken,  // Replace with your actual token value
+            'message' => 'Authentication successful',
+        ]);
         //throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+    }
+
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
+    {
+        $loginUrl = $this->getLoginUrl($request);
+
+        return new RedirectResponse($loginUrl);
     }
 
     protected function getLoginUrl(Request $request): string

@@ -216,8 +216,25 @@ class CenterService extends AbstractService
     // ----------------------------------------------------------------
     public function appGetCenters(): JsonResponse
     {
-        error_log(1);
-        return new JsonResponse(json_encode($this->centerRepository->findCenters($this->filterService, true, true)['centers']));
+        $filteredCenters = [];
+
+        $this->filterService->addOrderValue('area', 'DESC');
+        $centers = $this->centerRepository->findCenters($this->filterService, true)['centers'];
+        foreach ($centers as $center) {
+            $result = [];
+            $result['name'] = $center->getName();
+            $result['area'] = $center->getArea()->getName();
+            $result['phone'] = $center->getPhone();
+            $result['address'] = $center->getAddress();
+            $result['opening_time'] = $center->getOpeningTime()->format('H:i');
+            $result['closing_time'] = $center->getClosingTime()->format('H:i');
+            $result['color'] = $center->getColor();
+            $result['img'] = base64_encode($this->documentService->getContentOfDocumentId($center->getLogo()->getId()));
+
+            $filteredCenters[] = $result;
+        }
+
+        return new JsonResponse(json_encode($filteredCenters));
     }
     // ----------------------------------------------------------------
 }
