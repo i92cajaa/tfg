@@ -222,6 +222,7 @@ class CenterService extends AbstractService
         $centers = $this->centerRepository->findCenters($this->filterService, true)['centers'];
         foreach ($centers as $center) {
             $result = [];
+            $result['id'] = $center->getId();
             $result['name'] = $center->getName();
             $result['area'] = $center->getArea()->getName();
             $result['phone'] = $center->getPhone();

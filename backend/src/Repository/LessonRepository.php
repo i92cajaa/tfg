@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Lesson\Lesson;
 use App\Service\FilterService;
+use App\Shared\Classes\UTCDateTime;
 use App\Shared\Traits\DoctrineStorableObject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\AbstractQuery;
@@ -139,11 +140,13 @@ class LessonRepository extends ServiceEntityRepository
             ->leftJoin('l.users', 'userHasLesson')
             ->leftJoin('userHasLesson.user', 'user')
             ->leftJoin('l.schedules', 'schedules')
+            ->leftJoin('schedules.status', 'schedule_status')
             ->addSelect('image')
             ->addSelect('center')
             ->addSelect('userHasLesson')
             ->addSelect('user')
             ->addSelect('schedules')
+            ->addSelect('schedule_status')
         ;
 
         $this->setFilters($query, $filterService);
@@ -239,6 +242,14 @@ class LessonRepository extends ServiceEntityRepository
             if ($teacher !== null) {
                 $query->andWhere('user.id = :teacher')
                     ->setParameter('teacher', $teacher);
+            }
+
+            $schedule_available = $filterService->getFilterValue('schedule_available');
+            if ($schedule_available) {
+                $now = UTCDateTime::create();
+
+                $query->andWhere('schedules.dateFrom > :now AND schedule_status.id = 1')
+                    ->setParameter('now', $now);
             }
         }
     }
