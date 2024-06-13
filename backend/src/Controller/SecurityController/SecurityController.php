@@ -26,12 +26,6 @@ class SecurityController extends AbstractController
         return $this->securityService->login();
     }
 
-    #[Route(path: '/client/login', name: 'app_login_client')]
-    public function clientLogin(): Response
-    {
-        return $this->securityService->clientLogin();
-    }
-
     #[Route(path: '/change-locale/{locale}', name: 'app_change_locale', requirements: ['locale' => 'en|fr|de|es|pt'])]
     public function changeLocale(string $locale): Response
     {

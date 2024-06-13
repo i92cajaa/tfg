@@ -441,7 +441,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return [];
+        return ['ROLE_CLIENT'];
     }
 
     public function eraseCredentials()
@@ -451,7 +451,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return $this->id;
+        return $this->dni;
     }
 
     public function getLocale(): string

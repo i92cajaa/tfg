@@ -124,19 +124,4 @@ class ClientController extends AbstractController
         return $this->clientService->delete($client);
     }
     // ----------------------------------------------------------------
-
-    // ----------------------------------------------------------------
-    /**
-     * EN: ENDPOINT TO LOGIN WITH A CLIENT
-     * ES: ENDPOINT PARA LOGUEAR CON UN CLIENTE
-     *
-     * @return Response
-     */
-    // ----------------------------------------------------------------
-    #[Route(path: '/app-client-index', name: 'app_client_index')]
-    public function appClientIndex(Request $request): Response
-    {
-        dd($request);
-        return $this->centerService->appGetCenters();
-    }
 }

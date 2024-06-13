@@ -26,7 +26,7 @@ security:
             pattern: ^/public
             security: false
         client:
-            pattern: ^/client
+            pattern: ^/clientUser
             provider: app_client_provider
             stateless: true
             jwt: ~
@@ -56,7 +56,8 @@ security:
         - { path: ^/change-locale, roles: PUBLIC_ACCESS}
         - { path: ^/documents, roles: PUBLIC_ACCESS}
         - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/client, roles: PUBLIC_ACCESS }
+        - { path: ^/clientUser/login, roles: PUBLIC_ACCESS }
+        - { path: ^/clientUser, roles: ROLE_CLIENT }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/public/change-password, roles: PUBLIC_ACCESS }
 
