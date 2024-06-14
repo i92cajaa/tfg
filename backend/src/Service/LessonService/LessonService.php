@@ -31,7 +31,6 @@ class LessonService extends AbstractService
 
     public function __construct(
         private readonly LessonRepository $lessonRepository,
-        private readonly UserRepository $userRepository,
         private readonly CenterRepository $centerRepository,
         private readonly UserHasLessonRepository $userHasLessonRepository,
         private readonly DocumentService $documentService,
@@ -280,6 +279,41 @@ class LessonService extends AbstractService
         $this->lessonRepository->remove($lesson,true);
 
         return $this->redirectToRoute('lesson_index');
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO OBTAIN ALL CENTERS' LESSONS
+     * ES: SERVICIO PARA OBTENER TODA LAS CLASES DE LOS CENTROS
+     *
+     * @param string $centerId
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function appGetLessonsByCenterId(string $centerId): Response
+    {
+
+        $filteredLessons = [];
+
+        $this->filterService->addFilter('status', 1);
+        $this->filterService->addFilter('schedule_available', 1);
+        $this->filterService->addFilter('center', $centerId);
+        $lessons = $this->lessonRepository->findLessons($this->filterService, true)['lessons'];
+
+        foreach ($lessons as $lesson) {
+            $result = [];
+            $result['id'] = $lesson->getId();
+            $result['name'] = $lesson->getName();
+            $result['duration'] = $lesson->getDuration();
+            $result['description'] = $lesson->getDescription();
+            $result['color'] = $lesson->getColor();
+            $result['img'] = base64_encode($this->documentService->getContentOfDocumentId($lesson->getImage()->getId()));
+
+            $filteredLessons[] = $result;
+        }
+
+        return new JsonResponse($filteredLessons);
     }
     // ----------------------------------------------------------------
 }

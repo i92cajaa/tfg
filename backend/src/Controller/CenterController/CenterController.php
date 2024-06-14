@@ -26,7 +26,7 @@ class CenterController extends AbstractController
      */
     // ----------------------------------------------------------------
     #[Route(path: '/', name: 'center_index', methods: ["GET"])]
-    #[Permission(group: 'appointments', action:"list")]
+    #[Permission(group: 'centers', action:"list")]
     public function index(): Response
     {
 
@@ -45,6 +45,7 @@ class CenterController extends AbstractController
      */
     // ----------------------------------------------------------------
     #[Route(path: '/show/{center}', name: 'center_show', methods: ["GET",'POST'])]
+    #[Permission(group: 'centers', action:"show")]
     public function show(string $center): Response
     {
         return $this->centerService->show($center);
@@ -60,7 +61,7 @@ class CenterController extends AbstractController
      */
     // ----------------------------------------------------------------
     #[Route(path: '/new', name: 'center_new', methods: ["GET",'POST'])]
-    #[Permission(group: 'appointments', action:"list")]
+    #[Permission(group: 'centers', action:"create")]
     public function new(): Response
     {
         return $this->centerService->new();
@@ -77,6 +78,7 @@ class CenterController extends AbstractController
      */
     // ----------------------------------------------------------------
     #[Route(path: '/edit/{center}', name: 'center_edit', methods: ["GET",'POST'])]
+    #[Permission(group: 'centers', action:"edit")]
     public function edit(string $center): Response
     {
         return $this->centerService->edit($center);
@@ -93,6 +95,7 @@ class CenterController extends AbstractController
      */
     // ----------------------------------------------------------------
     #[Route(path: '/delete/{center}', name: 'center_delete', methods: ["GET",'POST'])]
+    #[Permission(group: 'centers', action:"delete")]
     public function delete(string $center): Response
     {
         return $this->centerService->delete($center);

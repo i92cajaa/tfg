@@ -50,8 +50,3 @@ services:
         class: App\EventListener\LocaleListener
         tags:
             - { name: kernel.event_listener, event: kernel.request }
-
-    App\EventListener\JwtTokenListener:
-        class: App\EventListener\JwtTokenListener
-        tags:
-            - { name: kernel.event_listener, event: kernel.request }

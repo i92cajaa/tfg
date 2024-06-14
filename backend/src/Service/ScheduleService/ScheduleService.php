@@ -473,4 +473,39 @@ class ScheduleService extends AbstractService
         return new Response("Modo guardado satisfactoriamente", 200);
     }
     // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO OBTAIN A LESSON'S SCHEDULES
+     * ES: SERVICIO PARA OBTENER TODOS LOS HORARIOS DE UNA CLASE
+     *
+     * @param string $lessonId
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function appGetSchedulesByLessonId(string $lessonId): Response
+    {
+
+        $filteredSchedules = [];
+
+        $this->filterService->addFilter('status', 1);
+        $this->filterService->addFilter('now', 1);
+        $this->filterService->addFilter('lesson', $lessonId);
+        $schedules = $this->scheduleRepository->findSchedules($this->filterService, true)['schedules'];
+
+        foreach ($schedules as $schedule) {
+            $result = [];
+            $result['id'] = $schedule->getId();
+            $result['room_floor'] = ($schedule->getRoom()->getFloor() == 0)? 'Baja' : $schedule->getRoom()->getFloor() . 'ª';
+            $result['room_number'] = $schedule->getRoom()->getNumber();
+            $result['day'] = $schedule->getDateFrom()->format('d/m');
+            $result['date_from'] = $schedule->getDateFrom()->format('H:i');
+            $result['date_to'] = $schedule->getDateTo()->format('H:i');
+
+            $filteredSchedules[] = $result;
+        }
+
+        return new JsonResponse($filteredSchedules);
+    }
+    // ----------------------------------------------------------------
 }

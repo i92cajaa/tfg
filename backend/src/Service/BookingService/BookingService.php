@@ -15,6 +15,7 @@ use App\Shared\Classes\UTCDateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
@@ -236,6 +237,75 @@ class BookingService extends AbstractService
         $this->bookingRepository->remove($booking,true);
 
         return $this->redirectToRoute('booking_index');
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE FOR A CLIENT TO BOOK A LESSON
+     * ES: SERVICIO PARA QUE UN CLIENTE RESERVE UNA CLASE
+     *
+     * @param string $clientId
+     * @param string $scheduleId
+     * @return Response
+     * @throws NonUniqueResultException
+     * @throws \Exception
+     */
+    // ----------------------------------------------------------------
+    public function book(string $clientId, string $scheduleId): Response
+    {
+
+        $client = $this->clientRepository->findByIdSimple($clientId, false);
+        if (!$client) {
+            throw new \Exception('El cliente no existe en la base de datos');
+        }
+
+        $schedule = $this->scheduleRepository->findById($scheduleId, false);
+        if (!$schedule) {
+            throw new \Exception('El cliente no existe en la base de datos');
+        }
+
+        $booking = (new Booking())
+            ->setClient($client)
+            ->setSchedule($schedule);
+        ;
+
+
+        if (count($booking->getSchedule()->getBookings()) === ($booking->getSchedule()->getRoom()->getCapacity() - 1)) {
+            $booking->getSchedule()->setStatus($this->statusRepository->findById(Status::STATUS_FULL, false));
+
+            $this->scheduleRepository->save($booking->getSchedule());
+        }
+
+        $this->bookingRepository->save($booking, true);
+
+        return new JsonResponse('DONE');
+
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO OBTAIN A CLIENT'S BOOKINGS
+     * ES: SERVICIO PARA OBTENER LAS RESERVAS DE UN CLIENTE
+     *
+     * @param string $clientId
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function getBookingsByClient(string $clientId): Response
+    {
+
+        $this->filterService->addFilter('client_id', $clientId);
+        $bookings = $this->bookingRepository->findBookings($this->filterService, true)['bookings'];
+
+        $filteredBookings = [];
+        foreach ($bookings as $booking) {
+            $filteredBookings[] = $booking->getSchedule()->getId();
+        }
+
+        return new JsonResponse($filteredBookings);
+
     }
     // ----------------------------------------------------------------
 }
