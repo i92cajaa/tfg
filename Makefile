@@ -4,7 +4,7 @@ file_selected := -f infrastructure/docker-compose.$(env).yml
 environment := $(env)
 
 up:
-	@docker-compose $(file_selected) up -d
+	@docker-compose $(file_selected) up
 
 ps:
 	@docker-compose $(file_selected) ps

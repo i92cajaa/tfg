@@ -496,7 +496,7 @@ class ScheduleService extends AbstractService
         foreach ($schedules as $schedule) {
             $result = [];
             $result['id'] = $schedule->getId();
-            $result['room_floor'] = $schedule->getRoom()->getFloor();
+            $result['room_floor'] = ($schedule->getRoom()->getFloor() == 0)? 'Baja' : $schedule->getRoom()->getFloor() . 'ª';
             $result['room_number'] = $schedule->getRoom()->getNumber();
             $result['day'] = $schedule->getDateFrom()->format('d/m');
             $result['date_from'] = $schedule->getDateFrom()->format('H:i');

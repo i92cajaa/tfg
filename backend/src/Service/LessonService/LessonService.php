@@ -308,6 +308,7 @@ class LessonService extends AbstractService
             $result['duration'] = $lesson->getDuration();
             $result['description'] = $lesson->getDescription();
             $result['color'] = $lesson->getColor();
+            $result['img'] = base64_encode($this->documentService->getContentOfDocumentId($lesson->getImage()->getId()));
 
             $filteredLessons[] = $result;
         }

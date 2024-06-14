@@ -105,4 +105,20 @@ class AppController extends AbstractController
         return $this->bookingService->book($client, $schedule);
     }
     // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO OBTAIN A CLIENT'S BOOKINGS
+     * ES: ENDPOINT PARA OBTENER LAS RESERVAS DE UN CLIENTE
+     *
+     * @param string $client
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/bookings-by-client/{client}', name: 'app_bookings_by_client')]
+    public function getBookings(string $client): Response
+    {
+        return $this->bookingService->getBookingsByClient($client);
+    }
+    // ----------------------------------------------------------------
 }

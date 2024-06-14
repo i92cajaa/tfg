@@ -62,6 +62,7 @@ class LoginClientFormAuthenticator extends AbstractLoginFormAuthenticator implem
 
         return new JsonResponse([
             'token' => $jwtToken,
+            'client_id' => $client->getId(),
             'message' => 'Authentication successful',
         ]);
     }

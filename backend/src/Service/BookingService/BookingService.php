@@ -279,7 +279,32 @@ class BookingService extends AbstractService
 
         $this->bookingRepository->save($booking, true);
 
-        return $this->redirectToRoute('app_schedules_by_lesson', ['lesson' => $schedule->getLesson()->getId()]);
+        return new JsonResponse('DONE');
+
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO OBTAIN A CLIENT'S BOOKINGS
+     * ES: SERVICIO PARA OBTENER LAS RESERVAS DE UN CLIENTE
+     *
+     * @param string $clientId
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function getBookingsByClient(string $clientId): Response
+    {
+
+        $this->filterService->addFilter('client_id', $clientId);
+        $bookings = $this->bookingRepository->findBookings($this->filterService, true)['bookings'];
+
+        $filteredBookings = [];
+        foreach ($bookings as $booking) {
+            $filteredBookings[] = $booking->getSchedule()->getId();
+        }
+
+        return new JsonResponse($filteredBookings);
 
     }
     // ----------------------------------------------------------------

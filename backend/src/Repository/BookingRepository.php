@@ -172,6 +172,12 @@ class BookingRepository extends ServiceEntityRepository
                     ->setParameter('client', '%' . $client . '%');
             }
 
+            $clientId = $filterService->getFilterValue('client_id');
+            if ($clientId != null) {
+                $query->andWhere('client.id LIKE :client')
+                    ->setParameter('client', '%' . $client . '%');
+            }
+
             $schedule = $filterService->getFilterValue('schedule');
             if ($schedule !== null) {
                 $query->andWhere('schedule.id = :schedule')
