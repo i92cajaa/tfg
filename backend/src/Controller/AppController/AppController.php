@@ -108,6 +108,22 @@ class AppController extends AbstractController
 
     // ----------------------------------------------------------------
     /**
+     * EN: ENDPOINT TO OBTAIN A CLIENT'S BOOKINGS' SCHEDULE ID
+     * ES: ENDPOINT PARA OBTENER EL ID DEL HORARIO DE LAS RESERVAS DE UN CLIENTE
+     *
+     * @param string $client
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/bookings-schedules-id-by-client/{client}', name: 'app_bookings_schedule_id_by_client')]
+    public function getBookingsScheduleIds(string $client): Response
+    {
+        return $this->bookingService->getSchedulesByClientsBookings($client);
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
      * EN: ENDPOINT TO OBTAIN A CLIENT'S BOOKINGS
      * ES: ENDPOINT PARA OBTENER LAS RESERVAS DE UN CLIENTE
      *
@@ -118,7 +134,27 @@ class AppController extends AbstractController
     #[Route(path: '/bookings-by-client/{client}', name: 'app_bookings_by_client')]
     public function getBookings(string $client): Response
     {
-        return $this->bookingService->getBookingsByClient($client);
+        return $this->bookingService->getClientBookings($client);
     }
     // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: ENDPOINT TO CANCEL A CLIENT'S BOOKING
+     * ES: ENDPOINT PARA CANCELAR LA RESERVA DE UN CLIENTE
+     *
+     * @param string $client
+     * @param string $schedule
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    #[Route(path: '/cancel-booking/{client}/{schedule}', name: 'app_cancel_booking')]
+    public function cancelBooking(string $client, string $schedule): Response
+    {
+        return $this->bookingService->appDelete($client, $schedule);
+    }
+    // ----------------------------------------------------------------
+
+
 }

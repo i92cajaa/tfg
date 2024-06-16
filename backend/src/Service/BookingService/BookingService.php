@@ -286,14 +286,14 @@ class BookingService extends AbstractService
 
     // ----------------------------------------------------------------
     /**
-     * EN: SERVICE TO OBTAIN A CLIENT'S BOOKINGS
-     * ES: SERVICIO PARA OBTENER LAS RESERVAS DE UN CLIENTE
+     * EN: SERVICE TO OBTAIN A CLIENT'S BOOKINGS' SCHEDULE ID
+     * ES: SERVICIO PARA OBTENER EL ID DEL HORARIO DE LAS RESERVAS DE UN CLIENTE
      *
      * @param string $clientId
      * @return Response
      */
     // ----------------------------------------------------------------
-    public function getBookingsByClient(string $clientId): Response
+    public function getSchedulesByClientsBookings(string $clientId): Response
     {
 
         $this->filterService->addFilter('client_id', $clientId);
@@ -306,6 +306,73 @@ class BookingService extends AbstractService
 
         return new JsonResponse($filteredBookings);
 
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO OBTAIN A CLIENT'S BOOKINGS
+     * ES: SERVICIO PARA OBTENER LAS RESERVAS DE UN CLIENTE
+     *
+     * @param string $clientId
+     * @return Response
+     */
+    // ----------------------------------------------------------------
+    public function getClientBookings(string $clientId): Response
+    {
+
+        $this->filterService->addFilter('client_id', $clientId);
+        $bookings = $this->bookingRepository->findBookings($this->filterService, true)['bookings'];
+
+        $filteredBookings = [];
+        $return = [];
+        foreach ($bookings as $booking) {
+            $return[0][0]['name'] = $booking->getClient()->getFullName();
+            $return[0][0]['dni'] = $booking->getClient()->getDni();
+            $result = [];
+            $result['schedule_id'] = $booking->getSchedule()->getId();
+            $result['class'] = $booking->getSchedule()->getLesson()->getName();
+            $result['room_floor'] = ($booking->getSchedule()->getRoom()->getFloor() == 0)? 'Baja' : $booking->getSchedule()->getRoom()->getFloor() . 'ª';
+            $result['room_number'] = $booking->getSchedule()->getRoom()->getNumber();
+            $result['day'] = $booking->getSchedule()->getDateFrom()->format('d/m');
+            $result['date_from'] = $booking->getSchedule()->getDateFrom()->format('H:i');
+            $result['date_to'] = $booking->getSchedule()->getDateTo()->format('H:i');
+            $result['done'] = ($booking->getSchedule()->getDateFrom() >= UTCDateTime::create())? 1 : 0;
+            $filteredBookings[] = $result;
+        }
+
+        $return[1] = $filteredBookings;
+
+        return new JsonResponse($return);
+
+    }
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    /**
+     * EN: SERVICE TO CANCEL A CLIENT'S BOOKING
+     * ES: SERVICIO PARA CANCELAR UNA RESERVA DE UN CLIENTE
+     *
+     * @param string $clientId
+     * @param string $scheduleId
+     * @return Response
+     * @throws NonUniqueResultException
+     */
+    // ----------------------------------------------------------------
+    public function appDelete(string $clientId, string $scheduleId): Response
+    {
+        $booking = $this->bookingRepository->findByCompositeId(
+            scheduleId: $scheduleId,
+            clientId: $clientId,
+            array: false);
+
+        if ($booking->getSchedule()->getStatus()->getId() === Status::STATUS_FULL) {
+            $booking->getSchedule()->setStatus($this->statusRepository->findById(Status::STATUS_AVAILABLE, false));
+        }
+
+        $this->bookingRepository->remove($booking,true);
+
+        return new JsonResponse('Done');
     }
     // ----------------------------------------------------------------
 }
